@@ -80,7 +80,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 
 val generateApiSpec = tasks.register("generateApiSpec",GenerateTask::class){
     setProperty("generatorName", "jaxrs-spec")
-    setProperty("inputSpec",  "$rootDir/api-spec-template/swagger.yaml")
+    setProperty("inputSpec",  "$rootDir/rapurc-api-spec/swagger.yaml")
     setProperty("outputDir", "$buildDir/generated/api-spec")
     setProperty("apiPackage", "fi.metatavu.example.api.spec")
     setProperty("invokerPackage", "fi.metatavu.example.api.invoker")
@@ -95,7 +95,7 @@ val generateApiSpec = tasks.register("generateApiSpec",GenerateTask::class){
 val generateApiClient = tasks.register("generateApiClient",GenerateTask::class){
     setProperty("generatorName", "kotlin")
     setProperty("library", "jvm-okhttp3")
-    setProperty("inputSpec",  "$rootDir/api-spec-template/swagger.yaml")
+    setProperty("inputSpec",  "$rootDir/rapurc-api-spec/swagger.yaml")
     setProperty("outputDir", "$buildDir/generated/api-client")
     setProperty("packageName", "fi.metatavu.example.api.client")
     this.configOptions.put("dateLibrary", "string")
