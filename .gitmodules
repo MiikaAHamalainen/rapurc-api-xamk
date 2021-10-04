@@ -1,0 +1,3 @@
+[submodule "api-spec-template"]
+	path = api-spec-template
+	url = git@github.com:Metatavu/api-spec-template.git
