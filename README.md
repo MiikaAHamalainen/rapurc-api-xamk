@@ -1,2 +1,2 @@
-# quarkus-kotlin-api-template
-Template project for Kotlin + Quarkus API
+## rapurc-api
+Kotlin + Quarkus API for Rapurc
