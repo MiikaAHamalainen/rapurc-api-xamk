@@ -1,6 +1,6 @@
 package fi.metatavu.rapurc.api.test.functional
 
-import fi.metatavu.example.api.client.infrastructure.ApiClient
+import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.jaxrs.test.functional.builder.AbstractTestBuilder
 import fi.metatavu.jaxrs.test.functional.builder.auth.AccessTokenProvider
 import fi.metatavu.jaxrs.test.functional.builder.auth.AuthorizedTestBuilderAuthentication
@@ -19,7 +19,7 @@ class TestBuilder: AbstractTestBuilder<ApiClient>() {
 
     val settings = ApiTestSettings()
 
-    private var manager: TestBuilderAuthentication? = null
+    private var admin: TestBuilderAuthentication? = null
 
     override fun createTestBuilderAuthentication(
         testBuilder: AbstractTestBuilder<ApiClient>,
@@ -35,16 +35,16 @@ class TestBuilder: AbstractTestBuilder<ApiClient>() {
      * @throws IOException
      */
     @kotlin.jvm.Throws(IOException::class)
-    fun manager(): TestBuilderAuthentication {
-        if (manager == null) {
+    fun admin(): TestBuilderAuthentication {
+        if (admin == null) {
             val authServerUrl: String = ConfigProvider.getConfig().getValue("keycloak.url", String::class.java)
             val realm: String = ConfigProvider.getConfig().getValue("keycloak.realm", String::class.java)
             val clientId = "test"
-            val username = "manager"
-            val password = "test"
-            manager = TestBuilderAuthentication(this, KeycloakAccessTokenProvider(authServerUrl, realm, clientId, username, password, null))
+            val username = "admin"
+            val password = "adminPassword"
+            admin = TestBuilderAuthentication(this, KeycloakAccessTokenProvider(authServerUrl, realm, clientId, username, password, null))
         }
 
-        return manager!!
+        return admin!!
     }
 }

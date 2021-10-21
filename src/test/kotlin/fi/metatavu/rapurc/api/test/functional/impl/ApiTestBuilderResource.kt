@@ -1,8 +1,8 @@
 package fi.metatavu.rapurc.api.test.functional.impl
 
-import fi.metatavu.example.api.client.infrastructure.ApiClient
-import fi.metatavu.example.api.client.infrastructure.ClientException
-import fi.metatavu.example.api.client.infrastructure.ServerException
+import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
+import fi.metatavu.rapurc.api.client.infrastructure.ClientException
+import fi.metatavu.rapurc.api.client.infrastructure.ServerException
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
 import org.junit.Assert
 
