@@ -36,7 +36,6 @@ class SurveyTestBuilderResource (
      */
     fun create(status: SurveyStatus = SurveyStatus.dRAFT): Survey {
         val survey = Survey(status = status)
-
         val result = api.createSurvey(survey)
         return addClosable(result)
     }
@@ -135,10 +134,11 @@ class SurveyTestBuilderResource (
      * Asserts create status fails with given status code
      *
      * @param expectedStatus expected status code
+     * @param status status
      */
-    fun assertCreateFailStatus(expectedStatus: Int) {
+    fun assertCreateFailStatus(expectedStatus: Int, status: SurveyStatus) {
         try {
-            create()
+            create(status = status)
             fail(String.format("Expected create to fail with status %d", expectedStatus))
         } catch (e: ClientException) {
             assertEquals(expectedStatus.toLong(), e.statusCode.toLong())
@@ -196,16 +196,6 @@ class SurveyTestBuilderResource (
         } catch (e: ClientException) {
             assertEquals(expectedStatus.toLong(), e.statusCode.toLong())
         }
-    }
-
-    /**
-     * Asserts that actual survey equals expected survey when both are serialized into JSON
-     *
-     * @param expected expected survey
-     * @param actual actual survey
-     */
-    fun assertSurveysEqual(expected: Survey?, actual: Survey?) {
-        assertJsonsEqual(expected, actual)
     }
 
     override fun clean(survey: Survey) {

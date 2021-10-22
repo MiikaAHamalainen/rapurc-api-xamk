@@ -29,7 +29,7 @@ class SurveyTestIT {
     @Test
     fun create() {
         TestBuilder().use {
-            val createdSurvey = it.admin().surveys.create()
+            val createdSurvey = it.admin.surveys.create()
             assertNotNull(createdSurvey)
         }
     }
@@ -40,7 +40,7 @@ class SurveyTestIT {
     @Test
     fun list() {
         TestBuilder().use {
-            val emptyList = it.admin().surveys.listSurveys(
+            val emptyList = it.admin.surveys.listSurveys(
                 firstResult = null,
                 maxResult = null,
                 address = null,
@@ -49,11 +49,11 @@ class SurveyTestIT {
 
             assertEquals(0, emptyList.size)
 
-            val survey = it.admin().surveys.create()
-            it.admin().surveys.create()
-            it.admin().surveys.create()
+            val survey = it.admin.surveys.create()
+            it.admin.surveys.create()
+            it.admin.surveys.create()
 
-            val listWithThreeItems = it.admin().surveys.listSurveys(
+            val listWithThreeItems = it.admin.surveys.listSurveys(
                 firstResult = null,
                 maxResult = null,
                 address = null,
@@ -62,11 +62,11 @@ class SurveyTestIT {
 
             assertEquals(3, listWithThreeItems.size)
 
-            it.admin().surveys.updateSurvey(
+            it.admin.surveys.updateSurvey(
                 survey.copy(status = SurveyStatus.dONE)
             )
 
-            val listWithDraftStatus = it.admin().surveys.listSurveys(
+            val listWithDraftStatus = it.admin.surveys.listSurveys(
                 firstResult = null,
                 maxResult = null,
                 address = null,
@@ -75,7 +75,7 @@ class SurveyTestIT {
 
             assertEquals(2, listWithDraftStatus.size)
 
-            val listWithDoneStatus = it.admin().surveys.listSurveys(
+            val listWithDoneStatus = it.admin.surveys.listSurveys(
                 firstResult = null,
                 maxResult = null,
                 address = null,
@@ -92,13 +92,13 @@ class SurveyTestIT {
     @Test
     fun find() {
         TestBuilder().use {
-            val survey = it.admin().surveys.create()
-            val foundSurvey = it.admin().surveys.findSurvey(surveyId = survey.id!!)
+            val survey = it.admin.surveys.create()
+            val foundSurvey = it.admin.surveys.findSurvey(surveyId = survey.id!!)
 
             assertEquals(survey.id, foundSurvey.id)
             assertEquals(survey.status, foundSurvey.status)
 
-            it.admin().surveys.assertFindFailStatus(expectedStatus = 404, surveyId = UUID.randomUUID())
+            it.admin.surveys.assertFindFailStatus(expectedStatus = 404, surveyId = UUID.randomUUID())
         }
     }
 
@@ -108,14 +108,14 @@ class SurveyTestIT {
     @Test
     fun update() {
         TestBuilder().use {
-            val survey = it.admin().surveys.create()
-            val updatedSurvey = it.admin().surveys.updateSurvey(body = survey.copy(status = SurveyStatus.dONE))
+            val survey = it.admin.surveys.create()
+            val updatedSurvey = it.admin.surveys.updateSurvey(body = survey.copy(status = SurveyStatus.dONE))
 
             assertEquals(survey.id, updatedSurvey.id)
             assertNotEquals(survey.status, updatedSurvey.status)
             assertEquals(SurveyStatus.dONE, updatedSurvey.status)
 
-            it.admin().surveys.assertUpdateFailStatus(expectedStatus = 404, survey.copy(id = UUID.randomUUID()))
+            it.admin.surveys.assertUpdateFailStatus(expectedStatus = 404, survey.copy(id = UUID.randomUUID()))
 
         }
     }
@@ -126,7 +126,7 @@ class SurveyTestIT {
     @Test
     fun delete() {
         TestBuilder().use {
-            val emptyList = it.admin().surveys.listSurveys(
+            val emptyList = it.admin.surveys.listSurveys(
                 firstResult = null,
                 maxResult = null,
                 address = null,
@@ -135,10 +135,10 @@ class SurveyTestIT {
 
             assertEquals(0, emptyList.size)
 
-            val survey = it.admin().surveys.create()
-            val anotherSurvey = it.admin().surveys.create()
+            val survey = it.admin.surveys.create()
+            val anotherSurvey = it.admin.surveys.create()
 
-            val listWithTwoItems = it.admin().surveys.listSurveys(
+            val listWithTwoItems = it.admin.surveys.listSurveys(
                 firstResult = null,
                 maxResult = null,
                 address = null,
@@ -147,12 +147,12 @@ class SurveyTestIT {
 
             assertEquals(2, listWithTwoItems.size)
 
-            it.admin().surveys.assertDeleteFailStatus(expectedStatus = 404, survey.copy(id = UUID.randomUUID()))
+            it.admin.surveys.assertDeleteFailStatus(expectedStatus = 404, survey.copy(id = UUID.randomUUID()))
 
-            it.admin().surveys.delete(survey = survey)
-            it.admin().surveys.delete(survey = anotherSurvey)
+            it.admin.surveys.delete(survey = survey)
+            it.admin.surveys.delete(survey = anotherSurvey)
 
-            it.admin().surveys.assertDeleteFailStatus(expectedStatus = 404, survey)
+            it.admin.surveys.assertDeleteFailStatus(expectedStatus = 404, survey)
         }
     }
 }

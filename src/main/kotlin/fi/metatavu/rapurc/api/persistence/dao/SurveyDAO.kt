@@ -19,6 +19,24 @@ import javax.persistence.criteria.Root
 class SurveyDAO: AbstractDAO<Survey>() {
 
     /**
+     * Creates new Survey
+     *
+     * @param id id
+     * @param status status
+     * @param creatorId creator's id
+     * @param lastModifierId last modifier's id
+     * @return created survey
+     */
+    fun create(id: UUID, status: SurveyStatus, creatorId: UUID, lastModifierId: UUID): Survey {
+        val survey = Survey()
+        survey.id = id
+        survey.status = status
+        survey.creatorId = creatorId
+        survey.lastModifierId = lastModifierId
+        return persist(survey)
+    }
+
+    /**
      * Lists surveys with given filters
      *
      * @param firstResult first result
@@ -49,24 +67,6 @@ class SurveyDAO: AbstractDAO<Survey>() {
         query.firstResult = firstResult
         query.maxResults = maxResults
         return query.resultList
-    }
-
-    /**
-     * Creates new Survey
-     *
-     * @param id id
-     * @param status status
-     * @param creatorId creator's id
-     * @param lastModifierId last modifier's id
-     * @return created survey
-     */
-    fun create(id: UUID, status: SurveyStatus, creatorId: UUID, lastModifierId: UUID): Survey {
-        val survey = Survey()
-        survey.id = id
-        survey.status = status
-        survey.creatorId = creatorId
-        survey.lastModifierId = lastModifierId
-        return persist(survey)
     }
 
     /**

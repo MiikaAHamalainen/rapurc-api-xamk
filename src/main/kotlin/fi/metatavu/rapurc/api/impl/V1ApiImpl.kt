@@ -1,11 +1,13 @@
 package fi.metatavu.rapurc.api.impl
 
+import fi.metatavu.rapurc.api.UserRole
 import fi.metatavu.rapurc.api.impl.surveys.SurveyController
 import fi.metatavu.rapurc.api.impl.translate.SurveyTranslator
 import fi.metatavu.rapurc.api.model.Survey
 import fi.metatavu.rapurc.api.model.SurveyStatus
 import fi.metatavu.rapurc.api.spec.V1Api
 import java.util.*
+import javax.annotation.security.RolesAllowed
 import javax.enterprise.context.RequestScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -28,6 +30,7 @@ class V1ApiImpl: V1Api, AbstractApi()  {
 
     /* SURVEYS */
 
+    @RolesAllowed(value = [ UserRole.USER.name ])
     override fun listSurveys(firstResult: Int?, maxResults: Int?, address: String?, status: SurveyStatus?): Response {
         loggedUserId ?: return createForbidden(NO_LOGGED_USER_ID)
         val surveys = surveyController.list(
@@ -40,6 +43,7 @@ class V1ApiImpl: V1Api, AbstractApi()  {
         return createOk(surveys.map(surveyTranslator::translate))
     }
 
+    @RolesAllowed(value = [ UserRole.USER.name ])
     override fun createSurvey(survey: Survey?): Response {
         val userId = loggedUserId ?: return createForbidden(NO_LOGGED_USER_ID)
         survey ?: return createBadRequest(MISSING_REQUEST_BODY)
@@ -49,6 +53,7 @@ class V1ApiImpl: V1Api, AbstractApi()  {
         return createOk(surveyTranslator.translate(createdSurvey))
     }
 
+    @RolesAllowed(value = [ UserRole.USER.name ])
     override fun findSurvey(surveyId: UUID?): Response {
         loggedUserId ?: return createForbidden(NO_LOGGED_USER_ID)
         surveyId ?: return createBadRequest(createMissingIdFromRequestMessage(target = SURVEY))
@@ -59,6 +64,7 @@ class V1ApiImpl: V1Api, AbstractApi()  {
         return createOk(surveyTranslator.translate(foundSurvey))
     }
 
+    @RolesAllowed(value = [ UserRole.USER.name ])
     override fun updateSurvey(surveyId: UUID?, survey: Survey?): Response {
         val userId = loggedUserId ?: return createForbidden(NO_LOGGED_USER_ID)
         survey ?: return createBadRequest(MISSING_REQUEST_BODY)
@@ -77,6 +83,7 @@ class V1ApiImpl: V1Api, AbstractApi()  {
         return createOk(surveyTranslator.translate(updatedSurvey))
     }
 
+    @RolesAllowed(value = [ UserRole.USER.name ])
     override fun deleteSurvey(surveyId: UUID?): Response {
         loggedUserId ?: return createForbidden(NO_LOGGED_USER_ID)
         surveyId ?: return createBadRequest(createMissingIdFromRequestMessage(target = SURVEY))
