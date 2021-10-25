@@ -37,8 +37,8 @@ class MysqlTestResource : QuarkusTestResourceLifecycleManager {
     }
 
     companion object {
-        const val DATABASE = "pages-api"
-        const val USERNAME = "pages-api"
+        const val DATABASE = "rapurc-api"
+        const val USERNAME = "rapurc-api"
         const val PASSWORD = "password"
     }
 

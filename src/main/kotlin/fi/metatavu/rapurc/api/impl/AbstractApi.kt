@@ -165,6 +165,25 @@ abstract class AbstractApi {
     }
 
     /**
+     * Creates not found message with given parameters
+     *
+     * @param target target of the find method
+     * @param id ID of the target
+     */
+    protected fun createNotFoundMessage(target: String, id: UUID): String {
+        return "$target with ID $id could not be found"
+    }
+
+    /**
+     * Creates missing ID from request message
+     *
+     * @param target target of the find method
+     */
+    protected fun createMissingIdFromRequestMessage(target: String): String {
+        return "$target id missing from request"
+    }
+
+    /**
      * Constructs an error response
      *
      * @param status status code
@@ -173,7 +192,7 @@ abstract class AbstractApi {
      * @return error response
      */
     private fun createError(status: Response.Status, message: String): Response {
-        val entity = fi.metatavu.example.api.model.Error()
+        val entity = fi.metatavu.rapurc.api.model.Error()
 
         entity.message = message
         entity.code = status.statusCode
@@ -189,6 +208,7 @@ abstract class AbstractApi {
         const val UNAUTHORIZED = "Unauthorized"
         const val FORBIDDEN = "Forbidden"
         const val MISSING_REQUEST_BODY = "Missing request body"
+        const val NO_LOGGED_USER_ID = "No logged in user!"
     }
 
 }
