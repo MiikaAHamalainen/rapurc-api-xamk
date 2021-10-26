@@ -23,14 +23,16 @@ class SurveyDAO: AbstractDAO<Survey>() {
      *
      * @param id id
      * @param status status
+     * @param keycloakGroupId keycloak group id
      * @param creatorId creator's id
      * @param lastModifierId last modifier's id
      * @return created survey
      */
-    fun create(id: UUID, status: SurveyStatus, creatorId: UUID, lastModifierId: UUID): Survey {
+    fun create(id: UUID, status: SurveyStatus, keycloakGroupId: UUID, creatorId: UUID, lastModifierId: UUID): Survey {
         val survey = Survey()
         survey.id = id
         survey.status = status
+        survey.keycloakGroupId = keycloakGroupId
         survey.creatorId = creatorId
         survey.lastModifierId = lastModifierId
         return persist(survey)
@@ -43,9 +45,10 @@ class SurveyDAO: AbstractDAO<Survey>() {
      * @param maxResults maximum amount of results
      * @param address filter by address
      * @param status filter by status
+     * @param keycloakGroupId filter by group id
      * @return List of visitor variables
      */
-    fun list(firstResult: Int, maxResults: Int, address: String?, status: SurveyStatus?): List<Survey> {
+    fun list(firstResult: Int, maxResults: Int, address: String?, status: SurveyStatus?, keycloakGroupId: UUID?): List<Survey> {
         val entityManager = getEntityManager()
         val criteriaBuilder = entityManager.criteriaBuilder
         val criteria: CriteriaQuery<Survey> = criteriaBuilder.createQuery(Survey::class.java)
@@ -59,6 +62,10 @@ class SurveyDAO: AbstractDAO<Survey>() {
 
         if (status != null) {
             restrictions.add(criteriaBuilder.equal(root.get(Survey_.status), status))
+        }
+
+        if (keycloakGroupId != null) {
+            restrictions.add(criteriaBuilder.equal(root.get(Survey_.keycloakGroupId), keycloakGroupId))
         }
 
         criteria.select(root)

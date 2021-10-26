@@ -19,6 +19,8 @@ class TestBuilder: AbstractTestBuilder<ApiClient>() {
     val settings = ApiTestSettings()
 
     val admin = createTestBuilderAuthentication(username = "admin", password = "adminPassword")
+    val userA = createTestBuilderAuthentication(username = "user_a", password = "passworda")
+    val userB = createTestBuilderAuthentication(username = "user_b", password = "passwordb")
 
     override fun createTestBuilderAuthentication(
         testBuilder: AbstractTestBuilder<ApiClient>,

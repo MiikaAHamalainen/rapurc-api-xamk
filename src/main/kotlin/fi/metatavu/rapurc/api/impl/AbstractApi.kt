@@ -37,6 +37,15 @@ abstract class AbstractApi {
         }
 
     /**
+     * Checks if user is admin
+     *
+     * @return if user is admin
+     */
+    protected fun isAdmin(): Boolean {
+        return securityContext.isUserInRole("admin")
+    }
+
+    /**
      * Constructs ok response
      *
      * @param entity payload
@@ -183,6 +192,23 @@ abstract class AbstractApi {
         return "$target id missing from request"
     }
 
+    /**
+     * Creates missing group id from user message
+     *
+     * @param userId user id
+     */
+    protected fun createMissingGroupIdMessage(userId: UUID): String {
+        return "User $userId belongs to no group"
+    }
+
+    /**
+     * Creates wrong group id message
+     *
+     * @param userId user id
+     */
+    protected fun createWrongGroupMessage(userId: UUID): String {
+        return "User $userId belongs to different group"
+    }
     /**
      * Constructs an error response
      *

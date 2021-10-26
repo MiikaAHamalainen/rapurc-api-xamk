@@ -20,7 +20,10 @@ import javax.ws.rs.core.Response
  */
 @RequestScoped
 @Transactional
-class V1ApiImpl: V1Api, AbstractApi()  {
+class V1ApiImpl : V1Api, AbstractApi() {
+
+    @Inject
+    lateinit var keycloakController: KeycloakController
 
     @Inject
     lateinit var surveyController: SurveyController
@@ -32,12 +35,19 @@ class V1ApiImpl: V1Api, AbstractApi()  {
 
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun listSurveys(firstResult: Int?, maxResults: Int?, address: String?, status: SurveyStatus?): Response {
-        loggedUserId ?: return createForbidden(NO_LOGGED_USER_ID)
+        val userId = loggedUserId ?: return createForbidden(NO_LOGGED_USER_ID)
+
+        var groupId: UUID? = null
+        if (!isAdmin()) {
+            groupId = keycloakController.getGroupId(userId) ?: return createForbidden(createMissingGroupIdMessage(userId = userId))
+        }
+
         val surveys = surveyController.list(
             firstResult = firstResult ?: 0,
             maxResults = maxResults ?: 10,
             address = address,
-            status = status
+            status = status,
+            keycloakGroupId = groupId
         )
 
         return createOk(surveys.map(surveyTranslator::translate))
@@ -49,17 +59,25 @@ class V1ApiImpl: V1Api, AbstractApi()  {
         survey ?: return createBadRequest(MISSING_REQUEST_BODY)
         val status = survey.status
 
-        val createdSurvey = surveyController.create(status = status, creatorId = userId)
+        val groupId = keycloakController.getGroupId(userId) ?: return createForbidden(createMissingGroupIdMessage(userId = userId))
+        val createdSurvey = surveyController.create(status = status, keycloakGroupId = groupId, creatorId = userId)
         return createOk(surveyTranslator.translate(createdSurvey))
     }
 
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun findSurvey(surveyId: UUID?): Response {
-        loggedUserId ?: return createForbidden(NO_LOGGED_USER_ID)
+        val userId = loggedUserId ?: return createForbidden(NO_LOGGED_USER_ID)
         surveyId ?: return createBadRequest(createMissingIdFromRequestMessage(target = SURVEY))
 
         val foundSurvey = surveyController.find(surveyId = surveyId)
             ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        if (!isAdmin()) {
+            val groupId = keycloakController.getGroupId(userId) ?: return createForbidden(createMissingGroupIdMessage(userId = userId))
+            if (groupId != foundSurvey.keycloakGroupId) {
+                return createForbidden(createWrongGroupMessage(userId = userId))
+            }
+        }
 
         return createOk(surveyTranslator.translate(foundSurvey))
     }
@@ -73,6 +91,13 @@ class V1ApiImpl: V1Api, AbstractApi()  {
         val surveyToUpdate = surveyController.find(surveyId = surveyId)
             ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 
+        if (!isAdmin()) {
+            val groupId = keycloakController.getGroupId(userId) ?: return createForbidden(createMissingGroupIdMessage(userId = userId))
+            if (groupId != surveyToUpdate.keycloakGroupId) {
+                return createForbidden(createWrongGroupMessage(userId = userId))
+            }
+        }
+
         val status = survey.status
         val updatedSurvey = surveyController.update(
             survey = surveyToUpdate,
@@ -85,11 +110,18 @@ class V1ApiImpl: V1Api, AbstractApi()  {
 
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun deleteSurvey(surveyId: UUID?): Response {
-        loggedUserId ?: return createForbidden(NO_LOGGED_USER_ID)
+        val userId = loggedUserId ?: return createForbidden(NO_LOGGED_USER_ID)
         surveyId ?: return createBadRequest(createMissingIdFromRequestMessage(target = SURVEY))
 
         val surveyToDelete = surveyController.find(surveyId = surveyId)
             ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        if (!isAdmin()) {
+            val groupId = keycloakController.getGroupId(userId) ?: return createForbidden(createMissingGroupIdMessage(userId = userId))
+            if (groupId != surveyToDelete.keycloakGroupId) {
+                return createForbidden(createWrongGroupMessage(userId = userId))
+            }
+        }
 
         surveyController.deleteSurvey(surveyToDelete)
 

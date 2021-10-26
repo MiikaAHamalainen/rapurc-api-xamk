@@ -29,8 +29,10 @@ class SurveyTestIT {
     @Test
     fun create() {
         TestBuilder().use {
-            val createdSurvey = it.admin.surveys.create()
+            val createdSurvey = it.userA.surveys.create()
             assertNotNull(createdSurvey)
+
+            it.admin.surveys.assertCreateFailStatus(403, SurveyStatus.dRAFT)
         }
     }
 
@@ -49,9 +51,9 @@ class SurveyTestIT {
 
             assertEquals(0, emptyList.size)
 
-            val survey = it.admin.surveys.create()
-            it.admin.surveys.create()
-            it.admin.surveys.create()
+            val survey = it.userA.surveys.create()
+            it.userA.surveys.create()
+            it.userB.surveys.create()
 
             val listWithThreeItems = it.admin.surveys.listSurveys(
                 firstResult = null,
@@ -83,6 +85,22 @@ class SurveyTestIT {
             )
 
             assertEquals(1, listWithDoneStatus.size)
+
+            val listByGroupA = it.userA.surveys.listSurveys(
+                firstResult = null,
+                maxResult = null,
+                address = null,
+                status = null
+            )
+            assertEquals(2, listByGroupA.size)
+
+            val listByGroupB = it.userB.surveys.listSurveys(
+                firstResult = null,
+                maxResult = null,
+                address = null,
+                status = null
+            )
+            assertEquals(1, listByGroupB.size)
         }
     }
 
@@ -92,13 +110,14 @@ class SurveyTestIT {
     @Test
     fun find() {
         TestBuilder().use {
-            val survey = it.admin.surveys.create()
-            val foundSurvey = it.admin.surveys.findSurvey(surveyId = survey.id!!)
+            val survey = it.userA.surveys.create()
+            val foundSurvey = it.userA.surveys.findSurvey(surveyId = survey.id!!)
 
             assertEquals(survey.id, foundSurvey.id)
             assertEquals(survey.status, foundSurvey.status)
 
             it.admin.surveys.assertFindFailStatus(expectedStatus = 404, surveyId = UUID.randomUUID())
+            it.userB.surveys.assertFindFailStatus(expectedStatus = 403, surveyId = survey.id)
         }
     }
 
@@ -108,15 +127,16 @@ class SurveyTestIT {
     @Test
     fun update() {
         TestBuilder().use {
-            val survey = it.admin.surveys.create()
-            val updatedSurvey = it.admin.surveys.updateSurvey(body = survey.copy(status = SurveyStatus.dONE))
+            val survey = it.userA.surveys.create()
+            val updateData = survey.copy(status = SurveyStatus.dONE)
+            val updatedSurvey = it.userA.surveys.updateSurvey(body = updateData)
 
             assertEquals(survey.id, updatedSurvey.id)
             assertNotEquals(survey.status, updatedSurvey.status)
             assertEquals(SurveyStatus.dONE, updatedSurvey.status)
 
+            it.userB.surveys.assertUpdateFailStatus(expectedStatus = 403, updateData)
             it.admin.surveys.assertUpdateFailStatus(expectedStatus = 404, survey.copy(id = UUID.randomUUID()))
-
         }
     }
 
@@ -135,8 +155,8 @@ class SurveyTestIT {
 
             assertEquals(0, emptyList.size)
 
-            val survey = it.admin.surveys.create()
-            val anotherSurvey = it.admin.surveys.create()
+            val survey = it.userA.surveys.create()
+            val anotherSurvey = it.userB.surveys.create()
 
             val listWithTwoItems = it.admin.surveys.listSurveys(
                 firstResult = null,
@@ -148,11 +168,21 @@ class SurveyTestIT {
             assertEquals(2, listWithTwoItems.size)
 
             it.admin.surveys.assertDeleteFailStatus(expectedStatus = 404, survey.copy(id = UUID.randomUUID()))
+            it.userB.surveys.assertDeleteFailStatus(expectedStatus = 403, survey)
 
             it.admin.surveys.delete(survey = survey)
-            it.admin.surveys.delete(survey = anotherSurvey)
+            it.userB.surveys.delete(survey = anotherSurvey)
 
             it.admin.surveys.assertDeleteFailStatus(expectedStatus = 404, survey)
+
+            val finalEmptyList = it.admin.surveys.listSurveys(
+                firstResult = null,
+                maxResult = null,
+                address = null,
+                status = null
+            )
+
+            assertEquals(0, finalEmptyList.size)
         }
     }
 }
