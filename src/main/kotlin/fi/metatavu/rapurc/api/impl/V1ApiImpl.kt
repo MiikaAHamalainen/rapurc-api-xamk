@@ -244,6 +244,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         return createOk(ownerInformationTranslator.translate(updatedOwnerInformation))
     }
 
+    @RolesAllowed(value = [ UserRole.USER.name ])
     override fun deleteOwnerInformation(surveyId: UUID, ownerId: UUID): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
