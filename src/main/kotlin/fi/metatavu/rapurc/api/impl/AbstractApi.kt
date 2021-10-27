@@ -193,23 +193,6 @@ abstract class AbstractApi {
     }
 
     /**
-     * Creates missing group id from user message
-     *
-     * @param userId user id
-     */
-    protected fun createMissingGroupIdMessage(userId: UUID): String {
-        return "User $userId belongs to no group"
-    }
-
-    /**
-     * Creates wrong group id message
-     *
-     * @param userId user id
-     */
-    protected fun createWrongGroupMessage(userId: UUID): String {
-        return "User $userId belongs to different group"
-    }
-    /**
      * Constructs an error response
      *
      * @param status status code

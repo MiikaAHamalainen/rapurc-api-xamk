@@ -42,6 +42,21 @@ class KeycloakController {
     private lateinit var apiAdminPassword: String
 
     /**
+     * Gets ID of the group user belongs to
+     *
+     * @param userId user id
+     * @return user group id if belongs to any
+     */
+    fun getGroupId(userId: UUID): UUID? {
+        val groups = realm().users().get(userId.toString())?.groups() ?: return null
+        if (groups.size >= 1) {
+            return UUID.fromString(groups[0].id)
+        }
+
+        return null
+    }
+
+    /**
      * Constructs a Keycloak client
      *
      * @return Keycloak client
@@ -65,20 +80,4 @@ class KeycloakController {
     private fun realm(): RealmResource {
         return getKeycloakClient().realm(realm)
     }
-
-    /**
-     * Gets ID of the group user belongs to
-     *
-     * @param userId user id
-     * @return user group id if belongs to any
-     */
-    fun getGroupId(userId: UUID): UUID? {
-        val groups = realm().users().get(userId.toString())?.groups() ?: return null
-        if (groups.size >= 1) {
-            return UUID.fromString(groups[0].id)
-        }
-
-        return null
-    }
-
 }

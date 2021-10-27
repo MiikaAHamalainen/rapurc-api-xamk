@@ -133,6 +133,25 @@ class V1ApiImpl : V1Api, AbstractApi() {
     }
 
     companion object {
+
+        /**
+         * Creates missing group id from user message
+         *
+         * @param userId user id
+         */
+        protected fun createMissingGroupIdMessage(userId: UUID): String {
+            return "User $userId belongs to no group"
+        }
+
+        /**
+         * Creates wrong group id message
+         *
+         * @param userId user id
+         */
+        protected fun createWrongGroupMessage(userId: UUID): String {
+            return "User $userId belongs to different group"
+        }
+
         const val SURVEY = "Survey"
     }
 
