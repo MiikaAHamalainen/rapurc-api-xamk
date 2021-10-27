@@ -11,7 +11,7 @@ import javax.persistence.*
  * @author Jari Nykänen
  */
 @Entity
-class Survey {
+class Survey: GeneralInfo() {
 
     @Id
     var id: UUID? = null
@@ -23,32 +23,4 @@ class Survey {
     @Column(nullable = false)
     var keycloakGroupId: UUID? = null
 
-    @Column(nullable = false)
-    var creatorId: UUID? = null
-
-    @Column(nullable = false)
-    var createdAt: OffsetDateTime? = null
-
-    @Column(nullable = false)
-    var lastModifierId: UUID? = null
-
-    @Column(nullable = false)
-    var modifiedAt: OffsetDateTime? = null
-
-    /**
-     * JPA pre-persist event handler
-     */
-    @PrePersist
-    fun onCreate() {
-        createdAt = OffsetDateTime.now()
-        modifiedAt = OffsetDateTime.now()
-    }
-
-    /**
-     * JPA pre-update event handler
-     */
-    @PreUpdate
-    fun onUpdate() {
-        modifiedAt = OffsetDateTime.now()
-    }
 }

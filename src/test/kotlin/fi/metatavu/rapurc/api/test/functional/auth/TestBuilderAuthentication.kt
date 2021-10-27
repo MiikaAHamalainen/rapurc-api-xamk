@@ -4,6 +4,7 @@ import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.jaxrs.test.functional.builder.auth.AccessTokenProvider
 import fi.metatavu.jaxrs.test.functional.builder.auth.AuthorizedTestBuilderAuthentication
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
+import fi.metatavu.rapurc.api.test.functional.resources.OwnerInformationTestBuilderResource
 import fi.metatavu.rapurc.api.test.functional.resources.SurveyTestBuilderResource
 
 /**
@@ -21,6 +22,7 @@ class TestBuilderAuthentication(
 
     private var accessTokenProvider: AccessTokenProvider? = accessTokenProvider
     val surveys: SurveyTestBuilderResource = SurveyTestBuilderResource(testBuilder, this.accessTokenProvider, createClient())
+    val owners: OwnerInformationTestBuilderResource = OwnerInformationTestBuilderResource(testBuilder, this.accessTokenProvider, createClient())
 
     /**
      * Creates a API client
