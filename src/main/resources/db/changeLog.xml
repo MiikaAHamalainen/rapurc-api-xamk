@@ -28,4 +28,12 @@
     </createTable>
   </changeSet>
 
+  <changeSet id="survey_group_id" author="katja danilova">
+    <addColumn tableName="survey">
+      <column name="keycloakgroupid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>

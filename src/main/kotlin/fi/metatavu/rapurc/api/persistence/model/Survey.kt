@@ -21,6 +21,9 @@ class Survey {
     var status: SurveyStatus? = null
 
     @Column(nullable = false)
+    var keycloakGroupId: UUID? = null
+
+    @Column(nullable = false)
     var creatorId: UUID? = null
 
     @Column(nullable = false)

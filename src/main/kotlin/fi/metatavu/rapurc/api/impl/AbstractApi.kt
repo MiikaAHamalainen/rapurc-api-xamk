@@ -37,6 +37,15 @@ abstract class AbstractApi {
         }
 
     /**
+     * Checks if user is admin
+     *
+     * @return if user is admin
+     */
+    protected fun isAdmin(): Boolean {
+        return securityContext.isUserInRole("admin")
+    }
+
+    /**
      * Constructs ok response
      *
      * @param entity payload

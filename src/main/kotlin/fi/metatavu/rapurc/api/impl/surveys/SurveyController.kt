@@ -25,14 +25,16 @@ class SurveyController {
      * @param maxResults maximum amount of results
      * @param address filter by address
      * @param status filter by status
+     * @param keycloakGroupId filter by group id
      * @return List of visitor variables
      */
-    fun list(firstResult: Int, maxResults: Int, address: String?, status: SurveyStatus?): List<Survey> {
+    fun list(firstResult: Int, maxResults: Int, address: String?, status: SurveyStatus?, keycloakGroupId: UUID?): List<Survey> {
         return surveyDAO.list(
             firstResult = firstResult,
             maxResults = maxResults,
             address = address,
-            status = status
+            status = status,
+            keycloakGroupId = keycloakGroupId
         )
     }
 
@@ -40,13 +42,15 @@ class SurveyController {
      * Creates new survey
      *
      * @param status new status
+     * @param keycloakGroupId keycloak group id
      * @param creatorId creator's ID
      * @return updated survey
      */
-    fun create(status: SurveyStatus, creatorId: UUID): Survey {
+    fun create(status: SurveyStatus, keycloakGroupId: UUID, creatorId: UUID): Survey {
         return surveyDAO.create(
             id = UUID.randomUUID(),
             status = status,
+            keycloakGroupId = keycloakGroupId,
             creatorId = creatorId,
             lastModifierId = creatorId
         )
