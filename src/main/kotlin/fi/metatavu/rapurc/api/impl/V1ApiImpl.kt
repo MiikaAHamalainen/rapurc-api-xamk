@@ -199,12 +199,9 @@ class V1ApiImpl : V1Api, AbstractApi() {
             return createForbidden(WRONG_SURVEY_FOR_OWNER_INFORMATION)
         }
 
-        val newSurvey = surveyController.find(surveyId = payload.surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = payload.surveyId))
-
         surveyAccessRightsCheck(userId, survey)?.let { return it }
-        surveyAccessRightsCheck(userId, newSurvey)?.let { return it }
 
-        val updatedOwnerInformation = ownerInformationController.update(ownerInformationToUpdate, payload, newSurvey, userId)
+        val updatedOwnerInformation = ownerInformationController.update(ownerInformationToUpdate, payload, userId)
         return createOk(ownerInformationTranslator.translate(updatedOwnerInformation))
     }
 
@@ -288,12 +285,9 @@ class V1ApiImpl : V1Api, AbstractApi() {
             return createForbidden(WRONG_SURVEY_FOR_BUILDING)
         }
 
-        val newSurvey = surveyController.find(surveyId = payload.surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = payload.surveyId))
-
         surveyAccessRightsCheck(userId, survey)?.let { return it }
-        surveyAccessRightsCheck(userId, newSurvey)?.let { return it }
 
-        val updatedBuilding = buildingController.update(buildingToUpdate, payload, newSurvey, userId)
+        val updatedBuilding = buildingController.update(buildingToUpdate, payload, userId)
         return createOk(buildingTranslator.translate(updatedBuilding))
     }
 

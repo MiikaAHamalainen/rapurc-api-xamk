@@ -105,12 +105,6 @@ class BuildingDAO: AbstractDAO<Building>() {
         return query.resultList
     }
 
-    fun updateSurvey(building: Building, newSurvey: Survey, userId: UUID): Building {
-        building.survey = newSurvey
-        building.lastModifierId = userId
-        return persist(building)
-    }
-
     fun updatePropertyId(building: Building, propertyId: String?, userId: UUID): Building {
         building.propertyId = propertyId
         building.lastModifierId = userId

@@ -120,10 +120,4 @@ class OwnerInformationDAO: AbstractDAO<OwnerInformation>() {
         return persist(ownerInformation)
     }
 
-    fun updateSurvey(ownerInformation: OwnerInformation, newSurvey: Survey, userId: UUID): OwnerInformation {
-        ownerInformation.survey = newSurvey
-        ownerInformation.lastModifierId = userId
-        return persist(ownerInformation)
-    }
-
 }

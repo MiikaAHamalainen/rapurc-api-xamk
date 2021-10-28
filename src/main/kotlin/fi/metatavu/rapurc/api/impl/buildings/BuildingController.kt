@@ -77,13 +77,11 @@ class BuildingController {
      *
      * @param buildingToUpdate original building to update
      * @param building new building data
-     * @param newSurvey new survey the building is assigned to
      * @param userId modifier id
      * @return update Building
      */
-    fun update(buildingToUpdate: Building, building: fi.metatavu.rapurc.api.model.Building, newSurvey: Survey, userId: UUID): Building {
-        var result = buildingDAO.updateSurvey(buildingToUpdate, newSurvey, userId)
-        buildingDAO.updatePropertyId(result, building.propertyId, userId)
+    fun update(buildingToUpdate: Building, building: fi.metatavu.rapurc.api.model.Building, userId: UUID): Building {
+        var result = buildingDAO.updatePropertyId(buildingToUpdate, building.propertyId, userId)
         buildingDAO.updateBuildingId(result, building.buildingId, userId)
         buildingDAO.updateClassificationCode(result, building.classificationCode, userId)
         buildingDAO.updateConstructionYear(result, building.constructionYear, userId)
