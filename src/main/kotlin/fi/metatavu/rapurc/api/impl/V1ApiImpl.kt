@@ -1,10 +1,13 @@
 package fi.metatavu.rapurc.api.impl
 
 import fi.metatavu.rapurc.api.UserRole
+import fi.metatavu.rapurc.api.impl.buildings.BuildingController
 import fi.metatavu.rapurc.api.impl.owners.OwnerInformationController
 import fi.metatavu.rapurc.api.impl.surveys.SurveyController
+import fi.metatavu.rapurc.api.impl.translate.BuildingTranslator
 import fi.metatavu.rapurc.api.impl.translate.OwnerInformationTranslator
 import fi.metatavu.rapurc.api.impl.translate.SurveyTranslator
+import fi.metatavu.rapurc.api.model.Building
 import fi.metatavu.rapurc.api.model.OwnerInformation
 import fi.metatavu.rapurc.api.model.Survey
 import fi.metatavu.rapurc.api.model.SurveyStatus
@@ -39,6 +42,12 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
     @Inject
     lateinit var ownerInformationTranslator: OwnerInformationTranslator
+
+    @Inject
+    lateinit var buildingController: BuildingController
+
+    @Inject
+    lateinit var buildingTranslator: BuildingTranslator
 
     /* SURVEYS */
 
@@ -263,6 +272,65 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         ownerInformationController.delete(ownerInformationToDelete)
         return createNoContent()
+    }
+
+    /* Buildings */
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun listBuildings(surveyId: UUID): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        if (!isAdmin()) {
+            val groupId = keycloakController.getGroupId(userId) ?: return createForbidden(createMissingGroupIdMessage(userId = userId))
+            if (groupId != survey.keycloakGroupId) {
+                return createForbidden(createWrongGroupMessage(userId = userId))
+            }
+        }
+
+        val buildings = buildingController.list(survey = survey)
+        return createOk(buildings.map(buildingTranslator::translate))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun createBuilding(surveyId: UUID, building: Building): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        if (building.surveyId != surveyId) {
+            return createForbidden(WRONG_SURVEY_FOR_OWNER_INFORMATION)
+        }
+
+        if (!isAdmin()) {
+            val groupId = keycloakController.getGroupId(userId) ?: return createForbidden(createMissingGroupIdMessage(userId = userId))
+            if (groupId != survey.keycloakGroupId) {
+                return createForbidden(createWrongGroupMessage(userId = userId))
+            }
+        }
+
+        val createdBuilding = buildingController.create(
+            survey = survey,
+            building = building,
+            userId = userId
+        )
+
+        return createOk(ownerInformationTranslator.translate(createdOwnerInformation))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun findBuilding(surveyId: UUID?, buildingId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun updateBuilding(surveyId: UUID?, buildingId: UUID?, building: Building?): Response {
+        TODO("Not yet implemented")
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun deleteBuilding(surveyId: UUID?, buildingId: UUID?): Response {
+        TODO("Not yet implemented")
     }
 
     override fun ping(): Response {
