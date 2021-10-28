@@ -42,7 +42,7 @@
         <constraints nullable="false" primaryKey="true"/>
       </column>
       <column name="survey_id" type="binary(16)">
-        <constraints nullable="false" foreignKeyName="FK_OWNERINFORMATION_SURVEY_ID" referencedColumnNames="id" referencedTableName="survey"/>
+        <constraints nullable="false" foreignKeyName="FK_OWNER_INFORMATION_SURVEY_ID" referencedColumnNames="id" referencedTableName="survey"/>
       </column>
       <column name="ownername" type="varchar(100)" />
       <column name="businessid" type="varchar(100)" />
