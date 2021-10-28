@@ -1,5 +1,7 @@
 package fi.metatavu.rapurc.api.impl.translate
 
+import fi.metatavu.rapurc.api.model.Address
+import fi.metatavu.rapurc.api.model.OtherStructure
 import fi.metatavu.rapurc.api.persistence.model.Building
 import javax.enterprise.context.ApplicationScoped
 
@@ -21,16 +23,23 @@ class BuildingTranslator: AbstractTranslator<Building, fi.metatavu.rapurc.api.mo
         result.floors = entity.floors
         result.basements = entity.basements
         result.foundation = entity.foundation
-        result.supportinStructure = entity.supportStructure
+        result.supportingStructure = entity.supportStructure
         result.facadeMaterial = entity.facadeMaterial
         result.roofType = entity.roofType
-        result.address.city = entity.city
-        result.address.streetAddress = entity.streetAddress
-        result.address.postCode = entity.postCode
         result.createdAt = entity.createdAt
         result.creatorId = entity.creatorId
         result.modifiedAt = entity.modifiedAt
         result.lastModifierId = entity.lastModifierId
+
+        result.otherStructures = entity.otherStructures?.map { jpaStructure ->
+            OtherStructure().name(jpaStructure.name).description(jpaStructure.description)
+        }
+
+        val address = Address()
+        address.city = entity.city
+        address.streetAddress = entity.streetAddress
+        address.postCode = entity.postCode
+        result.address = address
         return result
     }
 

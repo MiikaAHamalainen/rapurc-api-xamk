@@ -1,10 +1,7 @@
 package fi.metatavu.rapurc.api.persistence.model
 
 import java.util.*
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.ManyToOne
+import javax.persistence.*
 
 /**
  * JPA class for Building
@@ -62,5 +59,8 @@ class Building: GeneralInfo() {
 
     @Column (nullable = false)
     var postCode: String? = null
+
+    @ElementCollection
+    var otherStructures: List<OtherStructure>? = null
 
 }

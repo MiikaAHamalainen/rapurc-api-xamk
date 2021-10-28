@@ -1,13 +1,13 @@
 package fi.metatavu.rapurc.api.persistence.dao
 
 import fi.metatavu.rapurc.api.persistence.model.Building
+import fi.metatavu.rapurc.api.persistence.model.Building_
+import fi.metatavu.rapurc.api.persistence.model.OtherStructure
 import fi.metatavu.rapurc.api.persistence.model.Survey
-import fi.metatavu.rapurc.api.persistence.model.Survey_
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.persistence.TypedQuery
 import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 /**
@@ -36,6 +36,9 @@ class BuildingDAO: AbstractDAO<Building>() {
      * @param streetAddress street address
      * @param city city
      * @param postCode post code
+     * @param otherStructures other building structures
+     * @param creatorId creator id
+     * @param lastModifierId last modifier id
      * @return created building
      */
     fun create(
@@ -55,7 +58,10 @@ class BuildingDAO: AbstractDAO<Building>() {
         roofType: String?,
         streetAddress: String?,
         city: String?,
-        postCode: String?
+        postCode: String?,
+        otherStructures: List<OtherStructure>?,
+        creatorId: UUID,
+        lastModifierId: UUID
     ) : Building {
         val building = Building()
         building.id = id
@@ -75,6 +81,9 @@ class BuildingDAO: AbstractDAO<Building>() {
         building.streetAddress = streetAddress
         building.city = city
         building.postCode = postCode
+        building.otherStructures = otherStructures
+        building.creatorId = creatorId
+        building.lastModifierId = lastModifierId
         return persist(building)
     }
 
@@ -90,14 +99,112 @@ class BuildingDAO: AbstractDAO<Building>() {
         val criteria: CriteriaQuery<Building> = criteriaBuilder.createQuery(Building::class.java)
         val root: Root<Building> = criteria.from(Building::class.java)
 
-        val restrictions = ArrayList<Predicate>()
-
-
-        criteriaBuilder.equal(root.get(Building_.survey), survey)
-
         criteria.select(root)
-        criteria.where(*restrictions.toTypedArray())
+        criteria.where(criteriaBuilder.equal(root.get(Building_.survey), survey))
         val query: TypedQuery<Building> = entityManager.createQuery(criteria)
         return query.resultList
     }
+
+    fun updateSurvey(building: Building, newSurvey: Survey, userId: UUID): Building {
+        building.survey = newSurvey
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updatePropertyId(building: Building, propertyId: String?, userId: UUID): Building {
+        building.propertyId = propertyId
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updateBuildingId(building: Building, buildingId: String?, userId: UUID): Building {
+        building.buildingId = buildingId
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updateClassificationCode(building: Building, classificationCode: String?, userId: UUID): Building {
+        building.classificationCode = classificationCode
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updateConstructionYear(building: Building, constructionYear: Int?, userId: UUID): Building {
+        building.constructionYear = constructionYear
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updateSpace(building: Building, space: Int?, userId: UUID): Building {
+        building.space = space
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updateVolume(building: Building, volume: Int?, userId: UUID): Building {
+        building.volume = volume
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updateFloors(building: Building, floors: Int, userId: UUID): Building {
+        building.floors = floors
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updateBasements(building: Building, basements: Int?, userId: UUID): Building {
+        building.basements = basements
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updateFoundation(building: Building, foundation: String?, userId: UUID): Building {
+        building.foundation = foundation
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updateSupportStructure(building: Building, supportingStructure: String?, userId: UUID): Building {
+        building.supportStructure = supportingStructure
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updateFacadeMateria(building: Building, facadeMaterial: String?, userId: UUID): Building {
+        building.facadeMaterial = facadeMaterial
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updateRoofType(building: Building, roofType: String?, userId: UUID): Building {
+        building.roofType = roofType
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updateStreetAddress(building: Building, streetAddress: String?, userId: UUID): Building {
+        building.streetAddress = streetAddress
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updateCity(building: Building, city: String?, userId: UUID): Building {
+        building.city = city
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updatePostCode(building: Building, postCode: String?, userId: UUID): Building {
+        building.postCode = postCode
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
+    fun updateOtherBuildings(building: Building, otherStructures: List<OtherStructure>?, userId: UUID): Building {
+        building.otherStructures = otherStructures
+        building.lastModifierId = userId
+        return persist(building)
+    }
+
 }
