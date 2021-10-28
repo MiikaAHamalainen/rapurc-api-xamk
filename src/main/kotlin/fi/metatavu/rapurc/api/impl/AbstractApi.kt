@@ -193,6 +193,15 @@ abstract class AbstractApi {
     }
 
     /**
+     * Creates missing object from request message
+     *
+     * @param target target of the find method
+     */
+    protected fun createMissingObjectFromRequestMessage(target: String): String {
+        return "$target missing from request"
+    }
+
+    /**
      * Constructs an error response
      *
      * @param status status code

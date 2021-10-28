@@ -1,8 +1,11 @@
 package fi.metatavu.rapurc.api.impl
 
 import fi.metatavu.rapurc.api.UserRole
+import fi.metatavu.rapurc.api.impl.owners.OwnerInformationController
 import fi.metatavu.rapurc.api.impl.surveys.SurveyController
+import fi.metatavu.rapurc.api.impl.translate.OwnerInformationTranslator
 import fi.metatavu.rapurc.api.impl.translate.SurveyTranslator
+import fi.metatavu.rapurc.api.model.OwnerInformation
 import fi.metatavu.rapurc.api.model.Survey
 import fi.metatavu.rapurc.api.model.SurveyStatus
 import fi.metatavu.rapurc.api.spec.V1Api
@@ -31,11 +34,17 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @Inject
     lateinit var surveyTranslator: SurveyTranslator
 
+    @Inject
+    lateinit var ownerInformationController: OwnerInformationController
+
+    @Inject
+    lateinit var ownerInformationTranslator: OwnerInformationTranslator
+
     /* SURVEYS */
 
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun listSurveys(firstResult: Int?, maxResults: Int?, address: String?, status: SurveyStatus?): Response {
-        val userId = loggedUserId ?: return createForbidden(NO_LOGGED_USER_ID)
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
 
         var groupId: UUID? = null
         if (!isAdmin()) {
@@ -55,7 +64,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun createSurvey(survey: Survey?): Response {
-        val userId = loggedUserId ?: return createForbidden(NO_LOGGED_USER_ID)
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
         survey ?: return createBadRequest(MISSING_REQUEST_BODY)
         val status = survey.status
 
@@ -84,7 +93,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun updateSurvey(surveyId: UUID?, survey: Survey?): Response {
-        val userId = loggedUserId ?: return createForbidden(NO_LOGGED_USER_ID)
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
         survey ?: return createBadRequest(MISSING_REQUEST_BODY)
         surveyId ?: return createBadRequest(createMissingIdFromRequestMessage(target = SURVEY))
 
@@ -110,7 +119,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun deleteSurvey(surveyId: UUID?): Response {
-        val userId = loggedUserId ?: return createForbidden(NO_LOGGED_USER_ID)
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
         surveyId ?: return createBadRequest(createMissingIdFromRequestMessage(target = SURVEY))
 
         val surveyToDelete = surveyController.find(surveyId = surveyId)
@@ -125,6 +134,129 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         surveyController.deleteSurvey(surveyToDelete)
 
+        return createNoContent()
+    }
+
+    /* OWNERS */
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun listOwnerInformation(surveyId: UUID): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        if (!isAdmin()) {
+            val groupId = keycloakController.getGroupId(userId) ?: return createForbidden(createMissingGroupIdMessage(userId = userId))
+            if (groupId != survey.keycloakGroupId) {
+                return createForbidden(createWrongGroupMessage(userId = userId))
+            }
+        }
+
+        val ownerInformationList = ownerInformationController.list(survey = survey)
+        return createOk(ownerInformationList.map(ownerInformationTranslator::translate))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun createOwnerInformation(surveyId: UUID, ownerInformation: OwnerInformation): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        ownerInformation.contactPerson ?: return createBadRequest(createMissingObjectFromRequestMessage(CONTACT_PERSON))
+
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        if (ownerInformation.surveyId != surveyId) {
+            return createForbidden(WRONG_SURVEY_FOR_OWNER_INFORMATION)
+        }
+
+        if (!isAdmin()) {
+            val groupId = keycloakController.getGroupId(userId) ?: return createForbidden(createMissingGroupIdMessage(userId = userId))
+            if (groupId != survey.keycloakGroupId) {
+                return createForbidden(createWrongGroupMessage(userId = userId))
+            }
+        }
+
+        val createdOwnerInformation = ownerInformationController.create(
+            survey = survey,
+            ownerName = ownerInformation.ownerName,
+            businessId = ownerInformation.businessId,
+            contactPerson = ownerInformation.contactPerson,
+            creatorId = userId
+        )
+
+        return createOk(ownerInformationTranslator.translate(createdOwnerInformation))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun findOwnerInformation(surveyId: UUID, ownerId: UUID): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        val foundOwnerInformation = ownerInformationController.find(ownerId) ?: return createNotFound(createNotFoundMessage(target = OWNER_INFORMATION, id = ownerId))
+        if (foundOwnerInformation.survey != survey) {
+            return createForbidden(WRONG_SURVEY_FOR_OWNER_INFORMATION)
+        }
+
+        if (!isAdmin()) {
+            val groupId = keycloakController.getGroupId(userId) ?: return createForbidden(createMissingGroupIdMessage(userId = userId))
+            if (groupId != survey.keycloakGroupId) {
+                return createForbidden(createWrongGroupMessage(userId = userId))
+            }
+        }
+
+        return createOk(ownerInformationTranslator.translate(foundOwnerInformation))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun updateOwnerInformation(
+        surveyId: UUID,
+        ownerId: UUID,
+        payload: OwnerInformation
+    ): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        payload.contactPerson ?: return createBadRequest(createMissingObjectFromRequestMessage(CONTACT_PERSON))
+
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        val ownerInformationToUpdate = ownerInformationController.find(ownerId) ?: return createNotFound(createNotFoundMessage(target = OWNER_INFORMATION, id = ownerId))
+        if (ownerInformationToUpdate.survey != survey) {
+            return createForbidden(WRONG_SURVEY_FOR_OWNER_INFORMATION)
+        }
+
+        val newSurvey = surveyController.find(surveyId = payload.surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = payload.surveyId))
+
+        if (!isAdmin()) {
+            val groupId = keycloakController.getGroupId(userId) ?: return createForbidden(createMissingGroupIdMessage(userId = userId))
+
+            if (groupId != survey.keycloakGroupId) {
+                return createForbidden(createWrongGroupMessage(userId = userId))
+            }
+
+            if (groupId != newSurvey.keycloakGroupId) {
+                return createForbidden(createWrongGroupMessage(userId = userId))
+            }
+        }
+
+        val updatedOwnerInformation = ownerInformationController.update(ownerInformationToUpdate, payload, newSurvey, userId)
+        return createOk(ownerInformationTranslator.translate(updatedOwnerInformation))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun deleteOwnerInformation(surveyId: UUID, ownerId: UUID): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        if (!isAdmin()) {
+            val groupId = keycloakController.getGroupId(userId) ?: return createForbidden(createMissingGroupIdMessage(userId = userId))
+            if (groupId != survey.keycloakGroupId) {
+                return createForbidden(createWrongGroupMessage(userId = userId))
+            }
+        }
+
+        val ownerInformationToDelete = ownerInformationController.find(ownerId) ?: return createNotFound(createNotFoundMessage(target = OWNER_INFORMATION, id = ownerId))
+
+        if (ownerInformationToDelete.survey != survey) {
+            return createForbidden(WRONG_SURVEY_FOR_OWNER_INFORMATION)
+        }
+
+        ownerInformationController.delete(ownerInformationToDelete)
         return createNoContent()
     }
 
@@ -152,7 +284,10 @@ class V1ApiImpl : V1Api, AbstractApi() {
             return "User $userId belongs to different group"
         }
 
+        const val WRONG_SURVEY_FOR_OWNER_INFORMATION = "Owner information belongs to different survey!"
         const val SURVEY = "Survey"
+        const val OWNER_INFORMATION = "Owner information"
+        const val CONTACT_PERSON = "Contact person"
     }
 
 }
