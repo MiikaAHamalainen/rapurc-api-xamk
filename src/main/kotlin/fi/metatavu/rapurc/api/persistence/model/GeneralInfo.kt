@@ -11,7 +11,7 @@ import javax.persistence.PreUpdate
  * Class containing shared general properties of entities
  */
 @MappedSuperclass
-open class GeneralInfo {
+abstract class GeneralInfo {
 
     @Column(nullable = false)
     var createdAt: OffsetDateTime? = null

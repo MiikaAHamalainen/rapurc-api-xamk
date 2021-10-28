@@ -7,7 +7,7 @@ import javax.persistence.*
  * JPA entity representing owner information
  */
 @Entity
-class OwnerInformation : GeneralInfo() {
+class OwnerInformation: GeneralInfo() {
 
     @Id
     var id: UUID? = null

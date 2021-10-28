@@ -167,10 +167,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun createOwnerInformation(surveyId: UUID, ownerInformation: OwnerInformation): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-
-        if (ownerInformation.contactPerson == null) {
-            return createBadRequest(createMissingObjectFromRequestMessage(CONTACT_PERSON))
-        }
+        ownerInformation.contactPerson ?: return createBadRequest(createMissingObjectFromRequestMessage(CONTACT_PERSON))
 
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 
@@ -190,7 +187,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
             ownerName = ownerInformation.ownerName,
             businessId = ownerInformation.businessId,
             contactPerson = ownerInformation.contactPerson,
-            userId = userId
+            creatorId = userId
         )
 
         return createOk(ownerInformationTranslator.translate(createdOwnerInformation))
@@ -223,10 +220,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         payload: OwnerInformation
     ): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-
-        if (payload.contactPerson == null) {
-            return createBadRequest(createMissingObjectFromRequestMessage(CONTACT_PERSON))
-        }
+        payload.contactPerson ?: return createBadRequest(createMissingObjectFromRequestMessage(CONTACT_PERSON))
 
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 

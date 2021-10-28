@@ -34,7 +34,7 @@ class OwnerInformationController {
      * @param ownerName owner name
      * @param businessId business id
      * @param contactPerson info of contact person
-     * @param userId creator id
+     * @param creatorId creator id
      * @return created owner information object
      */
     fun create(
@@ -42,7 +42,7 @@ class OwnerInformationController {
         ownerName: String,
         businessId: String,
         contactPerson: ContactPerson,
-        userId: UUID
+        creatorId: UUID
     ): OwnerInformation {
         return ownerInformationDAO.create(
             id = UUID.randomUUID(),
@@ -54,8 +54,8 @@ class OwnerInformationController {
             phone = contactPerson.phone,
             email = contactPerson.email,
             profession = contactPerson.profession,
-            creatorId = userId,
-            lastModifierId = userId
+            creatorId = creatorId,
+            lastModifierId = creatorId
         )
     }
 
