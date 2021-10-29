@@ -1,8 +1,10 @@
 package fi.metatavu.rapurc.api.persistence.dao
 
 import fi.metatavu.rapurc.api.model.SurveyStatus
+import fi.metatavu.rapurc.api.model.SurveyType
 import fi.metatavu.rapurc.api.persistence.model.Survey
 import fi.metatavu.rapurc.api.persistence.model.Survey_
+import java.time.LocalDate
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.persistence.TypedQuery
@@ -24,15 +26,30 @@ class SurveyDAO: AbstractDAO<Survey>() {
      * @param id id
      * @param status status
      * @param keycloakGroupId keycloak group id
+     * @param type type
+     * @param startDate start date
+     * @param endDate end date
      * @param creatorId creator's id
      * @param lastModifierId last modifier's id
      * @return created survey
      */
-    fun create(id: UUID, status: SurveyStatus, keycloakGroupId: UUID, creatorId: UUID, lastModifierId: UUID): Survey {
+    fun create(
+        id: UUID,
+        status: SurveyStatus,
+        keycloakGroupId: UUID,
+        type: SurveyType?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+        creatorId: UUID,
+        lastModifierId: UUID
+    ): Survey {
         val survey = Survey()
         survey.id = id
         survey.status = status
         survey.keycloakGroupId = keycloakGroupId
+        survey.type = type
+        survey.startDate = startDate
+        survey.endDate = endDate
         survey.creatorId = creatorId
         survey.lastModifierId = lastModifierId
         return persist(survey)
@@ -45,10 +62,22 @@ class SurveyDAO: AbstractDAO<Survey>() {
      * @param maxResults maximum amount of results
      * @param address filter by address
      * @param status filter by status
+     * @param type filter by type
+     * @param startDate filter after start date
+     * @param endDate filter before end date
      * @param keycloakGroupId filter by group id
      * @return List of visitor variables
      */
-    fun list(firstResult: Int, maxResults: Int, address: String?, status: SurveyStatus?, keycloakGroupId: UUID?): List<Survey> {
+    fun list(
+        firstResult: Int,
+        maxResults: Int,
+        address: String?,
+        status: SurveyStatus?,
+        type: SurveyType?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+        keycloakGroupId: UUID?
+    ): List<Survey> {
         val entityManager = getEntityManager()
         val criteriaBuilder = entityManager.criteriaBuilder
         val criteria: CriteriaQuery<Survey> = criteriaBuilder.createQuery(Survey::class.java)
@@ -62,6 +91,18 @@ class SurveyDAO: AbstractDAO<Survey>() {
 
         if (status != null) {
             restrictions.add(criteriaBuilder.equal(root.get(Survey_.status), status))
+        }
+
+        if (type != null) {
+            restrictions.add(criteriaBuilder.equal(root.get(Survey_.type), type))
+        }
+
+        if (startDate != null) {
+            restrictions.add(criteriaBuilder.greaterThanOrEqualTo(root.get(Survey_.startDate), startDate))
+        }
+
+        if (endDate != null) {
+            restrictions.add(criteriaBuilder.lessThanOrEqualTo(root.get(Survey_.endDate), endDate))
         }
 
         if (keycloakGroupId != null) {

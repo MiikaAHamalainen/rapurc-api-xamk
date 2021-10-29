@@ -6,6 +6,7 @@ import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.rapurc.api.client.infrastructure.ClientException
 import fi.metatavu.rapurc.api.client.models.Survey
 import fi.metatavu.rapurc.api.client.models.SurveyStatus
+import fi.metatavu.rapurc.api.client.models.SurveyType
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
 import fi.metatavu.rapurc.api.test.functional.impl.ApiTestBuilderResource
 import java.util.UUID
@@ -41,6 +42,17 @@ class SurveyTestBuilderResource (
     }
 
     /**
+     * Creates new survey
+     *
+     * @param survey survey
+     * @return created survey
+     */
+    fun create(survey: Survey): Survey {
+        val result = api.createSurvey(survey)
+        return addClosable(result)
+    }
+
+    /**
      * Finds a survey
      *
      * @param surveyId survey id
@@ -57,14 +69,28 @@ class SurveyTestBuilderResource (
      * @param maxResult max results
      * @param address filter by address
      * @param status filter by status
+     * @param type filter by type
+     * @param startDate filter by start date
+     * @param endDate filter by end date
      * @return found surveys
      */
-    fun listSurveys(firstResult: Int?, maxResult: Int?, address: String?, status: SurveyStatus?): Array<Survey> {
+    fun listSurveys(
+        firstResult: Int?,
+        maxResult: Int?,
+        address: String?,
+        status: SurveyStatus?,
+        type: SurveyType?,
+        startDate: String?,
+        endDate: String?
+    ): Array<Survey> {
         return api.listSurveys(
             firstResult = firstResult,
             maxResults = maxResult,
             address = address,
-            status = status
+            status = status,
+            type = type,
+            startDate = startDate,
+            endDate = endDate
         )
     }
 
@@ -101,16 +127,31 @@ class SurveyTestBuilderResource (
      * @param maxResult max results
      * @param address filter by address
      * @param status filter by status
+     * @param type filter by type
+     * @param startDate filter by start date
+     * @param endDate filter by end date
      * @param expected expected count
      */
-    fun assertCount(expected: Int, firstResult: Int?, maxResult: Int?, address: String?, status: SurveyStatus?) {
+    fun assertCount(
+        expected: Int,
+        firstResult: Int?,
+        maxResult: Int?,
+        address: String?,
+        status: SurveyStatus?,
+        type: SurveyType?,
+        startDate: String?,
+        endDate: String?
+    ) {
         assertEquals(
             expected,
             api.listSurveys(
                 firstResult = firstResult,
                 maxResults = maxResult,
                 address = address,
-                status = status
+                status = status,
+                type = type,
+                startDate = startDate,
+                endDate = endDate
             ).size
         )
     }
@@ -183,14 +224,29 @@ class SurveyTestBuilderResource (
      * @param maxResult max results
      * @param address filter by address
      * @param status filter by status
+     * @param type filter by type
+     * @param startDate filter by start date
+     * @param endDate filter by end date
      */
-    fun assertListFailStatus(expectedStatus: Int, firstResult: Int?, maxResult: Int?, address: String?, status: SurveyStatus?) {
+    fun assertListFailStatus(
+        expectedStatus: Int,
+        firstResult: Int?,
+        maxResult: Int?,
+        address: String?,
+        status: SurveyStatus?,
+        type: SurveyType?,
+        startDate: String?,
+        endDate: String?
+    ) {
         try {
             api.listSurveys(
                 firstResult = firstResult,
                 maxResults = maxResult,
                 address = address,
-                status = status
+                status = status,
+                type = type,
+                startDate = startDate,
+                endDate = endDate
             )
             fail(String.format("Expected list to fail with status %d", expectedStatus))
         } catch (e: ClientException) {
