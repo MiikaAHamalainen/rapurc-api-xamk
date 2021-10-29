@@ -96,7 +96,7 @@ class BuildingController {
         buildingDAO.updateStreetAddress(result, building.address.streetAddress, userId)
         buildingDAO.updateCity(result, building.address.city, userId)
         buildingDAO.updatePostCode(result, building.address.postCode, userId)
-        result = buildingDAO.updateOtherBuildings(result, building.otherStructures?.map(this::translateOtherStructure), userId)
+        buildingDAO.updateOtherBuildings(result, building.otherStructures?.map(this::translateOtherStructure), userId)
         return result
     }
 
