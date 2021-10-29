@@ -232,7 +232,6 @@ class V1ApiImpl : V1Api, AbstractApi() {
         surveyAccessRightsCheck(userId, survey)?.let { return it }
 
         val buildings = buildingController.list(survey = survey)
-        println("found ${buildings.size} buldings for survey $survey")
         return createOk(buildings.map(buildingTranslator::translate))
     }
 
