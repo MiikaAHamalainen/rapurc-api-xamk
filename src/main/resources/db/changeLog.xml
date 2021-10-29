@@ -106,7 +106,10 @@
   </changeSet>
 
   <changeSet id="otherstructures" author="katja danilova">
-    <createTable tableName="building_otherstructures">
+    <createTable tableName="otherstructure">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
       <column name="name" type="varchar(255)">
         <constraints nullable="false"/>
       </column>

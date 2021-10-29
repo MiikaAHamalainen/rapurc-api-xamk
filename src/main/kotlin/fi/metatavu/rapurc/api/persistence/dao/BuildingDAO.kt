@@ -36,7 +36,6 @@ class BuildingDAO: AbstractDAO<Building>() {
      * @param streetAddress street address
      * @param city city
      * @param postCode post code
-     * @param otherStructures other building structures
      * @param creatorId creator id
      * @param lastModifierId last modifier id
      * @return created building
@@ -59,7 +58,6 @@ class BuildingDAO: AbstractDAO<Building>() {
         streetAddress: String?,
         city: String?,
         postCode: String?,
-        otherStructures: List<OtherStructure>?,
         creatorId: UUID,
         lastModifierId: UUID
     ) : Building {
@@ -81,7 +79,6 @@ class BuildingDAO: AbstractDAO<Building>() {
         building.streetAddress = streetAddress
         building.city = city
         building.postCode = postCode
-        building.otherStructures = otherStructures
         building.creatorId = creatorId
         building.lastModifierId = lastModifierId
         return persist(building)
@@ -191,12 +188,6 @@ class BuildingDAO: AbstractDAO<Building>() {
 
     fun updatePostCode(building: Building, postCode: String?, userId: UUID): Building {
         building.postCode = postCode
-        building.lastModifierId = userId
-        return persist(building)
-    }
-
-    fun updateOtherBuildings(building: Building, otherStructures: List<OtherStructure>?, userId: UUID): Building {
-        building.otherStructures = otherStructures
         building.lastModifierId = userId
         return persist(building)
     }

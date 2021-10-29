@@ -1,17 +1,23 @@
 package fi.metatavu.rapurc.api.persistence.model
 
-import javax.persistence.Column
-import javax.persistence.Embeddable
+import java.util.*
+import javax.persistence.*
 
 /**
  * Other building structure to be demolished
  */
-@Embeddable
+@Entity
 class OtherStructure {
+
+    @Id
+    var id: UUID? = null
 
     @Column
     var name: String? = null
 
     @Column
     var description: String? = null
+
+    @ManyToOne
+    var building: Building? = null
 }

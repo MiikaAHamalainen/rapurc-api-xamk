@@ -60,7 +60,4 @@ class Building: GeneralInfo() {
     @Column (nullable = false)
     var postCode: String? = null
 
-    @ElementCollection
-    var otherStructures: List<OtherStructure>? = null
-
 }

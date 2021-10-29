@@ -2,14 +2,20 @@ package fi.metatavu.rapurc.api.impl.translate
 
 import fi.metatavu.rapurc.api.model.Address
 import fi.metatavu.rapurc.api.model.OtherStructure
+import fi.metatavu.rapurc.api.persistence.dao.OtherStructureDAO
 import fi.metatavu.rapurc.api.persistence.model.Building
 import javax.enterprise.context.ApplicationScoped
+import javax.inject.Inject
 
 /**
  * Translates JPA Building to REST Building
  */
 @ApplicationScoped
 class BuildingTranslator: AbstractTranslator<Building, fi.metatavu.rapurc.api.model.Building>() {
+
+    @Inject
+    private lateinit var otherStructureDAO: OtherStructureDAO
+
     override fun translate(entity: Building): fi.metatavu.rapurc.api.model.Building {
         val result = fi.metatavu.rapurc.api.model.Building()
         result.id = entity.id
@@ -31,7 +37,7 @@ class BuildingTranslator: AbstractTranslator<Building, fi.metatavu.rapurc.api.mo
         result.modifiedAt = entity.modifiedAt
         result.lastModifierId = entity.lastModifierId
 
-        result.otherStructures = entity.otherStructures?.map { jpaStructure ->
+        result.otherStructures = otherStructureDAO.listByBuilding(building = entity)?.map { jpaStructure ->
             OtherStructure().name(jpaStructure.name).description(jpaStructure.description)
         }
 

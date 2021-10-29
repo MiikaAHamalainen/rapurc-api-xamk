@@ -1,8 +1,8 @@
 package fi.metatavu.rapurc.api.impl.buildings
 
 import fi.metatavu.rapurc.api.persistence.dao.BuildingDAO
+import fi.metatavu.rapurc.api.persistence.dao.OtherStructureDAO
 import fi.metatavu.rapurc.api.persistence.model.Building
-import fi.metatavu.rapurc.api.persistence.model.OtherStructure
 import fi.metatavu.rapurc.api.persistence.model.Survey
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
@@ -16,6 +16,9 @@ class BuildingController {
 
     @Inject
     private lateinit var buildingDAO: BuildingDAO
+
+    @Inject
+    private lateinit var otherStuctureDao: OtherStructureDAO
 
     /**
      * Lists buildings based on survey
@@ -36,9 +39,7 @@ class BuildingController {
      * @return created Building
      */
     fun create(survey: Survey, building: fi.metatavu.rapurc.api.model.Building, creatorId: UUID): Building {
-        val otherStructures = building.otherStructures?.map(this::translateOtherStructure)
-
-        return buildingDAO.create(
+        val createdBuilding = buildingDAO.create(
             id = UUID.randomUUID(),
             survey = survey,
             propertyId = building.propertyId,
@@ -56,10 +57,20 @@ class BuildingController {
             streetAddress = building.address.streetAddress,
             city = building.address.city,
             postCode = building.address.postCode,
-            otherStructures = otherStructures,
             creatorId = creatorId,
             lastModifierId = creatorId
         )
+
+        building.otherStructures?.forEach { otherStructure ->
+            otherStuctureDao.create(
+                id = UUID.randomUUID(),
+                name = otherStructure.name,
+                description = otherStructure.description,
+                building = createdBuilding
+            )
+        }
+
+        return createdBuilding
     }
 
     /**
@@ -81,7 +92,7 @@ class BuildingController {
      * @return update Building
      */
     fun update(buildingToUpdate: Building, building: fi.metatavu.rapurc.api.model.Building, userId: UUID): Building {
-        var result = buildingDAO.updatePropertyId(buildingToUpdate, building.propertyId, userId)
+        val result = buildingDAO.updatePropertyId(buildingToUpdate, building.propertyId, userId)
         buildingDAO.updateBuildingId(result, building.buildingId, userId)
         buildingDAO.updateClassificationCode(result, building.classificationCode, userId)
         buildingDAO.updateConstructionYear(result, building.constructionYear, userId)
@@ -96,7 +107,16 @@ class BuildingController {
         buildingDAO.updateStreetAddress(result, building.address.streetAddress, userId)
         buildingDAO.updateCity(result, building.address.city, userId)
         buildingDAO.updatePostCode(result, building.address.postCode, userId)
-        buildingDAO.updateOtherBuildings(result, building.otherStructures?.map(this::translateOtherStructure), userId)
+
+        otherStuctureDao.listByBuilding(buildingToUpdate)?.forEach(otherStuctureDao::delete)
+        building.otherStructures?.forEach { otherStructure ->
+            otherStuctureDao.create(
+                id = UUID.randomUUID(),
+                name = otherStructure.name,
+                description = otherStructure.description,
+                building = result
+            )
+        }
         return result
     }
 
@@ -106,20 +126,8 @@ class BuildingController {
      * @param buildingToDelete building to delete
      */
     fun delete(buildingToDelete: Building) {
+        otherStuctureDao.listByBuilding(buildingToDelete)?.forEach(otherStuctureDao::delete)
         buildingDAO.delete(buildingToDelete)
-    }
-
-    /**
-     * Builds JPA Other structure object from REST object
-     *
-     * @param restStructure rest structure
-     * @return jpa other structure
-     */
-    private fun translateOtherStructure(restStructure: fi.metatavu.rapurc.api.model.OtherStructure): OtherStructure {
-        val otherStructure = OtherStructure()
-        otherStructure.name = restStructure.name
-        otherStructure.description = restStructure.description
-        return otherStructure
     }
 
 }
