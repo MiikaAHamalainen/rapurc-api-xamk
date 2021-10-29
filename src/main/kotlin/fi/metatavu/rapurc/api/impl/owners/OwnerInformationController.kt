@@ -18,16 +18,6 @@ class OwnerInformationController {
     private lateinit var ownerInformationDAO: OwnerInformationDAO
 
     /**
-     * Lists owner information records based on the survey
-     *
-     * @param survey survey to filter by
-     * @return filtered owner information objects
-     */
-    fun list(survey: Survey): MutableList<OwnerInformation> {
-        return ownerInformationDAO.list(survey)
-    }
-
-    /**
      * Creates new owner information entity
      *
      * @param survey survey
@@ -57,6 +47,16 @@ class OwnerInformationController {
             creatorId = creatorId,
             lastModifierId = creatorId
         )
+    }
+
+    /**
+    * Lists owner information records based on the survey
+    *
+    * @param survey survey to filter by
+    * @return filtered owner information objects
+    */
+    fun list(survey: Survey): MutableList<OwnerInformation> {
+        return ownerInformationDAO.list(survey)
     }
 
     /**
