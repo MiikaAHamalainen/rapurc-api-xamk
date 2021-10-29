@@ -65,4 +65,60 @@
       </column>
     </createTable>
   </changeSet>
+
+  <changeSet id="building" author="katja danilova">
+    <createTable tableName="building">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="survey_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_BUILDING_SURVEY_ID" referencedColumnNames="id" referencedTableName="survey"/>
+      </column>
+      <column name="propertyId" type="varchar(100)" />
+      <column name="buildingId" type="varchar(100)" />
+      <column name="classificationcode" type="varchar(100)" />
+      <column name="constructionyear" type="int" />
+      <column name="space" type="int" />
+      <column name="volume" type="int" />
+      <column name="floors" type="int" />
+      <column name="basements" type="int" />
+      <column name="foundation" type="varchar(255)" />
+      <column name="supportstructure" type="varchar(255)" />
+      <column name="facadematerial" type="varchar(255)" />
+      <column name="rooftype" type="varchar(255)" />
+      <column name="streetaddress" type="varchar(255)" />
+      <column name="city" type="varchar(255)" />
+      <column name="postcode" type="varchar(255)" />
+
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="otherstructures" author="katja danilova">
+    <createTable tableName="otherstructure">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="name" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="longtext">
+        <constraints nullable="false"/>
+      </column>
+      <column name="building_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_OTHER_STRUCTURE_BUILDING_ID" referencedColumnNames="id" referencedTableName="building"/>
+      </column>
+    </createTable>
+  </changeSet>
 </databaseChangeLog>

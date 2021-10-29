@@ -18,16 +18,6 @@ class OwnerInformationController {
     private lateinit var ownerInformationDAO: OwnerInformationDAO
 
     /**
-     * Lists owner information records based on the survey
-     *
-     * @param survey survey to filter by
-     * @return filtered owner information objects
-     */
-    fun list(survey: Survey): MutableList<OwnerInformation> {
-        return ownerInformationDAO.list(survey)
-    }
-
-    /**
      * Creates new owner information entity
      *
      * @param survey survey
@@ -60,6 +50,16 @@ class OwnerInformationController {
     }
 
     /**
+    * Lists owner information records based on the survey
+    *
+    * @param survey survey to filter by
+    * @return filtered owner information objects
+    */
+    fun list(survey: Survey): MutableList<OwnerInformation> {
+        return ownerInformationDAO.list(survey)
+    }
+
+    /**
      * Finds owner information object
      *
      * @param ownerId owner id
@@ -74,18 +74,15 @@ class OwnerInformationController {
      *
      * @param ownerInformationToUpdate old object
      * @param newOwnerInformation new object
-     * @param newSurvey new survey connection
      * @param userId modifier id
      * @return updated OwnerInformation
      */
     fun update(
         ownerInformationToUpdate: OwnerInformation,
         newOwnerInformation: fi.metatavu.rapurc.api.model.OwnerInformation,
-        newSurvey: Survey,
         userId: UUID
     ): OwnerInformation {
-        var result = ownerInformationDAO.updateSurvey(ownerInformationToUpdate, newSurvey, userId)
-        ownerInformationDAO.updateOwnerName(result, newOwnerInformation.ownerName, userId)
+        var result = ownerInformationDAO.updateOwnerName(ownerInformationToUpdate, newOwnerInformation.ownerName, userId)
         ownerInformationDAO.updateBusinessId(result, newOwnerInformation.businessId, userId)
         ownerInformationDAO.updateFirstName(result, newOwnerInformation.contactPerson?.firstName, userId)
         ownerInformationDAO.updateLastName(result, newOwnerInformation.contactPerson?.lastName, userId)
