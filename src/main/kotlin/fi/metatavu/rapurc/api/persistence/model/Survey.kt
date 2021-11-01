@@ -1,7 +1,8 @@
 package fi.metatavu.rapurc.api.persistence.model
 
 import fi.metatavu.rapurc.api.model.SurveyStatus
-import java.time.OffsetDateTime
+import fi.metatavu.rapurc.api.model.SurveyType
+import java.time.LocalDate
 import java.util.*
 import javax.persistence.*
 
@@ -22,5 +23,14 @@ class Survey: GeneralInfo() {
 
     @Column(nullable = false)
     var keycloakGroupId: UUID? = null
+
+    @Enumerated(EnumType.STRING)
+    var type: SurveyType? = null
+
+    @Column
+    var startDate: LocalDate? = null
+
+    @Column
+    var endDate: LocalDate? = null
 
 }

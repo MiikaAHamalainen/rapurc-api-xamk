@@ -1,6 +1,8 @@
 package fi.metatavu.rapurc.api.test.functional.tests
 
+import fi.metatavu.rapurc.api.client.models.Survey
 import fi.metatavu.rapurc.api.client.models.SurveyStatus
+import fi.metatavu.rapurc.api.client.models.SurveyType
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
 import fi.metatavu.rapurc.api.test.functional.resources.KeycloakTestResource
 import fi.metatavu.rapurc.api.test.functional.resources.MysqlTestResource
@@ -8,6 +10,7 @@ import io.quarkus.test.common.QuarkusTestResource
 import io.quarkus.test.junit.QuarkusTest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 import java.util.*
 
 /**
@@ -46,33 +49,57 @@ class SurveyTestIT {
                 firstResult = null,
                 maxResult = null,
                 address = null,
-                status = null
+                status = null,
+                type = null,
+                startDate = null,
+                endDate = null
             )
 
             assertEquals(0, emptyList.size)
 
-            val survey = it.userA.surveys.create()
-            it.userA.surveys.create()
-            it.userB.surveys.create()
+            it.userA.surveys.create(
+                Survey(
+                    status = SurveyStatus.dRAFT,
+                    startDate = LocalDate.of(2021, 1, 10).toString(),
+                    endDate = LocalDate.of(2021, 5, 1).toString(),
+                    type = SurveyType.dEMOLITION
+                )
+            )
+            it.userA.surveys.create(
+                Survey(
+                    status = SurveyStatus.dONE,
+                    type = SurveyType.rENOVATION,
+                    startDate = LocalDate.of(2020, 1, 1).toString(),
+                    endDate = LocalDate.of(2020, 12, 1).toString()
+                )
+            )
+            it.userB.surveys.create(
+                Survey(
+                    status = SurveyStatus.dRAFT,
+                    type = SurveyType.rENOVATION
+                )
+            )
 
             val listWithThreeItems = it.admin.surveys.listSurveys(
                 firstResult = null,
                 maxResult = null,
                 address = null,
-                status = null
+                status = null,
+                type = null,
+                startDate = null,
+                endDate = null
             )
 
             assertEquals(3, listWithThreeItems.size)
-
-            it.admin.surveys.updateSurvey(
-                survey.copy(status = SurveyStatus.dONE)
-            )
 
             val listWithDraftStatus = it.admin.surveys.listSurveys(
                 firstResult = null,
                 maxResult = null,
                 address = null,
-                status = SurveyStatus.dRAFT
+                status = SurveyStatus.dRAFT,
+                type = null,
+                startDate = null,
+                endDate = null
             )
 
             assertEquals(2, listWithDraftStatus.size)
@@ -81,16 +108,43 @@ class SurveyTestIT {
                 firstResult = null,
                 maxResult = null,
                 address = null,
-                status = SurveyStatus.dONE
+                status = SurveyStatus.dONE,
+                type = null,
+                startDate = null,
+                endDate = null
             )
-
             assertEquals(1, listWithDoneStatus.size)
+
+            val listByType = it.admin.surveys.listSurveys(
+                firstResult = null,
+                maxResult = null,
+                address = null,
+                status = null,
+                type = SurveyType.rENOVATION,
+                startDate = null,
+                endDate = null
+            )
+            assertEquals(2, listByType.size)
+
+            val listFilteredByDate = it.admin.surveys.listSurveys(
+                firstResult = null,
+                maxResult = null,
+                address = null,
+                status = null,
+                type = null,
+                startDate = LocalDate.of(2021, 1, 1).toString(),
+                endDate = LocalDate.of(2021, 5, 1).toString()
+            )
+            assertEquals(1, listFilteredByDate.size)
 
             val listByGroupA = it.userA.surveys.listSurveys(
                 firstResult = null,
                 maxResult = null,
                 address = null,
-                status = null
+                status = null,
+                type = null,
+                startDate = null,
+                endDate = null
             )
             assertEquals(2, listByGroupA.size)
 
@@ -98,7 +152,10 @@ class SurveyTestIT {
                 firstResult = null,
                 maxResult = null,
                 address = null,
-                status = null
+                status = null,
+                type = null,
+                startDate = null,
+                endDate = null
             )
             assertEquals(1, listByGroupB.size)
         }
@@ -150,7 +207,10 @@ class SurveyTestIT {
                 firstResult = null,
                 maxResult = null,
                 address = null,
-                status = null
+                status = null,
+                type = null,
+                startDate = null,
+                endDate = null
             )
 
             assertEquals(0, emptyList.size)
@@ -162,7 +222,10 @@ class SurveyTestIT {
                 firstResult = null,
                 maxResult = null,
                 address = null,
-                status = null
+                status = null,
+                type = null,
+                startDate = null,
+                endDate = null
             )
 
             assertEquals(2, listWithTwoItems.size)
@@ -179,7 +242,10 @@ class SurveyTestIT {
                 firstResult = null,
                 maxResult = null,
                 address = null,
-                status = null
+                status = null,
+                type = null,
+                startDate = null,
+                endDate = null
             )
 
             assertEquals(0, finalEmptyList.size)

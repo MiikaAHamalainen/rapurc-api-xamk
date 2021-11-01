@@ -14,6 +14,9 @@ class SurveyTranslator: AbstractTranslator<Survey, fi.metatavu.rapurc.api.model.
 
         result.id = entity.id
         result.status = entity.status
+        result.type = entity.type
+        result.startDate = entity.startDate
+        result.endDate = entity.endDate
         result.creatorId = entity.creatorId
         result.createdAt = entity.createdAt
         result.lastModifierId = entity.lastModifierId

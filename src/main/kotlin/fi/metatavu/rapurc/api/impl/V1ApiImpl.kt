@@ -7,11 +7,9 @@ import fi.metatavu.rapurc.api.impl.surveys.SurveyController
 import fi.metatavu.rapurc.api.impl.translate.BuildingTranslator
 import fi.metatavu.rapurc.api.impl.translate.OwnerInformationTranslator
 import fi.metatavu.rapurc.api.impl.translate.SurveyTranslator
-import fi.metatavu.rapurc.api.model.Building
-import fi.metatavu.rapurc.api.model.OwnerInformation
-import fi.metatavu.rapurc.api.model.Survey
-import fi.metatavu.rapurc.api.model.SurveyStatus
+import fi.metatavu.rapurc.api.model.*
 import fi.metatavu.rapurc.api.spec.V1Api
+import java.time.LocalDate
 import java.util.*
 import javax.annotation.security.RolesAllowed
 import javax.enterprise.context.RequestScoped
@@ -52,7 +50,15 @@ class V1ApiImpl : V1Api, AbstractApi() {
     /* SURVEYS */
 
     @RolesAllowed(value = [ UserRole.USER.name ])
-    override fun listSurveys(firstResult: Int?, maxResults: Int?, address: String?, status: SurveyStatus?): Response {
+    override fun listSurveys(
+        firstResult: Int?,
+        maxResults: Int?,
+        address: String?,
+        status: SurveyStatus?,
+        type: SurveyType?,
+        startDate: LocalDate?,
+        endDate: LocalDate?
+    ): Response? {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
 
         var groupId: UUID? = null
@@ -65,6 +71,9 @@ class V1ApiImpl : V1Api, AbstractApi() {
             maxResults = maxResults ?: 10,
             address = address,
             status = status,
+            type = type,
+            startDate = startDate,
+            endDate = endDate,
             keycloakGroupId = groupId
         )
 
@@ -78,7 +87,14 @@ class V1ApiImpl : V1Api, AbstractApi() {
         val status = survey.status
 
         val groupId = keycloakController.getGroupId(userId) ?: return createForbidden(createMissingGroupIdMessage(userId = userId))
-        val createdSurvey = surveyController.create(status = status, keycloakGroupId = groupId, creatorId = userId)
+        val createdSurvey = surveyController.create(
+            status = status,
+            keycloakGroupId = groupId,
+            type = survey.type,
+            startDate = survey.startDate,
+            endDate = survey.endDate,
+            creatorId = userId
+        )
         return createOk(surveyTranslator.translate(createdSurvey))
     }
 

@@ -1,8 +1,10 @@
 package fi.metatavu.rapurc.api.impl.surveys
 
 import fi.metatavu.rapurc.api.model.SurveyStatus
+import fi.metatavu.rapurc.api.model.SurveyType
 import fi.metatavu.rapurc.api.persistence.dao.SurveyDAO
 import fi.metatavu.rapurc.api.persistence.model.Survey
+import java.time.LocalDate
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -25,15 +27,30 @@ class SurveyController {
      * @param maxResults maximum amount of results
      * @param address filter by address
      * @param status filter by status
+     * @param type survey type
+     * @param startDate start date
+     * @param endDate end date
      * @param keycloakGroupId filter by group id
      * @return List of visitor variables
      */
-    fun list(firstResult: Int, maxResults: Int, address: String?, status: SurveyStatus?, keycloakGroupId: UUID?): List<Survey> {
+    fun list(
+        firstResult: Int,
+        maxResults: Int,
+        address: String?,
+        status: SurveyStatus?,
+        type: SurveyType?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+        keycloakGroupId: UUID?
+        ): List<Survey> {
         return surveyDAO.list(
             firstResult = firstResult,
             maxResults = maxResults,
             address = address,
             status = status,
+            type = type,
+            startDate = startDate,
+            endDate = endDate,
             keycloakGroupId = keycloakGroupId
         )
     }
@@ -43,14 +60,27 @@ class SurveyController {
      *
      * @param status new status
      * @param keycloakGroupId keycloak group id
+     * @param type survey type
+     * @param startDate estimated demolition start
+     * @param endDate estimated demolition end
      * @param creatorId creator's ID
-     * @return updated survey
+     * @return created survey
      */
-    fun create(status: SurveyStatus, keycloakGroupId: UUID, creatorId: UUID): Survey {
+    fun create(
+        status: SurveyStatus,
+        keycloakGroupId: UUID,
+        type: SurveyType?, //todo is type always not null?
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+        creatorId: UUID
+        ): Survey {
         return surveyDAO.create(
             id = UUID.randomUUID(),
             status = status,
             keycloakGroupId = keycloakGroupId,
+            type = type,
+            startDate = startDate,
+            endDate = endDate,
             creatorId = creatorId,
             lastModifierId = creatorId
         )
