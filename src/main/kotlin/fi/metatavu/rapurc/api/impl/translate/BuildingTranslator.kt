@@ -16,6 +16,9 @@ class BuildingTranslator: AbstractTranslator<Building, fi.metatavu.rapurc.api.mo
     @Inject
     private lateinit var otherStructureDAO: OtherStructureDAO
 
+    @Inject
+    lateinit var metadataTranslator: MetadataTranslator
+
     override fun translate(entity: Building): fi.metatavu.rapurc.api.model.Building {
         val result = fi.metatavu.rapurc.api.model.Building()
         result.id = entity.id
@@ -32,10 +35,7 @@ class BuildingTranslator: AbstractTranslator<Building, fi.metatavu.rapurc.api.mo
         result.supportingStructure = entity.supportStructure
         result.facadeMaterial = entity.facadeMaterial
         result.roofType = entity.roofType
-        result.createdAt = entity.createdAt
-        result.creatorId = entity.creatorId
-        result.modifiedAt = entity.modifiedAt
-        result.lastModifierId = entity.lastModifierId
+        result.metadata = metadataTranslator.translate(entity)
 
         result.otherStructures = otherStructureDAO.listByBuilding(building = entity)?.map { jpaStructure ->
             OtherStructure().name(jpaStructure.name).description(jpaStructure.description)

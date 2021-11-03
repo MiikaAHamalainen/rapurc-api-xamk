@@ -3,12 +3,16 @@ package fi.metatavu.rapurc.api.impl.translate
 import fi.metatavu.rapurc.api.model.ContactPerson
 import fi.metatavu.rapurc.api.persistence.model.OwnerInformation
 import javax.enterprise.context.ApplicationScoped
+import javax.inject.Inject
 
 /**
  * Translates JPA Owner Information to REST Owner Information
  */
 @ApplicationScoped
 class OwnerInformationTranslator: AbstractTranslator<OwnerInformation, fi.metatavu.rapurc.api.model.OwnerInformation>() {
+
+    @Inject
+    lateinit var metadataTranslator: MetadataTranslator
 
     override fun translate(entity: OwnerInformation): fi.metatavu.rapurc.api.model.OwnerInformation {
         val result = fi.metatavu.rapurc.api.model.OwnerInformation()
@@ -25,11 +29,7 @@ class OwnerInformationTranslator: AbstractTranslator<OwnerInformation, fi.metata
         contactPerson.lastName = entity.lastName
         contactPerson.profession = entity.profession
         result.contactPerson = contactPerson
-
-        result.createdAt = entity.createdAt
-        result.creatorId = entity.creatorId
-        result.modifiedAt = entity.modifiedAt
-        result.lastModifierId = entity.lastModifierId
+        result.metadata =metadataTranslator.translate(entity)
         return result
     }
 }
