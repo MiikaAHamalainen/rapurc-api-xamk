@@ -2,11 +2,11 @@ package fi.metatavu.rapurc.api.impl
 
 import fi.metatavu.rapurc.api.UserRole
 import fi.metatavu.rapurc.api.impl.buildings.BuildingController
+import fi.metatavu.rapurc.api.impl.materials.ReusableController
+import fi.metatavu.rapurc.api.impl.materials.ReusableMaterialController
 import fi.metatavu.rapurc.api.impl.owners.OwnerInformationController
 import fi.metatavu.rapurc.api.impl.surveys.SurveyController
-import fi.metatavu.rapurc.api.impl.translate.BuildingTranslator
-import fi.metatavu.rapurc.api.impl.translate.OwnerInformationTranslator
-import fi.metatavu.rapurc.api.impl.translate.SurveyTranslator
+import fi.metatavu.rapurc.api.impl.translate.*
 import fi.metatavu.rapurc.api.model.*
 import fi.metatavu.rapurc.api.spec.V1Api
 import java.time.LocalDate
@@ -46,6 +46,18 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
     @Inject
     lateinit var buildingTranslator: BuildingTranslator
+
+    @Inject
+    lateinit var reusableController: ReusableController
+
+    @Inject
+    lateinit var reusableTranslator: ReusableTranslator
+
+    @Inject
+    lateinit var reuseableMaterialController: ReusableMaterialController
+
+    @Inject
+    lateinit var reusableMaterialTranslator: ReusableMaterialTranslator
 
     /* SURVEYS */
 
@@ -168,7 +180,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 
         if (ownerInformation.surveyId != surveyId) {
-            return createForbidden(WRONG_SURVEY_FOR_OWNER_INFORMATION)
+            return createForbidden(createWrongSurveyMessage(OWNER_INFORMATION, surveyId))
         }
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
@@ -191,7 +203,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         val foundOwnerInformation = ownerInformationController.find(ownerId) ?: return createNotFound(createNotFoundMessage(target = OWNER_INFORMATION, id = ownerId))
         if (foundOwnerInformation.survey != survey) {
-            return createForbidden(WRONG_SURVEY_FOR_OWNER_INFORMATION)
+            return createForbidden(createWrongSurveyMessage(OWNER_INFORMATION, surveyId))
         }
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
@@ -212,7 +224,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         val ownerInformationToUpdate = ownerInformationController.find(ownerId) ?: return createNotFound(createNotFoundMessage(target = OWNER_INFORMATION, id = ownerId))
         if (ownerInformationToUpdate.survey != survey) {
-            return createForbidden(WRONG_SURVEY_FOR_OWNER_INFORMATION)
+            return createForbidden(createWrongSurveyMessage(OWNER_INFORMATION, surveyId))
         }
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
@@ -231,7 +243,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         val ownerInformationToDelete = ownerInformationController.find(ownerId) ?: return createNotFound(createNotFoundMessage(target = OWNER_INFORMATION, id = ownerId))
 
         if (ownerInformationToDelete.survey != survey) {
-            return createForbidden(WRONG_SURVEY_FOR_OWNER_INFORMATION)
+            return createForbidden(createWrongSurveyMessage(OWNER_INFORMATION, surveyId))
         }
 
         ownerInformationController.delete(ownerInformationToDelete)
@@ -259,7 +271,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 
         if (building.surveyId != surveyId) {
-            return createForbidden(WRONG_SURVEY_FOR_BUILDING)
+            return createForbidden(createWrongSurveyMessage(BUILDING, surveyId))
         }
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
@@ -280,7 +292,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         val foundBuilding = buildingController.find(buildingId) ?: return createNotFound(createNotFoundMessage(target = BUILDING, id = buildingId))
         if (foundBuilding.survey != survey) {
-            return createForbidden(WRONG_SURVEY_FOR_BUILDING)
+            return createForbidden(createWrongSurveyMessage(BUILDING, surveyId))
         }
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
@@ -297,7 +309,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         val buildingToUpdate = buildingController.find(buildingId) ?: return createNotFound(createNotFoundMessage(target = BUILDING, id = buildingId))
         if (buildingToUpdate.survey != survey) {
-            return createForbidden(WRONG_SURVEY_FOR_BUILDING)
+            return createForbidden(createWrongSurveyMessage(BUILDING, surveyId))
         }
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
@@ -316,10 +328,115 @@ class V1ApiImpl : V1Api, AbstractApi() {
         val buildingToDelete = buildingController.find(buildingId) ?: return createNotFound(createNotFoundMessage(target = BUILDING, id = buildingId))
 
         if (buildingToDelete.survey != survey) {
-            return createForbidden(WRONG_SURVEY_FOR_BUILDING)
+            return createForbidden(createWrongSurveyMessage(BUILDING, surveyId))
         }
 
         buildingController.delete(buildingToDelete)
+        return createNoContent()
+    }
+
+    /* REUSABLE MATERIALS */
+
+    @RolesAllowed(value = [ UserRole.ADMIN.name, UserRole.USER.name ])
+    override fun listReusableMaterials(): Response {
+        val allMaterials = reuseableMaterialController.listAll()
+        return createOk(allMaterials.map(reusableMaterialTranslator::translate))
+    }
+
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
+    override fun createReusableMaterial(reusableMaterial: ReusableMaterial): Response {
+        reusableMaterial.name ?: return createBadRequest(createMissingObjectFromRequestMessage("Reusable material name"))
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+
+        val createdMaterial = reuseableMaterialController.create(reusableMaterial, userId)
+        return createOk(reusableMaterialTranslator.translate(createdMaterial))
+    }
+
+    @RolesAllowed(value = [ UserRole.ADMIN.name, UserRole.USER.name ])
+    override fun findReusableMaterial(reusableMaterialId: UUID): Response {
+        loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+
+        val foundMaterial = reuseableMaterialController.find(reusableMaterialId) ?: return createNotFound(createNotFoundMessage(REUSABLE_MATERIAL, reusableMaterialId))
+        return createOk(reusableMaterialTranslator.translate(foundMaterial))
+    }
+
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
+    override fun updateReusableMaterial(reusableMaterialId: UUID, reusableMaterial: ReusableMaterial): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val materialToUpdate = reuseableMaterialController.find(reusableMaterialId) ?: return createNotFound(createNotFoundMessage(REUSABLE_MATERIAL, reusableMaterialId))
+        val updatedMaterial = reuseableMaterialController.update(materialToUpdate, reusableMaterial, userId)
+        return createOk(reusableMaterialTranslator.translate(updatedMaterial))
+    }
+
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
+    override fun deleteReusableMaterial(reusableMaterialId: UUID): Response {
+        loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val materialToDelete = reuseableMaterialController.find(reusableMaterialId) ?: return createNotFound(createNotFoundMessage(REUSABLE_MATERIAL, reusableMaterialId))
+
+        if (reusableController.listByMaterial(materialToDelete)?.isNotEmpty() == true) {
+            return createBadRequest("Reusables depend on this material!")
+        }
+
+        reuseableMaterialController.delete(materialToDelete)
+        return createNoContent()
+    }
+
+    /* REUSABLES */
+
+    override fun listSurveyReusables(surveyId: UUID): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val reusables = reusableController.listBySurvey(survey)
+        return createOk(reusables?.map(reusableTranslator::translate))
+    }
+
+    override fun createSurveyReusable(surveyId: UUID, reusable: Reusable): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+        reusable.componentName ?: return createBadRequest(createMissingObjectFromRequestMessage("Component name"))
+        reuseableMaterialController.find(reusable.reusableMaterialId) ?: return createNotFound(createNotFoundMessage(REUSABLE_MATERIAL, reusable.reusableMaterialId))
+
+        val createdReusable = reusableController.create(reusable, survey, userId)
+        return createOk(reusableTranslator.translate(createdReusable))
+    }
+
+    override fun findSurveyReusable(surveyId: UUID, reusableId: UUID): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val reusable = reusableController.findById(reusableId) ?: return createNotFound(createNotFoundMessage(REUSABLE, reusableId))
+        return createOk(reusableTranslator.translate(reusable))
+    }
+
+    override fun updateSurveyReusable(surveyId: UUID, reusableId: UUID, reusable: Reusable): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        reuseableMaterialController.find(reusable.reusableMaterialId) ?: return createNotFound(createNotFoundMessage(REUSABLE_MATERIAL, reusable.reusableMaterialId))
+        reusable.componentName ?: return createBadRequest(createMissingObjectFromRequestMessage("Component name"))
+
+        val reusableToUpdate = reusableController.findById(reusableId) ?: return createNotFound(createNotFoundMessage(REUSABLE, reusableId))
+        val updatedReusable = reusableController.updateReusable(reusableToUpdate, reusable, userId)
+        return createOk(reusableTranslator.translate(updatedReusable))
+    }
+
+    override fun deleteSurveyReusable(surveyId: UUID, reusableId: UUID): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val reusableToDelete = reusableController.findById(reusableId) ?: return createNotFound(createNotFoundMessage(REUSABLE, reusableId))
+
+        reusableController.delete(reusableToDelete)
         return createNoContent()
     }
 
@@ -365,14 +482,24 @@ class V1ApiImpl : V1Api, AbstractApi() {
             return "User $userId belongs to different group"
         }
 
-        const val WRONG_SURVEY_FOR_OWNER_INFORMATION = "Owner information belongs to different survey!"
-        const val WRONG_SURVEY_FOR_BUILDING = "Building belongs to different survey!"
+        /**
+         * Creates wrong survey message
+         *
+         * @param target object
+         * @param surveyId survey id
+         * @return error message
+         */
+        protected fun createWrongSurveyMessage(target: String, surveyId: UUID): String {
+            return "$target belongs to different survey than $surveyId"
+        }
+
         const val SURVEY = "Survey"
         const val OWNER_INFORMATION = "Owner information"
         const val BUILDING = "Building"
         const val CONTACT_PERSON = "Contact person"
         const val ADDRESS = "Address"
-
+        const val REUSABLE = "Reusable"
+        const val REUSABLE_MATERIAL = "Reusable materials"
     }
 
 }
