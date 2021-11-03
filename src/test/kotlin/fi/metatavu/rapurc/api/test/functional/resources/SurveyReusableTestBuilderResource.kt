@@ -46,7 +46,7 @@ class SurveyReusableTestBuilderResource(
      * @param reusableId reusable id
      * @return found reusable
      */
-    fun findOwner(surveyId: UUID, reusableId: UUID): fi.metatavu.rapurc.api.client.models.Reusable {
+    fun find(surveyId: UUID, reusableId: UUID): fi.metatavu.rapurc.api.client.models.Reusable {
         return api.findSurveyReusable(surveyId, reusableId)
     }
 
@@ -75,21 +75,21 @@ class SurveyReusableTestBuilderResource(
     /**
      * Deletes reusable from the API
      *
-     * @param reusable reusable to delete
+     * @param reusableId reusable id to delete
      */
-    fun delete(surveyId: UUID, reusable: Reusable) {
-        api.deleteSurveyReusable(surveyId, reusable.id!!)
+    fun delete(surveyId: UUID, reusableId: UUID) {
+        api.deleteSurveyReusable(surveyId, reusableId)
 
-        val foundEntry = reusableSurveyMap.filter { it.key.id == reusable.id }
+        val foundEntry = reusableSurveyMap.filter { it.key.id == reusableId }
         foundEntry.forEach { (reusable, uuid) ->
             reusableSurveyMap.remove(reusable, uuid)
         }
-
         removeCloseable { closable: Any? ->
-            if (closable !is Reusable) {
+            if (closable !is fi.metatavu.rapurc.api.client.models.Reusable) {
                 return@removeCloseable false
             }
-            closable.id == reusable.id
+
+            closable.id == reusableId
         }
     }
 
@@ -161,11 +161,11 @@ class SurveyReusableTestBuilderResource(
      * Asserts delete status fails with given status code
      *
      * @param expectedStatus expected status code
-     * @param reusable reusable to delete
+     * @param reusableId reusable id to delete
      */
-    fun assertDeleteFailStatus(expectedStatus: Int, surveyId: UUID, reusable: Reusable) {
+    fun assertDeleteFailStatus(expectedStatus: Int, surveyId: UUID, reusableId: UUID) {
         try {
-            api.deleteSurveyReusable(surveyId, reusable.id!!)
+            api.deleteSurveyReusable(surveyId, reusableId)
             Assert.fail(String.format("Expected delete to fail with status %d", expectedStatus))
         } catch (e: ClientException) {
             Assert.assertEquals(expectedStatus.toLong(), e.statusCode.toLong())

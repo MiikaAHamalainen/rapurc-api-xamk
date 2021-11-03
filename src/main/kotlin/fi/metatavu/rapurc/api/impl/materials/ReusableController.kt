@@ -46,6 +46,10 @@ class ReusableController {
      * @return created Reusable
      */
     fun create(reusable: fi.metatavu.rapurc.api.model.Reusable, survey: Survey, userId: UUID): Reusable {
+        val imageList = reusable.images.map { uri ->
+            uri.toString()
+        }
+
         return reusableDAO.create(
             id = UUID.randomUUID(),
             survey = survey,
@@ -55,7 +59,7 @@ class ReusableController {
             amount = reusable.amount,
             unit = reusable.unit,
             description = reusable.description,
-            images = reusable.images,
+            images = imageList,
             creatorId = userId,
             lastModifierId = userId
         )
@@ -80,13 +84,17 @@ class ReusableController {
      * @return updated reusable
      */
     fun updateReusable(reusableToUpdate: Reusable, reusable: fi.metatavu.rapurc.api.model.Reusable, userId: UUID): Reusable {
+        val imageList = reusable.images?.map { uri ->
+            uri.toString()
+        }
+
         var result = reusableDAO.updateComponentName(reusableToUpdate, reusable.componentName, userId)
         reusableDAO.updateMaterialId(result, reusable.reusableMaterialId, userId)
         reusableDAO.updateUsability(result, reusable.usability, userId)
         reusableDAO.updateAmount(result, reusable.amount, userId)
         reusableDAO.updateUnit(result, reusable.unit, userId)
         reusableDAO.updateDescription(result, reusable.description, userId)
-        result = reusableDAO.updateImages(result, reusable.images, userId)
+        result = reusableDAO.updateImages(result, imageList, userId)
         return result
     }
 

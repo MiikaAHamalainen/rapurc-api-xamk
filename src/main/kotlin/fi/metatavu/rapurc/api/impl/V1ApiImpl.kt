@@ -412,18 +412,29 @@ class V1ApiImpl : V1Api, AbstractApi() {
         surveyAccessRightsCheck(userId, survey)?.let { return it }
 
         val reusable = reusableController.findById(reusableId) ?: return createNotFound(createNotFoundMessage(REUSABLE, reusableId))
+
+        if (reusable.survey != survey) {
+            return createForbidden(createWrongSurveyMessage(REUSABLE, surveyId))
+        }
+
         return createOk(reusableTranslator.translate(reusable))
     }
 
     override fun updateSurveyReusable(surveyId: UUID, reusableId: UUID, reusable: Reusable): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
         surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val reusableToUpdate = reusableController.findById(reusableId) ?: return createNotFound(createNotFoundMessage(REUSABLE, reusableId))
+
+        if (reusableToUpdate.survey != survey) {
+            return createForbidden(createWrongSurveyMessage(REUSABLE, surveyId))
+        }
 
         reuseableMaterialController.find(reusable.reusableMaterialId) ?: return createNotFound(createNotFoundMessage(REUSABLE_MATERIAL, reusable.reusableMaterialId))
         reusable.componentName ?: return createBadRequest(createMissingObjectFromRequestMessage("Component name"))
 
-        val reusableToUpdate = reusableController.findById(reusableId) ?: return createNotFound(createNotFoundMessage(REUSABLE, reusableId))
         val updatedReusable = reusableController.updateReusable(reusableToUpdate, reusable, userId)
         return createOk(reusableTranslator.translate(updatedReusable))
     }
@@ -435,6 +446,10 @@ class V1ApiImpl : V1Api, AbstractApi() {
         surveyAccessRightsCheck(userId, survey)?.let { return it }
 
         val reusableToDelete = reusableController.findById(reusableId) ?: return createNotFound(createNotFoundMessage(REUSABLE, reusableId))
+
+        if (reusableToDelete.survey != survey) {
+            return createForbidden(createWrongSurveyMessage(REUSABLE, surveyId))
+        }
 
         reusableController.delete(reusableToDelete)
         return createNoContent()

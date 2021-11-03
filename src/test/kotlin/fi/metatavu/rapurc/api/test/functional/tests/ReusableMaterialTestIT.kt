@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
 /**
- * Tests for Survey Reusables API
+ * Tests for Reusable materials API
  */
 @QuarkusTest
 @QuarkusTestResource.List(

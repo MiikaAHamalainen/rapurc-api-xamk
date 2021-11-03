@@ -3,9 +3,6 @@ package fi.metatavu.rapurc.api.persistence.dao
 import fi.metatavu.rapurc.api.model.Unit
 import fi.metatavu.rapurc.api.model.Usability
 import fi.metatavu.rapurc.api.persistence.model.*
-import fi.metatavu.rapurc.api.persistence.model.Building_.survey
-import fi.metatavu.rapurc.api.persistence.model.OwnerInformation_.survey
-import java.net.URI
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.persistence.TypedQuery
@@ -43,7 +40,7 @@ class ReusableDAO: AbstractDAO<Reusable>() {
         amount: Double?,
         unit: Unit?,
         description: String?,
-        images: List<URI>?,
+        images: List<String>?,
         creatorId: UUID,
         lastModifierId: UUID
     ): Reusable {
@@ -136,7 +133,7 @@ class ReusableDAO: AbstractDAO<Reusable>() {
         return persist(reusable)
     }
 
-    fun updateImages(reusable: Reusable, images: List<URI>?, userId: UUID): Reusable {
+    fun updateImages(reusable: Reusable, images: List<String>?, userId: UUID): Reusable {
         reusable.images = images
         reusable.lastModifierId = userId
         return persist(reusable)

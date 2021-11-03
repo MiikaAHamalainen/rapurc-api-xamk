@@ -2,7 +2,6 @@ package fi.metatavu.rapurc.api.persistence.model
 
 import fi.metatavu.rapurc.api.model.Unit
 import fi.metatavu.rapurc.api.model.Usability
-import java.net.URI
 import java.util.*
 import javax.persistence.*
 
@@ -37,6 +36,6 @@ class Reusable: GeneralInfo() {
     var description: String? = null
 
     @ElementCollection
-    var images: List<URI>? = null
+    var images: List<String>? = null
 
 }
