@@ -14,16 +14,16 @@ import javax.persistence.PreUpdate
 abstract class GeneralInfo {
 
     @Column(nullable = false)
-    var createdAt: OffsetDateTime? = null
+    open var createdAt: OffsetDateTime? = null
 
     @Column(nullable = false)
-    var modifiedAt: OffsetDateTime? = null
+    open var modifiedAt: OffsetDateTime? = null
 
     @Column(nullable = false)
-    var creatorId: UUID? = null
+    open var creatorId: UUID? = null
 
     @Column(nullable = false)
-    var lastModifierId: UUID? = null
+    open var lastModifierId: UUID? = null
 
     /**
      * JPA pre-persist event handler

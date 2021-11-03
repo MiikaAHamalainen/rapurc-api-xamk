@@ -41,7 +41,7 @@ class ReusableMaterialTestBuilderResource(
      * @param materialId material id
      * @return found OwnerInformation
      */
-    fun findOwner(materialId: UUID): ReusableMaterial {
+    fun findMaterial(materialId: UUID): ReusableMaterial {
         return api.findReusableMaterial(materialId)
     }
 

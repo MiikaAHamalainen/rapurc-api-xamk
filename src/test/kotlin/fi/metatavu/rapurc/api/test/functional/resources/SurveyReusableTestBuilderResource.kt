@@ -33,7 +33,7 @@ class SurveyReusableTestBuilderResource(
      * @param reusable reusable
      * @return created OwnerInformation
      */
-    fun create(surveyId: UUID, reusable: Reusable): fi.metatavu.rapurc.api.client.models.Reusable? {
+    fun create(surveyId: UUID, reusable: fi.metatavu.rapurc.api.client.models.Reusable): fi.metatavu.rapurc.api.client.models.Reusable? {
         val result = api.createSurveyReusable(surveyId, reusable)
         reusableSurveyMap[result] = surveyId
         return addClosable(result)
@@ -68,7 +68,7 @@ class SurveyReusableTestBuilderResource(
      * @param reusable new reusable data
      * @return updated owner information
      */
-    fun update(surveyId: UUID, reusableId: UUID, reusable: Reusable): fi.metatavu.rapurc.api.client.models.Reusable {
+    fun update(surveyId: UUID, reusableId: UUID, reusable: fi.metatavu.rapurc.api.client.models.Reusable): fi.metatavu.rapurc.api.client.models.Reusable {
         return api.updateSurveyReusable(surveyId, reusableId, reusable)
     }
 
@@ -131,7 +131,7 @@ class SurveyReusableTestBuilderResource(
      * @param surveyId survey id
      * @param reusable reusable
      */
-    fun assertCreateFailStatus(expectedStatus: Int, surveyId: UUID?, reusable: Reusable) {
+    fun assertCreateFailStatus(expectedStatus: Int, surveyId: UUID?, reusable: fi.metatavu.rapurc.api.client.models.Reusable) {
         try {
             create(surveyId!!, reusable)
             Assert.fail(String.format("Expected create to fail with status %d", expectedStatus))
@@ -148,7 +148,7 @@ class SurveyReusableTestBuilderResource(
      * @param reusableId reusable id
      * @param reusable reusable
      */
-    fun assertUpdateFailStatus(expectedStatus: Int, surveyId: UUID, reusableId: UUID, reusable: Reusable) {
+    fun assertUpdateFailStatus(expectedStatus: Int, surveyId: UUID, reusableId: UUID, reusable: fi.metatavu.rapurc.api.client.models.Reusable) {
         try {
             update(surveyId, reusableId, reusable)
             Assert.fail(String.format("Expected update to fail with status %d", expectedStatus))
