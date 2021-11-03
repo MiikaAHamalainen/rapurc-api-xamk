@@ -4,13 +4,15 @@ import fi.metatavu.jaxrs.test.functional.builder.auth.AccessTokenProvider
 import fi.metatavu.rapurc.api.client.apis.SurveysApi
 import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.rapurc.api.client.infrastructure.ClientException
+import fi.metatavu.rapurc.api.client.models.Metadata
 import fi.metatavu.rapurc.api.client.models.Survey
 import fi.metatavu.rapurc.api.client.models.SurveyStatus
 import fi.metatavu.rapurc.api.client.models.SurveyType
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
 import fi.metatavu.rapurc.api.test.functional.impl.ApiTestBuilderResource
-import java.util.UUID
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.fail
+import java.util.*
 
 /**
  * Test builder resource for surveys
@@ -18,11 +20,11 @@ import org.junit.Assert.*
  * @author Antti Leppä
  * @author Jari Nykänen
  */
-class SurveyTestBuilderResource (
+class SurveyTestBuilderResource(
     testBuilder: TestBuilder,
     private val accessTokenProvider: AccessTokenProvider?,
     apiClient: ApiClient
-) : ApiTestBuilderResource<Survey, ApiClient?>(testBuilder, apiClient) {
+): ApiTestBuilderResource<Survey, ApiClient?>(testBuilder, apiClient) {
 
     override fun getApi(): SurveysApi {
         ApiClient.accessToken = accessTokenProvider?.accessToken
@@ -36,7 +38,7 @@ class SurveyTestBuilderResource (
      * @return created survey
      */
     fun create(status: SurveyStatus = SurveyStatus.dRAFT): Survey {
-        val survey = Survey(status = status)
+        val survey = Survey(status = status, type = SurveyType.rENOVATION, metadata = Metadata())
         val result = api.createSurvey(survey)
         return addClosable(result)
     }
@@ -115,8 +117,7 @@ class SurveyTestBuilderResource (
             if (closable !is Survey) {
                 return@removeCloseable false
             }
-            val (_, id) = closable
-            id == survey.id
+            closable.id == survey.id
         }
     }
 
