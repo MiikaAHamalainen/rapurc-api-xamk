@@ -1,8 +1,8 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
 >
 
   <changeSet id="surveys" author="Jari Nykänen">
@@ -42,16 +42,15 @@
         <constraints nullable="false" primaryKey="true"/>
       </column>
       <column name="survey_id" type="binary(16)">
-        <constraints nullable="false" foreignKeyName="FK_OWNER_INFORMATION_SURVEY_ID" referencedColumnNames="id"
-                     referencedTableName="survey"/>
+        <constraints nullable="false" foreignKeyName="FK_OWNER_INFORMATION_SURVEY_ID" referencedColumnNames="id" referencedTableName="survey"/>
       </column>
-      <column name="ownername" type="varchar(100)"/>
-      <column name="businessid" type="varchar(100)"/>
-      <column name="firstname" type="varchar(100)"/>
-      <column name="lastname" type="varchar(100)"/>
-      <column name="phone" type="varchar(50)"/>
-      <column name="email" type="varchar(100)"/>
-      <column name="profession" type="varchar(100)"/>
+      <column name="ownername" type="varchar(100)" />
+      <column name="businessid" type="varchar(100)" />
+      <column name="firstname" type="varchar(100)" />
+      <column name="lastname" type="varchar(100)" />
+      <column name="phone" type="varchar(50)" />
+      <column name="email" type="varchar(100)" />
+      <column name="profession" type="varchar(100)" />
       <column name="creatorid" type="binary(16)">
         <constraints nullable="false"/>
       </column>
