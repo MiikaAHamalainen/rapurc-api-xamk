@@ -9,7 +9,7 @@ import javax.persistence.Id
  * Entity for Reusable Material
  */
 @Entity
-class ReusableMaterial: GeneralInfo() {
+class ReusableMaterial: Metadata() {
 
     @Id
     var id: UUID? = null
