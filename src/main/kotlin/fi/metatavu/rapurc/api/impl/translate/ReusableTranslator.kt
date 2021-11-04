@@ -23,7 +23,7 @@ class ReusableTranslator: AbstractTranslator<Reusable, fi.metatavu.rapurc.api.mo
         reusable.amount = entity.amount
         reusable.unit = entity.unit
         reusable.description = entity.description
-        reusable.images = entity.images?.map { image -> URI.create(image) }
+        reusable.images = entity.images?.map { image -> URI.create(image.imageUri!!) }
         reusable.metadata = metadataTranslator.translate(entity)
         return reusable
     }

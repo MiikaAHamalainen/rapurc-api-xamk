@@ -185,11 +185,16 @@
       </column>
     </createTable>
 
-    <createTable tableName="reusable_images">
-      <column name="reusable_id" type="binary(16)">
-        <constraints nullable="false" foreignKeyName="FK_REUSABLE_IMAGES_REUSABLE_ID" referencedColumnNames="id" referencedTableName="reusable"/>
+    <createTable tableName="image">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
       </column>
-      <column name="images" type="varchar(192)"/>
+      <column name="reusable_id" type="binary(16)">
+        <constraints foreignKeyName="FK_IMAGE_REUSABLE_ID" referencedColumnNames="id" referencedTableName="reusable"/>
+      </column>
+      <column name="imageuri" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
     </createTable>
   </changeSet>
 </databaseChangeLog>

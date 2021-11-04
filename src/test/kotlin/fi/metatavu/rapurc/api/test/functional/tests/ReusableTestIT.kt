@@ -98,6 +98,8 @@ class ReusableTestIT {
 
             testBuilder.userA.reusables.assertFindFailStatus(403, survey2.id, created1!!.id)
             testBuilder.admin.reusables.assertFindFailStatus(403, survey1.id, created2!!.id)
+            testBuilder.admin.reusables.assertFindFailStatus(404, UUID.randomUUID(), created1.id)
+            testBuilder.admin.reusables.assertFindFailStatus(404, survey1.id, UUID.randomUUID())
             val found1 = testBuilder.userA.reusables.find(survey1.id, created1.id!!)
 
             assertEquals(created1.id, found1.id)
@@ -129,7 +131,9 @@ class ReusableTestIT {
 
             testBuilder.userA.reusables.assertUpdateFailStatus(403, survey2.id, created1.id!!, updateData)
             testBuilder.userA.reusables.assertUpdateFailStatus(403, survey1.id, created2!!.id!!, updateData)
-            testBuilder.userA.reusables.assertUpdateFailStatus(404, survey1.id, created1.id, updateData.copy(
+            testBuilder.userA.reusables.assertUpdateFailStatus(404, UUID.randomUUID(), created1.id, updateData)
+            testBuilder.userA.reusables.assertUpdateFailStatus(404, survey1.id, UUID.randomUUID(), updateData)
+                testBuilder.userA.reusables.assertUpdateFailStatus(404, survey1.id, created1.id, updateData.copy(
                 reusableMaterialId = UUID.randomUUID()
             ))
             val updated = testBuilder.userA.reusables.update(survey1.id, created1.id, updateData)
@@ -159,7 +163,10 @@ class ReusableTestIT {
 
             testBuilder.userA.reusables.assertDeleteFailStatus(403, survey2.id, created1!!.id!!)
             testBuilder.userA.reusables.assertDeleteFailStatus(403, survey1.id, created2!!.id!!)
-            testBuilder.userA.reusables.delete(survey1.id, created1.id!!)
+            testBuilder.userA.reusables.assertDeleteFailStatus(404, UUID.randomUUID(), created1.id!!)
+            testBuilder.userA.reusables.assertDeleteFailStatus(404, survey1.id, UUID.randomUUID())
+
+            testBuilder.userA.reusables.delete(survey1.id, created1.id)
             testBuilder.admin.reusables.delete(survey2.id, created2.id!!)
 
             testBuilder.admin.reusables.assertCount(0, survey1.id)

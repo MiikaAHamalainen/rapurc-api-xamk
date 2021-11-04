@@ -35,7 +35,8 @@ class Reusable: GeneralInfo() {
     @Column
     var description: String? = null
 
-    @ElementCollection
-    var images: List<String>? = null
+    @OneToMany(targetEntity = Image::class)
+    @JoinColumn(name="reusable_id")
+    var images: List<Image>? = null
 
 }
