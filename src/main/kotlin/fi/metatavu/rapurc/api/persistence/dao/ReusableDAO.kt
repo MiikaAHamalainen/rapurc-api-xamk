@@ -7,6 +7,7 @@ import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.persistence.TypedQuery
 import javax.persistence.criteria.CriteriaQuery
+import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 /**
@@ -63,37 +64,29 @@ class ReusableDAO: AbstractDAO<Reusable>() {
      * Lists Reusables by survey
      *
      * @param survey filter survey
-     * @return reusables
-     */
-    fun listBySurvey(survey: Survey): MutableList<Reusable> {
-        val entityManager = getEntityManager()
-        val criteriaBuilder = entityManager.criteriaBuilder
-        val criteria: CriteriaQuery<Reusable> = criteriaBuilder.createQuery(Reusable::class.java)
-        val root: Root<Reusable> = criteria.from(Reusable::class.java)
-
-        criteria.select(root)
-        criteria.where(criteriaBuilder.equal(root.get(Reusable_.survey), survey))
-        val query: TypedQuery<Reusable> = entityManager.createQuery(criteria)
-
-        return query.resultList
-    }
-
-    /**
-     * Lists reusables by material
-     *
      * @param material filter material
      * @return reusables
      */
-    fun listByMaterial(material: ReusableMaterial): MutableList<Reusable> {
+    fun list(survey: Survey?, material: ReusableMaterial?): MutableList<Reusable> {
         val entityManager = getEntityManager()
         val criteriaBuilder = entityManager.criteriaBuilder
         val criteria: CriteriaQuery<Reusable> = criteriaBuilder.createQuery(Reusable::class.java)
         val root: Root<Reusable> = criteria.from(Reusable::class.java)
 
         criteria.select(root)
-        criteria.where(criteriaBuilder.equal(root.get(Reusable_.materialId), material.id))
-        val query: TypedQuery<Reusable> = entityManager.createQuery(criteria)
 
+        val restrictions = ArrayList<Predicate>()
+
+        if (survey != null) {
+            restrictions.add(criteriaBuilder.equal(root.get(Reusable_.survey), survey))
+        }
+
+        if (material != null) {
+            restrictions.add(criteriaBuilder.equal(root.get(Reusable_.materialId), material.id))
+        }
+
+        criteria.where(*restrictions.toTypedArray())
+        val query: TypedQuery<Reusable> = entityManager.createQuery(criteria)
         return query.resultList
     }
 

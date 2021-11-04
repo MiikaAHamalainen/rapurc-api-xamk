@@ -180,7 +180,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 
         if (ownerInformation.surveyId != surveyId) {
-            return createForbidden(createWrongSurveyMessage(OWNER_INFORMATION, surveyId))
+            return createForbidden(createWrongSurveyMessage(target = OWNER_INFORMATION, surveyId = surveyId))
         }
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
@@ -203,7 +203,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         val foundOwnerInformation = ownerInformationController.find(ownerId) ?: return createNotFound(createNotFoundMessage(target = OWNER_INFORMATION, id = ownerId))
         if (foundOwnerInformation.survey != survey) {
-            return createForbidden(createWrongSurveyMessage(OWNER_INFORMATION, surveyId))
+            return createForbidden(createWrongSurveyMessage(target = OWNER_INFORMATION, surveyId = surveyId))
         }
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
@@ -224,7 +224,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         val ownerInformationToUpdate = ownerInformationController.find(ownerId) ?: return createNotFound(createNotFoundMessage(target = OWNER_INFORMATION, id = ownerId))
         if (ownerInformationToUpdate.survey != survey) {
-            return createForbidden(createWrongSurveyMessage(OWNER_INFORMATION, surveyId))
+            return createForbidden(createWrongSurveyMessage(target = OWNER_INFORMATION, surveyId = surveyId))
         }
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
@@ -243,7 +243,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         val ownerInformationToDelete = ownerInformationController.find(ownerId) ?: return createNotFound(createNotFoundMessage(target = OWNER_INFORMATION, id = ownerId))
 
         if (ownerInformationToDelete.survey != survey) {
-            return createForbidden(createWrongSurveyMessage(OWNER_INFORMATION, surveyId))
+            return createForbidden(createWrongSurveyMessage(target = OWNER_INFORMATION, surveyId = surveyId))
         }
 
         ownerInformationController.delete(ownerInformationToDelete)
@@ -271,7 +271,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 
         if (building.surveyId != surveyId) {
-            return createForbidden(createWrongSurveyMessage(BUILDING, surveyId))
+            return createForbidden(createWrongSurveyMessage(target = BUILDING, surveyId = surveyId))
         }
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
@@ -292,7 +292,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         val foundBuilding = buildingController.find(buildingId) ?: return createNotFound(createNotFoundMessage(target = BUILDING, id = buildingId))
         if (foundBuilding.survey != survey) {
-            return createForbidden(createWrongSurveyMessage(BUILDING, surveyId))
+            return createForbidden(createWrongSurveyMessage(target = BUILDING, surveyId = surveyId))
         }
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
@@ -309,7 +309,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         val buildingToUpdate = buildingController.find(buildingId) ?: return createNotFound(createNotFoundMessage(target = BUILDING, id = buildingId))
         if (buildingToUpdate.survey != survey) {
-            return createForbidden(createWrongSurveyMessage(BUILDING, surveyId))
+            return createForbidden(createWrongSurveyMessage(target = BUILDING, surveyId = surveyId))
         }
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
@@ -328,7 +328,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         val buildingToDelete = buildingController.find(buildingId) ?: return createNotFound(createNotFoundMessage(target = BUILDING, id = buildingId))
 
         if (buildingToDelete.survey != survey) {
-            return createForbidden(createWrongSurveyMessage(BUILDING, surveyId))
+            return createForbidden(createWrongSurveyMessage(target = BUILDING, surveyId = surveyId))
         }
 
         buildingController.delete(buildingToDelete)
@@ -345,7 +345,6 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun createReusableMaterial(reusableMaterial: ReusableMaterial): Response {
-        reusableMaterial.name ?: return createBadRequest(createMissingObjectFromRequestMessage("Reusable material name"))
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
 
         val createdMaterial = reuseableMaterialController.create(reusableMaterial, userId)
@@ -356,24 +355,29 @@ class V1ApiImpl : V1Api, AbstractApi() {
     override fun findReusableMaterial(reusableMaterialId: UUID): Response {
         loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
 
-        val foundMaterial = reuseableMaterialController.find(reusableMaterialId) ?: return createNotFound(createNotFoundMessage(REUSABLE_MATERIAL, reusableMaterialId))
+        val foundMaterial = reuseableMaterialController.find(reusableMaterialId) ?: return createNotFound(createNotFoundMessage(target = REUSABLE_MATERIAL, id = reusableMaterialId))
         return createOk(reusableMaterialTranslator.translate(foundMaterial))
     }
 
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun updateReusableMaterial(reusableMaterialId: UUID, reusableMaterial: ReusableMaterial): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        val materialToUpdate = reuseableMaterialController.find(reusableMaterialId) ?: return createNotFound(createNotFoundMessage(REUSABLE_MATERIAL, reusableMaterialId))
-        val updatedMaterial = reuseableMaterialController.update(materialToUpdate, reusableMaterial, userId)
+        val materialToUpdate = reuseableMaterialController.find(reusableMaterialId) ?: return createNotFound(createNotFoundMessage(target = REUSABLE_MATERIAL, id = reusableMaterialId))
+        val updatedMaterial = reuseableMaterialController.update(
+            materialToUpdate = materialToUpdate,
+            reusableMaterial = reusableMaterial,
+            userId = userId
+        )
+
         return createOk(reusableMaterialTranslator.translate(updatedMaterial))
     }
 
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun deleteReusableMaterial(reusableMaterialId: UUID): Response {
         loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        val materialToDelete = reuseableMaterialController.find(reusableMaterialId) ?: return createNotFound(createNotFoundMessage(REUSABLE_MATERIAL, reusableMaterialId))
+        val materialToDelete = reuseableMaterialController.find(reusableMaterialId) ?: return createNotFound(createNotFoundMessage(target = REUSABLE_MATERIAL, id = reusableMaterialId))
 
-        if (reusableController.listByMaterial(materialToDelete)?.isNotEmpty() == true) {
+        if (reusableController.list(survey = null, material = materialToDelete)?.isNotEmpty() == true) {
             return createBadRequest("Reusables depend on this material!")
         }
 
@@ -389,7 +393,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
 
-        val reusables = reusableController.listBySurvey(survey)
+        val reusables = reusableController.list(survey = survey, material = null)
         return createOk(reusables?.map(reusableTranslator::translate))
     }
 
@@ -398,10 +402,14 @@ class V1ApiImpl : V1Api, AbstractApi() {
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
-        reusable.componentName ?: return createBadRequest(createMissingObjectFromRequestMessage("Component name"))
-        reuseableMaterialController.find(reusable.reusableMaterialId) ?: return createNotFound(createNotFoundMessage(REUSABLE_MATERIAL, reusable.reusableMaterialId))
+        reuseableMaterialController.find(reusable.reusableMaterialId) ?: return createNotFound(createNotFoundMessage(target = REUSABLE_MATERIAL, id = reusable.reusableMaterialId))
 
-        val createdReusable = reusableController.create(reusable, survey, userId)
+        val createdReusable = reusableController.create(
+            reusable = reusable,
+            survey = survey,
+            userId = userId
+        )
+
         return createOk(reusableTranslator.translate(createdReusable))
     }
 
@@ -411,10 +419,10 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
 
-        val reusable = reusableController.findById(reusableId) ?: return createNotFound(createNotFoundMessage(REUSABLE, reusableId))
+        val reusable = reusableController.findById(reusableId) ?: return createNotFound(createNotFoundMessage(target = REUSABLE, id = reusableId))
 
         if (reusable.survey != survey) {
-            return createForbidden(createWrongSurveyMessage(REUSABLE, surveyId))
+            return createForbidden(createWrongSurveyMessage(target = REUSABLE, surveyId = surveyId))
         }
 
         return createOk(reusableTranslator.translate(reusable))
@@ -426,16 +434,20 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
 
-        val reusableToUpdate = reusableController.findById(reusableId) ?: return createNotFound(createNotFoundMessage(REUSABLE, reusableId))
+        val reusableToUpdate = reusableController.findById(reusableId) ?: return createNotFound(createNotFoundMessage(target = REUSABLE, id = reusableId))
 
         if (reusableToUpdate.survey != survey) {
             return createForbidden(createWrongSurveyMessage(REUSABLE, surveyId))
         }
 
-        reuseableMaterialController.find(reusable.reusableMaterialId) ?: return createNotFound(createNotFoundMessage(REUSABLE_MATERIAL, reusable.reusableMaterialId))
-        reusable.componentName ?: return createBadRequest(createMissingObjectFromRequestMessage("Component name"))
+        reuseableMaterialController.find(reusable.reusableMaterialId) ?: return createNotFound(createNotFoundMessage(target = REUSABLE_MATERIAL, id = reusable.reusableMaterialId))
 
-        val updatedReusable = reusableController.updateReusable(reusableToUpdate, reusable, userId)
+        val updatedReusable = reusableController.updateReusable(
+            reusableToUpdate = reusableToUpdate,
+            reusable = reusable,
+            userId = userId
+        )
+
         return createOk(reusableTranslator.translate(updatedReusable))
     }
 
@@ -445,10 +457,10 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
 
-        val reusableToDelete = reusableController.findById(reusableId) ?: return createNotFound(createNotFoundMessage(REUSABLE, reusableId))
+        val reusableToDelete = reusableController.findById(reusableId) ?: return createNotFound(createNotFoundMessage(target = REUSABLE, id= reusableId))
 
         if (reusableToDelete.survey != survey) {
-            return createForbidden(createWrongSurveyMessage(REUSABLE, surveyId))
+            return createForbidden(createWrongSurveyMessage(target = REUSABLE, surveyId = surveyId))
         }
 
         reusableController.delete(reusableToDelete)

@@ -21,20 +21,11 @@ class ReusableController {
      * Lists Reusables by survey
      *
      * @param survey survey to filter by
-     * @return reusables
-     */
-    fun listBySurvey(survey: Survey): MutableList<Reusable>? {
-        return reusableDAO.listBySurvey(survey)
-    }
-
-    /**
-     * Lists Reusables by survey
-     *
      * @param material material to filter by
      * @return reusables
      */
-    fun listByMaterial(material: ReusableMaterial): MutableList<Reusable>? {
-        return reusableDAO.listByMaterial(material)
+    fun list(survey: Survey?, material: ReusableMaterial?): MutableList<Reusable>? {
+        return reusableDAO.list(survey, material)
     }
 
     /**
@@ -88,14 +79,13 @@ class ReusableController {
             uri.toString()
         }
 
-        var result = reusableDAO.updateComponentName(reusableToUpdate, reusable.componentName, userId)
+        val result = reusableDAO.updateComponentName(reusableToUpdate, reusable.componentName, userId)
         reusableDAO.updateMaterialId(result, reusable.reusableMaterialId, userId)
         reusableDAO.updateUsability(result, reusable.usability, userId)
         reusableDAO.updateAmount(result, reusable.amount, userId)
         reusableDAO.updateUnit(result, reusable.unit, userId)
         reusableDAO.updateDescription(result, reusable.description, userId)
-        result = reusableDAO.updateImages(result, imageList, userId)
-        return result
+        return reusableDAO.updateImages(result, imageList, userId)
     }
 
     /**

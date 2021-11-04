@@ -58,7 +58,11 @@ class ReusableMaterialController {
      * @param userId modifier id
      * @return updated material
      */
-    fun update(materialToUpdate: ReusableMaterial, reusableMaterial: fi.metatavu.rapurc.api.model.ReusableMaterial, userId: UUID): ReusableMaterial {
+    fun update(
+        materialToUpdate: ReusableMaterial,
+        reusableMaterial: fi.metatavu.rapurc.api.model.ReusableMaterial,
+        userId: UUID)
+    : ReusableMaterial {
         return reusableMaterialDAO.updateName(materialToUpdate, reusableMaterial.name, userId)
     }
 
