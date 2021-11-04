@@ -4,6 +4,7 @@ import fi.metatavu.jaxrs.test.functional.builder.auth.AccessTokenProvider
 import fi.metatavu.rapurc.api.client.apis.ReusableMaterialApi
 import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.rapurc.api.client.infrastructure.ClientException
+import fi.metatavu.rapurc.api.client.models.Metadata
 import fi.metatavu.rapurc.api.client.models.ReusableMaterial
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
 import fi.metatavu.rapurc.api.test.functional.impl.ApiTestBuilderResource
@@ -31,8 +32,23 @@ class ReusableMaterialTestBuilderResource(
      * @return created ReusableMaterial
      */
     fun create(reusableMaterial: ReusableMaterial): ReusableMaterial {
-        val result = api.createReusableMaterial(reusableMaterial)
-        return addClosable(result)
+        return addClosable(api.createReusableMaterial(reusableMaterial))
+    }
+
+    /**
+     * Creates reusable material with default values
+     *
+     * @return created reusable material
+     */
+    fun createDefault(): ReusableMaterial {
+        return addClosable(
+            api.createReusableMaterial(
+                ReusableMaterial(
+                    name = "brick",
+                    metadata = Metadata()
+                )
+            )
+        )
     }
 
     /**

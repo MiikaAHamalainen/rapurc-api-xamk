@@ -32,11 +32,6 @@ class ReusableTestIT {
         metadata = Metadata()
     )
 
-    val reusableMaterial = ReusableMaterial(
-        name = "brick",
-        metadata = Metadata()
-    )
-
     /**
      * Tests survey reusable creation and access rights
      */
@@ -46,7 +41,7 @@ class ReusableTestIT {
             val survey1 = testBuilder.userA.surveys.create(SurveyStatus.dRAFT)
             val survey2 = testBuilder.userB.surveys.create(SurveyStatus.dRAFT)
 
-            val material = testBuilder.admin.materials.create(reusableMaterial)
+            val material = testBuilder.admin.materials.createDefault()
 
             testBuilder.userA.reusables.assertCreateFailStatus(403, survey2.id!!, reusable)
             testBuilder.userA.reusables.assertCreateFailStatus(404, survey1.id!!, reusable)
@@ -70,7 +65,7 @@ class ReusableTestIT {
             val survey1 = testBuilder.userA.surveys.create(SurveyStatus.dRAFT)
             val survey2 = testBuilder.userB.surveys.create(SurveyStatus.dRAFT)
 
-            val material = testBuilder.admin.materials.create(reusableMaterial)
+            val material = testBuilder.admin.materials.createDefault()
             testBuilder.userA.reusables.create(survey1.id!!, reusable.copy(reusableMaterialId = material.id!!))
             testBuilder.userB.reusables.create(survey2.id!!, reusable.copy(reusableMaterialId = material.id))
             testBuilder.userB.reusables.create(survey2.id, reusable.copy(reusableMaterialId = material.id))
@@ -91,7 +86,7 @@ class ReusableTestIT {
             val survey1 = testBuilder.userA.surveys.create(SurveyStatus.dRAFT)
             val survey2 = testBuilder.userB.surveys.create(SurveyStatus.dRAFT)
 
-            val material = testBuilder.admin.materials.create(reusableMaterial)
+            val material = testBuilder.admin.materials.createDefault()
 
             val created1 = testBuilder.userA.reusables.create(survey1.id!!, reusable.copy(reusableMaterialId = material.id!!))
             val created2 = testBuilder.userB.reusables.create(survey2.id!!, reusable.copy(reusableMaterialId = material.id))
@@ -118,7 +113,7 @@ class ReusableTestIT {
             val survey1 = testBuilder.userA.surveys.create(SurveyStatus.dRAFT)
             val survey2 = testBuilder.userB.surveys.create(SurveyStatus.dRAFT)
 
-            val material = testBuilder.admin.materials.create(reusableMaterial)
+            val material = testBuilder.admin.materials.createDefault()
 
             val created1 = testBuilder.userA.reusables.create(survey1.id!!, reusable.copy(reusableMaterialId = material.id!!))
             val created2 = testBuilder.userB.reusables.create(survey2.id!!, reusable.copy(reusableMaterialId = material.id))
@@ -156,7 +151,7 @@ class ReusableTestIT {
             val survey1 = testBuilder.userA.surveys.create(SurveyStatus.dRAFT)
             val survey2 = testBuilder.userB.surveys.create(SurveyStatus.dRAFT)
 
-            val material = testBuilder.admin.materials.create(reusableMaterial)
+            val material = testBuilder.admin.materials.createDefault()
 
             val created1 = testBuilder.userA.reusables.create(survey1.id!!, reusable.copy(reusableMaterialId = material.id!!))
             val created2 = testBuilder.userB.reusables.create(survey2.id!!, reusable.copy(reusableMaterialId = material.id))
