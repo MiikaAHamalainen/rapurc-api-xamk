@@ -4,6 +4,7 @@ import java.util.*
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
+import javax.persistence.ManyToOne
 
 /**
  * Image entity
@@ -16,4 +17,7 @@ class Image {
 
     @Column(nullable = false)
     var imageUri: String? = null
+
+    @ManyToOne
+    var reusable: Reusable? = null
 }

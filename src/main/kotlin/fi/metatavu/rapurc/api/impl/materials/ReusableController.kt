@@ -41,14 +41,7 @@ class ReusableController {
      * @return created Reusable
      */
     fun create(reusable: fi.metatavu.rapurc.api.model.Reusable, survey: Survey, userId: UUID): Reusable {
-        val imageList = reusable.images.map { uri ->
-            imageDAO.create(
-                id = UUID.randomUUID(),
-                imageUri = uri.toString()
-            )
-        }
-
-        return reusableDAO.create(
+        val createdReusable = reusableDAO.create(
             id = UUID.randomUUID(),
             survey = survey,
             componentName = reusable.componentName,
@@ -57,10 +50,19 @@ class ReusableController {
             amount = reusable.amount,
             unit = reusable.unit,
             description = reusable.description,
-            images = imageList,
             creatorId = userId,
             lastModifierId = userId
         )
+
+        reusable.images.map { uri ->
+            imageDAO.create(
+                id = UUID.randomUUID(),
+                imageUri = uri.toString(),
+                reusable = createdReusable
+            )
+        }
+
+        return createdReusable
     }
 
     /**
@@ -82,10 +84,12 @@ class ReusableController {
      * @return updated reusable
      */
     fun updateReusable(reusableToUpdate: Reusable, reusable: fi.metatavu.rapurc.api.model.Reusable, userId: UUID): Reusable {
-        val imageList = reusable.images.map { uri ->
+        imageDAO.list(reusableToUpdate).forEach(imageDAO::delete)
+        reusable.images.map { uri ->
             imageDAO.create(
                 id = UUID.randomUUID(),
-                imageUri = uri.toString()
+                imageUri = uri.toString(),
+                reusable = reusableToUpdate
             )
         }
 
@@ -94,8 +98,7 @@ class ReusableController {
         reusableDAO.updateUsability(result, reusable.usability, userId)
         reusableDAO.updateAmount(result, reusable.amount, userId)
         reusableDAO.updateUnit(result, reusable.unit, userId)
-        reusableDAO.updateDescription(result, reusable.description, userId)
-        return reusableDAO.updateImages(result, imageList, userId)
+        return reusableDAO.updateDescription(result, reusable.description, userId)
     }
 
     /**
@@ -104,7 +107,7 @@ class ReusableController {
      * @param reusableToDelete reusable to delete
      */
     fun delete(reusableToDelete: Reusable) {
-        reusableToDelete.images?.forEach { image ->
+        imageDAO.list(reusableToDelete).forEach { image ->
             imageDAO.delete(image)
         }
 

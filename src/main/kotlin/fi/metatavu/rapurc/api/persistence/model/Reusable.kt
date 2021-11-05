@@ -35,8 +35,4 @@ class Reusable: Metadata() {
     @Column
     var description: String? = null
 
-    @OneToMany(targetEntity = Image::class)
-    @JoinColumn(name="reusable_id")
-    var images: List<Image>? = null
-
 }

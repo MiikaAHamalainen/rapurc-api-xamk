@@ -27,7 +27,6 @@ class ReusableDAO: AbstractDAO<Reusable>() {
      * @param amount amount
      * @param unit unit
      * @param description description
-     * @param images images uris
      * @param creatorId creator id
      * @param lastModifierId modifier id
      * @return created reusable
@@ -41,7 +40,6 @@ class ReusableDAO: AbstractDAO<Reusable>() {
         amount: Double?,
         unit: Unit?,
         description: String?,
-        images: List<Image>?,
         creatorId: UUID,
         lastModifierId: UUID
     ): Reusable {
@@ -54,7 +52,6 @@ class ReusableDAO: AbstractDAO<Reusable>() {
         reusable.amount = amount
         reusable.unit = unit
         reusable.description = description
-        reusable.images = images
         reusable.creatorId = creatorId
         reusable.lastModifierId = lastModifierId
         return persist(reusable)
@@ -122,12 +119,6 @@ class ReusableDAO: AbstractDAO<Reusable>() {
 
     fun updateDescription(reusable: Reusable, description: String?, userId: UUID): Reusable {
         reusable.description = description
-        reusable.lastModifierId = userId
-        return persist(reusable)
-    }
-
-    fun updateImages(reusable: Reusable, images: List<Image>?, userId: UUID): Reusable {
-        reusable.images = images
         reusable.lastModifierId = userId
         return persist(reusable)
     }
