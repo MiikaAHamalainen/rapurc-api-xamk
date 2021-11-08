@@ -12,7 +12,7 @@ import javax.persistence.*
  * @author Jari Nykänen
  */
 @Entity
-class Survey: GeneralInfo() {
+class Survey: Metadata() {
 
     @Id
     var id: UUID? = null

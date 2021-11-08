@@ -11,19 +11,19 @@ import javax.persistence.PreUpdate
  * Class containing shared general properties of entities
  */
 @MappedSuperclass
-abstract class GeneralInfo {
+abstract class Metadata {
 
     @Column(nullable = false)
-    var createdAt: OffsetDateTime? = null
+    open var createdAt: OffsetDateTime? = null
 
     @Column(nullable = false)
-    var modifiedAt: OffsetDateTime? = null
+    open var modifiedAt: OffsetDateTime? = null
 
     @Column(nullable = false)
-    var creatorId: UUID? = null
+    open var creatorId: UUID? = null
 
     @Column(nullable = false)
-    var lastModifierId: UUID? = null
+    open var lastModifierId: UUID? = null
 
     /**
      * JPA pre-persist event handler

@@ -7,7 +7,7 @@ import javax.persistence.*
  * JPA class for Building
  */
 @Entity
-class Building: GeneralInfo() {
+class Building: Metadata() {
 
     @Id
     var id: UUID? = null
