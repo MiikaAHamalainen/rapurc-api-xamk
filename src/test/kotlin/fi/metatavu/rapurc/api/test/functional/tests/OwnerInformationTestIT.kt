@@ -1,6 +1,7 @@
 package fi.metatavu.rapurc.api.test.functional.tests
 
 import fi.metatavu.rapurc.api.client.models.ContactPerson
+import fi.metatavu.rapurc.api.client.models.Metadata
 import fi.metatavu.rapurc.api.client.models.OwnerInformation
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
 import fi.metatavu.rapurc.api.test.functional.resources.KeycloakTestResource
@@ -30,7 +31,8 @@ class OwnerInformationTestIT {
             firstName = "Timo",
             email = "example@example.com",
             profession = "construction worker"
-        )
+        ),
+        metadata = Metadata()
     )
 
     /**

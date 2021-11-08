@@ -81,8 +81,7 @@ class BuildingTestBuilderResource(
             if (closable !is Building) {
                 return@removeCloseable false
             }
-            val (_, id) = closable
-            id == building.id
+            closable.id == building.id
         }
     }
 

@@ -81,8 +81,7 @@ class OwnerInformationTestBuilderResource(
             if (closable !is OwnerInformation) {
                 return@removeCloseable false
             }
-            val (_, id) = closable
-            id == ownerInfo.id
+            closable.id == ownerInfo.id
         }
     }
 

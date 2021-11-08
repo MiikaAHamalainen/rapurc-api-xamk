@@ -1,5 +1,6 @@
 package fi.metatavu.rapurc.api.test.functional.tests
 
+import fi.metatavu.rapurc.api.client.models.Metadata
 import fi.metatavu.rapurc.api.client.models.Survey
 import fi.metatavu.rapurc.api.client.models.SurveyStatus
 import fi.metatavu.rapurc.api.client.models.SurveyType
@@ -62,7 +63,8 @@ class SurveyTestIT {
                     status = SurveyStatus.dRAFT,
                     startDate = LocalDate.of(2021, 1, 10).toString(),
                     endDate = LocalDate.of(2021, 5, 1).toString(),
-                    type = SurveyType.dEMOLITION
+                    type = SurveyType.dEMOLITION,
+                    metadata = Metadata()
                 )
             )
             it.userA.surveys.create(
@@ -70,13 +72,15 @@ class SurveyTestIT {
                     status = SurveyStatus.dONE,
                     type = SurveyType.rENOVATION,
                     startDate = LocalDate.of(2020, 1, 1).toString(),
-                    endDate = LocalDate.of(2020, 12, 1).toString()
+                    endDate = LocalDate.of(2020, 12, 1).toString(),
+                    metadata = Metadata()
                 )
             )
             it.userB.surveys.create(
                 Survey(
                     status = SurveyStatus.dRAFT,
-                    type = SurveyType.rENOVATION
+                    type = SurveyType.rENOVATION,
+                    metadata = Metadata()
                 )
             )
 

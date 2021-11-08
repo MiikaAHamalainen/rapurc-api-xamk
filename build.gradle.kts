@@ -99,6 +99,7 @@ val generateApiClient = tasks.register("generateApiClient",GenerateTask::class){
     setProperty("inputSpec",  "$rootDir/rapurc-api-spec/swagger.yaml")
     setProperty("outputDir", "$buildDir/generated/api-client")
     setProperty("packageName", "fi.metatavu.rapurc.api.client")
+    this.typeMappings.put("URI", "kotlin.String")
     this.configOptions.put("dateLibrary", "string")
     this.configOptions.put("collectionType", "array")
 }

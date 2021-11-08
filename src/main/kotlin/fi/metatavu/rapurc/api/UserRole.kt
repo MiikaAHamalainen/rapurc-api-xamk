@@ -11,4 +11,8 @@ sealed class UserRole(val role: String) {
         const val name = "user"
     }
 
+    object ADMIN: UserRole("admin") {
+        const val name = "admin"
+    }
+
 }
