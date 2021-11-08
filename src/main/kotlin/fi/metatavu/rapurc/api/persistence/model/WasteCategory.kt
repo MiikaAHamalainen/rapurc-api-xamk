@@ -9,7 +9,7 @@ import javax.persistence.Id
  * Waste category entity
  */
 @Entity
-class WasteCategory: GeneralInfo() {
+class WasteCategory: Metadata() {
 
     @Id
     var id: UUID? = null

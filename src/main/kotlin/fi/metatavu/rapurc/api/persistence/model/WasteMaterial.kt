@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne
  * Entity for Waste Material
  */
 @Entity
-class WasteMaterial: GeneralInfo() {
+class WasteMaterial: Metadata() {
 
     @Id
     var id: UUID? = null

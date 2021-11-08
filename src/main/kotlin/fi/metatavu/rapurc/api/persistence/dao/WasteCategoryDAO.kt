@@ -35,4 +35,16 @@ class WasteCategoryDAO: AbstractDAO<WasteCategory>() {
         wasteCategory.lastModifierId = modifierId
         return persist(wasteCategory)
     }
+
+    fun updateName(wasteCategory: WasteCategory, name: String, userId: UUID): WasteCategory {
+        wasteCategory.name = name
+        wasteCategory.lastModifierId = userId
+        return persist(wasteCategory)
+    }
+
+    fun updateEwcCode(wasteCategory: WasteCategory, ewcCode: String, userId: UUID): WasteCategory {
+        wasteCategory.ewcCode = ewcCode
+        wasteCategory.lastModifierId = userId
+        return persist(wasteCategory)
+    }
 }

@@ -197,4 +197,56 @@
       </column>
     </createTable>
   </changeSet>
+
+  <changeSet id="waste_materials_categories" author="katja danilova">
+    <createTable tableName="wastecategory">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="name" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ewccode" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <createTable tableName="wastematerial">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="wastecategory_id" type="binary(16)">
+        <constraints foreignKeyName="FK_WASTE_MATERIAL_WASTE CATEGORY_ID" referencedColumnNames="id" referencedTableName="wastecategory"/>
+      </column>
+      <column name="name" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ewcspecificationcode" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
 </databaseChangeLog>
