@@ -19,6 +19,9 @@ import java.util.*
 )
 class WasteCategoryTestIT {
 
+    /**
+     * Tests waste category creation and access rights
+     */
     @Test
     fun create() {
         TestBuilder().use { testBuilder ->
@@ -33,6 +36,9 @@ class WasteCategoryTestIT {
         }
     }
 
+    /**
+     * Tests waste category listing
+     */
     @Test
     fun list() {
         TestBuilder().use { testBuilder ->
@@ -42,6 +48,9 @@ class WasteCategoryTestIT {
         }
     }
 
+    /**
+     * Tests waste category search
+     */
     @Test
     fun find() {
         TestBuilder().use { testBuilder ->
@@ -52,6 +61,9 @@ class WasteCategoryTestIT {
         }
     }
 
+    /**
+     * Tests waste category updates and access rights
+     */
     @Test
     fun update() {
         TestBuilder().use { testBuilder ->
@@ -66,6 +78,9 @@ class WasteCategoryTestIT {
         }
     }
 
+    /**
+     * Tests waste category deletion and access rights
+     */
     @Test
     fun delete() {
         TestBuilder().use { testBuilder ->

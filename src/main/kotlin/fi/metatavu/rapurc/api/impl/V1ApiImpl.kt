@@ -548,7 +548,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         return createOk(wasteMaterials.map(wasteMaterialTranslator::translate))
     }
 
-    @RolesAllowed(value = [ UserRole.USER.name ])
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun createWasteMaterial(wasteMaterial: WasteMaterial): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
         val foundWasteCategory = wasteCategoryController.find(wasteCategoryId = wasteMaterial.wasteCategoryId) ?: return createNotFound(createNotFoundMessage(target = WASTE_CATEGORY, id = wasteMaterial.wasteCategoryId))
@@ -563,7 +563,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         return createOk(wasteMaterialTranslator.translate(foundWasteMaterial))
     }
 
-    @RolesAllowed(value = [ UserRole.USER.name ])
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun updateWasteMaterial(wasteMaterialId: UUID, wasteMaterial: WasteMaterial): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
 
@@ -579,7 +579,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         return createOk(wasteMaterialTranslator.translate(updatedWasteMaterial))
     }
 
-    @RolesAllowed(value = [ UserRole.USER.name ])
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun deleteWasteMaterial(wasteMaterialId: UUID): Response {
         val materialToDelete = wasteMaterialController.find(wasteMaterialId = wasteMaterialId) ?: return createNotFound(createNotFoundMessage(target = WASTE_MATERIAL, id = wasteMaterialId))
 

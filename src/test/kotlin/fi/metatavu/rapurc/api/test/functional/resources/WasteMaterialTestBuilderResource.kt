@@ -4,6 +4,7 @@ import fi.metatavu.jaxrs.test.functional.builder.auth.AccessTokenProvider
 import fi.metatavu.rapurc.api.client.apis.WasteMaterialApi
 import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.rapurc.api.client.infrastructure.ClientException
+import fi.metatavu.rapurc.api.client.models.Metadata
 import fi.metatavu.rapurc.api.client.models.WasteMaterial
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
 import fi.metatavu.rapurc.api.test.functional.impl.ApiTestBuilderResource
@@ -28,13 +29,34 @@ class WasteMaterialTestBuilderResource(
         return WasteMaterialApi(testBuilder.settings.apiBasePath)
     }
 
+    val wasteMaterial = WasteMaterial(
+        name = "brick",
+        ewcSpecificationCode = "111",
+        metadata = Metadata(),
+        wasteCategoryId = UUID.randomUUID()
+    )
+
+    /**
+     * Creates default waste material with selected category
+     *
+     * @param wasteCategoryId waste category id
+     * @return created waste material
+     */
+    fun create(wasteCategoryId: UUID): WasteMaterial {
+        return create(
+            wasteMaterial.copy(
+                wasteCategoryId = wasteCategoryId
+            )
+        )
+    }
+
     /**
      * Creates new waste material object
      *
      * @param wasteMaterial new data
      * @return created waste material
      */
-    fun create(wasteMaterial: WasteMaterial): WasteMaterial? {
+    fun create(wasteMaterial: WasteMaterial): WasteMaterial {
         return addClosable(api.createWasteMaterial(wasteMaterial))
     }
 
@@ -114,11 +136,11 @@ class WasteMaterialTestBuilderResource(
      * Asserts create status fails with given status code
      *
      * @param expectedStatus expected status code
-     * @param wasteMaterial waste material
+     * @param wasteCategoryId waste category id
      */
-    fun assertCreateFailStatus(expectedStatus: Int, wasteMaterial: WasteMaterial) {
+    fun assertCreateFailStatus(expectedStatus: Int, wasteCategoryId: UUID) {
         try {
-            create(wasteMaterial)
+            create(wasteCategoryId)
             Assert.fail(String.format("Expected create to fail with status %d", expectedStatus))
         } catch (e: ClientException) {
             Assert.assertEquals(expectedStatus.toLong(), e.statusCode.toLong())

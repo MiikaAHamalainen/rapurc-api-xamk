@@ -23,23 +23,20 @@ import java.util.*
 )
 class WasteMaterialTestIT {
 
-    val wasteMaterial = WasteMaterial(
-        name = "brick",
-        ewcSpecificationCode = "111",
-        metadata = Metadata(),
-        wasteCategoryId = UUID.randomUUID()
-    )
-
+    /**
+     * Tests waste material creation
+     */
     @Test
     fun create() {
         TestBuilder().use { testBuilder ->
             var materialID: UUID? = null
             try {
                 val categoryId = testBuilder.admin.wasteCategories.createDefault().id
-                testBuilder.userA.wasteMaterials.assertCreateFailStatus(404, wasteMaterial)
+                testBuilder.userA.wasteMaterials.assertCreateFailStatus(403, UUID.randomUUID())
+                testBuilder.admin.wasteMaterials.assertCreateFailStatus(404, UUID.randomUUID())
 
-                val createdMaterial = testBuilder.userA.wasteMaterials.create(wasteMaterial.copy(wasteCategoryId = categoryId!!))
-                materialID = createdMaterial!!.id
+                val createdMaterial = testBuilder.admin.wasteMaterials.create(categoryId!!)
+                materialID = createdMaterial.id
 
                 assertNotNull(createdMaterial.id)
                 assertNotNull(createdMaterial.metadata.createdAt)
@@ -47,8 +44,8 @@ class WasteMaterialTestIT {
                 assertNotNull(createdMaterial.metadata.creatorId)
                 assertNotNull(createdMaterial.metadata.lastModifierId)
                 assertEquals(categoryId, createdMaterial.wasteCategoryId)
-                assertEquals(wasteMaterial.name, createdMaterial.name)
-                assertEquals(wasteMaterial.ewcSpecificationCode, createdMaterial.ewcSpecificationCode)
+                assertEquals(testBuilder.userA.wasteMaterials.wasteMaterial.name, createdMaterial.name)
+                assertEquals(testBuilder.userA.wasteMaterials.wasteMaterial.ewcSpecificationCode, createdMaterial.ewcSpecificationCode)
             } finally {
                 if (materialID != null) {
                     testBuilder.admin.wasteMaterials.delete(materialID)
@@ -57,24 +54,30 @@ class WasteMaterialTestIT {
         }
     }
 
+    /**
+     * Tests waste material listing
+     */
     @Test
     fun list() {
         TestBuilder().use { testBuilder ->
             val category = testBuilder.admin.wasteCategories.createDefault()
-            testBuilder.userA.wasteMaterials.create(wasteMaterial.copy(wasteCategoryId = category.id!!))
-            testBuilder.userA.wasteMaterials.create(wasteMaterial.copy(wasteCategoryId = category.id))
+            testBuilder.admin.wasteMaterials.create(category.id!!)
+            testBuilder.admin.wasteMaterials.create(category.id)
             testBuilder.userA.wasteMaterials.assertCount(2)
         }
     }
 
+    /**
+     * Tests waste material search
+     */
     @Test
     fun find() {
         TestBuilder().use { testBuilder ->
             val category = testBuilder.admin.wasteCategories.createDefault()
-            val createdMaterial = testBuilder.userA.wasteMaterials.create(wasteMaterial.copy(wasteCategoryId = category.id!!))
+            val createdMaterial = testBuilder.admin.wasteMaterials.create(category.id!!)
 
             testBuilder.userA.wasteMaterials.assertFindFailStatus(404, UUID.randomUUID())
-            val foundMaterial = testBuilder.userA.wasteMaterials.find(createdMaterial!!.id!!)
+            val foundMaterial = testBuilder.userA.wasteMaterials.find(createdMaterial.id!!)
             assertEquals(createdMaterial.id, foundMaterial.id)
             assertEquals(createdMaterial.wasteCategoryId, foundMaterial.wasteCategoryId)
             assertEquals(createdMaterial.name, foundMaterial.name)
@@ -82,14 +85,17 @@ class WasteMaterialTestIT {
         }
     }
 
+    /**
+     * Tests waste material updates and access rights
+     */
     @Test
     fun update() {
         TestBuilder().use { testBuilder ->
             var materialId: UUID? = null
             try {
                 val category1 = testBuilder.admin.wasteCategories.createDefault()
-                val createdMaterial = testBuilder.userA.wasteMaterials.create(wasteMaterial.copy(wasteCategoryId = category1.id!!))
-                materialId = createdMaterial!!.id
+                val createdMaterial = testBuilder.admin.wasteMaterials.create(category1.id!!)
+                materialId = createdMaterial.id
                 val category2 = testBuilder.admin.wasteCategories.create(
                     category1.copy(
                         name = "new category"
@@ -101,13 +107,14 @@ class WasteMaterialTestIT {
                     wasteCategoryId = category2.id!!
                 )
 
-                testBuilder.userA.wasteMaterials.assertUpdateFailStatus(404, UUID.randomUUID(), updateData)
-                testBuilder.userA.wasteMaterials.assertUpdateFailStatus(
+                testBuilder.userA.wasteMaterials.assertUpdateFailStatus(403, UUID.randomUUID(), updateData)
+                testBuilder.admin.wasteMaterials.assertUpdateFailStatus(404, UUID.randomUUID(), updateData)
+                testBuilder.admin.wasteMaterials.assertUpdateFailStatus(
                     404,
                     createdMaterial.id!!,
                     updateData.copy(wasteCategoryId = UUID.randomUUID())
                 )
-                val updated = testBuilder.userA.wasteMaterials.update(createdMaterial.id, updateData)
+                val updated = testBuilder.admin.wasteMaterials.update(createdMaterial.id, updateData)
                 assertEquals(updateData.wasteCategoryId, updated.wasteCategoryId)
                 assertEquals(updateData.id, updated.id)
                 assertEquals(updateData.name, updated.name)
@@ -120,12 +127,15 @@ class WasteMaterialTestIT {
         }
     }
 
+    /**
+     * Tests waste material deletion
+     */
     @Test
     fun delete() {
         TestBuilder().use { testBuilder ->
             val category = testBuilder.admin.wasteCategories.createDefault()
-            val created = testBuilder.userA.wasteMaterials.create(wasteMaterial.copy(wasteCategoryId = category.id!!))
-            testBuilder.userA.wasteMaterials.delete(created!!.id!!)
+            val created = testBuilder.admin.wasteMaterials.create(category.id!!)
+            testBuilder.admin.wasteMaterials.delete(created.id!!)
             testBuilder.userA.wasteMaterials.assertCount(0)
         }
     }
