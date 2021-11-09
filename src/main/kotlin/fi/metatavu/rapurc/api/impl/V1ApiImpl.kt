@@ -487,9 +487,10 @@ class V1ApiImpl : V1Api, AbstractApi() {
     }
 
     /* Waste category */
+
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun listWasteCategories(): Response {
-        val categories: List<fi.metatavu.rapurc.api.persistence.model.WasteCategory> = wasteCategoryController.list()
+        val categories = wasteCategoryController.list()
         return createOk(categories.map(wasteCategoryTranslator::translate))
     }
 
@@ -497,7 +498,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
     override fun createWasteCategory(wasteCategory: WasteCategory): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
 
-        val createdCategory: fi.metatavu.rapurc.api.persistence.model.WasteCategory = wasteCategoryController.create(
+        val createdCategory = wasteCategoryController.create(
             wasteCategory = wasteCategory,
             userId = userId
         )

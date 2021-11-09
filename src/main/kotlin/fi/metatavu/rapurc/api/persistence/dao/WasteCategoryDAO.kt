@@ -18,7 +18,7 @@ class WasteCategoryDAO: AbstractDAO<WasteCategory>() {
      * @param ewcCode first four characters of EWC code
      * @param creatorId creator id
      * @param modifierId modifier id
-     * @return saved waste category
+     * @return created waste category
      */
     fun create(
         id: UUID,

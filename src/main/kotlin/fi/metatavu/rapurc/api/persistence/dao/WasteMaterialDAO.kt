@@ -44,10 +44,10 @@ class WasteMaterialDAO: AbstractDAO<WasteMaterial>(){
     }
 
     /**
-     * Lists materials by filters
+     * Lists materials with given filters
      *
-     * @param wasteCategory filter by category
-     * @return waste materials
+     * @param wasteCategory filter by waste category
+     * @return list of waste materials
      */
     fun list(wasteCategory: WasteCategory?): List<WasteMaterial> {
         val entityManager = getEntityManager()

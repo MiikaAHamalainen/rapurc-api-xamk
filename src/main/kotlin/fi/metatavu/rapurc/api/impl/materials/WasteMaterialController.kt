@@ -19,7 +19,8 @@ class WasteMaterialController {
     /**
      * Lists waste materials
      *
-     * @return waste materials
+     * @param wasteCategory filter by waste category
+     * @return list of waste materials
      */
     fun list(wasteCategory: WasteCategory?): List<WasteMaterial> {
         return wasteMaterialDAO.list(wasteCategory)
@@ -47,7 +48,7 @@ class WasteMaterialController {
     /**
      * Finds waste material
      *
-     * @param wasteMaterialId id
+     * @param wasteMaterialId waste material id
      * @return found material or null
      */
     fun find(wasteMaterialId: UUID): WasteMaterial? {
@@ -66,7 +67,8 @@ class WasteMaterialController {
     fun update(oldWasteMaterial: WasteMaterial, newWasteMaterial: fi.metatavu.rapurc.api.model.WasteMaterial, newWasteCategory: WasteCategory, userId: UUID): WasteMaterial {
         val result = wasteMaterialDAO.updateName(oldWasteMaterial, newWasteMaterial.name, userId)
         wasteMaterialDAO.updateEwcSpecificationCode(result, newWasteMaterial.ewcSpecificationCode, userId)
-        return wasteMaterialDAO.updateWasteCategory(result, newWasteCategory, userId)
+        wasteMaterialDAO.updateWasteCategory(result, newWasteCategory, userId)
+        return result
     }
 
     /**
