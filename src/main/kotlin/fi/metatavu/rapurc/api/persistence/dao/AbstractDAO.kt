@@ -1,9 +1,7 @@
 package fi.metatavu.rapurc.api.persistence.dao
 
-import org.slf4j.Logger
 import java.lang.reflect.ParameterizedType
 import java.util.*
-import javax.inject.Inject
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 import javax.persistence.Query
@@ -17,9 +15,6 @@ import javax.persistence.TypedQuery
  * @param <T> entity type
  */
 abstract class AbstractDAO<T> {
-
-    @Inject
-    private lateinit var logger: Logger
 
     @PersistenceContext
     private lateinit var entityManager: EntityManager
@@ -126,10 +121,10 @@ abstract class AbstractDAO<T> {
      * @return entity or null if result is empty
      */
     protected open fun <X> getSingleResult(query: TypedQuery<X>): X? {
-        val list: List<X> = query.getResultList()
+        val list: List<X> = query.resultList
         if (list.isEmpty()) return null
         if (list.size > 1) {
-            logger.error(String.format("SingleResult query returned %d elements from %s", list.size, genericTypeClass!!.name))
+            println(String.format("SingleResult query returned %d elements from %s", list.size, genericTypeClass!!.name))
         }
         return list[list.size - 1]
     }

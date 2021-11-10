@@ -4,9 +4,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
 import org.keycloak.admin.client.resource.RealmResource
-import org.keycloak.admin.client.resource.UserResource
-import org.keycloak.admin.client.resource.UsersResource
-import org.slf4j.Logger
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
