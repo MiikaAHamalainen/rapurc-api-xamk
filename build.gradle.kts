@@ -38,6 +38,7 @@ dependencies {
     implementation("io.quarkus:quarkus-arc")
     implementation("org.apache.commons:commons-lang3")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.jboss.logging:commons-logging-jboss-logging")
 
     testImplementation("com.squareup.okhttp3:okhttp")
     testImplementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
