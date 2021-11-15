@@ -587,6 +587,120 @@ class V1ApiImpl : V1Api, AbstractApi() {
         return createNoContent()
     }
 
+    /* Survey waste */
+
+    override fun listSurveyWastes(surveyId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun createSurveyWaste(surveyId: UUID?, waste: Waste?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun findSurveyWaste(surveyId: UUID?, wasteId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateSurveyWaste(surveyId: UUID?, wasteId: UUID?, waste: Waste?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteSurveyWaste(surveyId: UUID?, wasteId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    /* Usages */
+
+    override fun listUsages(): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun createUsage(usage: Usage?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun findUsage(usageId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateUsage(usageId: UUID?, usage: Usage?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteUsage(usageId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    /* Hazardous materials */
+
+    override fun listHazardousMaterials(): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun createHazardousMaterial(hazardousMaterial: HazardousMaterial?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun findHazardousMaterial(hazardousMaterialId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateHazardousMaterial(hazardousMaterialId: UUID?, hazardousMaterial: HazardousMaterial?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteHazardousMaterial(hazardousMaterialId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    /* Waste specifiers */
+
+    override fun listWasteSpecifiers(): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun createWasteSpecifier(wasteSpecifier: WasteSpecifier?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun findWasteSpecifier(wasteSpecifierId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateWasteSpecifier(wasteSpecifierId: UUID?, wasteSpecifier: WasteSpecifier?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteWasteSpecifier(wasteSpecifierId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    /* Survey hazardous waste */
+
+    override fun listSurveyHazardousWastes(surveyId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun createSurveyHazardousWaste(surveyId: UUID?, hazardousWaste: HazardousWaste?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun findSurveyHazardousWaste(surveyId: UUID?, hazardousWasteId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateSurveyHazardousWaste(
+        surveyId: UUID?,
+        hazardousWasteId: UUID?,
+        hazardousWaste: HazardousWaste?
+    ): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteSurveyHazardousWaste(surveyId: UUID?, hazardousWasteId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
     override fun ping(): Response {
         return createOk("pong")
     }
