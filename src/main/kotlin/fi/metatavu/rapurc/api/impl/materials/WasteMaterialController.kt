@@ -14,7 +14,7 @@ import javax.inject.Inject
 class WasteMaterialController {
 
     @Inject
-    private lateinit var wasteMaterialDAO: WasteMaterialDAO
+    lateinit var wasteMaterialDAO: WasteMaterialDAO
 
     /**
      * Lists waste materials

@@ -249,4 +249,64 @@
       </column>
     </createTable>
   </changeSet>
+
+  <changeSet id="fix_typo" author="katja danilova">
+    <dropForeignKeyConstraint baseTableName="wastematerial" constraintName="FK_WASTE_MATERIAL_WASTE CATEGORY_ID"/>
+    <addForeignKeyConstraint baseTableName="wastematerial" baseColumnNames="wastecategory_id" constraintName="FK_WASTE_MATERIAL_WASTE_CATEGORY_ID" referencedTableName="wastecategory"
+                             referencedColumnNames="id"/>
+  </changeSet>
+  
+  <changeSet id="wastes_usages" author="katja danilova">
+    <createTable tableName="wasteusage">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="name" type="varchar(191)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <createTable tableName="waste">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="amount" type="double">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="longtext"/>
+      <column name="survey_id" type="binary(16)">
+        <constraints foreignKeyName="FK_WASTE_SURVEY_ID" referencedColumnNames="id" referencedTableName="survey"/>
+      </column>
+      <column name="wastematerial_id" type="binary(16)">
+        <constraints foreignKeyName="FK_WASTE_WASTE_MATERIAL_ID" referencedColumnNames="id" referencedTableName="wastematerial"/>
+      </column>
+      <column name="usage_id" type="binary(16)">
+        <constraints foreignKeyName="FK_WASTE_USAGE_ID" referencedColumnNames="id" referencedTableName="wasteusage"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
 </databaseChangeLog>

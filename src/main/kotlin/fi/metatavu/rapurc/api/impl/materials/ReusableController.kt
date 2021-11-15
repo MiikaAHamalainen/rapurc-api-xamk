@@ -16,10 +16,10 @@ import javax.inject.Inject
 class ReusableController {
 
     @Inject
-    private lateinit var reusableDAO: ReusableDAO
+    lateinit var reusableDAO: ReusableDAO
 
     @Inject
-    private lateinit var imageDAO: ImageDAO
+    lateinit var imageDAO: ImageDAO
 
     /**
      * Lists Reusables by survey

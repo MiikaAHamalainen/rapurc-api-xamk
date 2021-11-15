@@ -14,7 +14,7 @@ import javax.inject.Inject
 class BuildingTranslator: AbstractTranslator<Building, fi.metatavu.rapurc.api.model.Building>() {
 
     @Inject
-    private lateinit var otherStructureDAO: OtherStructureDAO
+    lateinit var otherStructureDAO: OtherStructureDAO
 
     @Inject
     lateinit var metadataTranslator: MetadataTranslator

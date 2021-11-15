@@ -15,10 +15,10 @@ import javax.inject.Inject
 class BuildingController {
 
     @Inject
-    private lateinit var buildingDAO: BuildingDAO
+    lateinit var buildingDAO: BuildingDAO
 
     @Inject
-    private lateinit var otherStuctureDao: OtherStructureDAO
+    lateinit var otherStuctureDao: OtherStructureDAO
 
     /**
      * Lists buildings based on survey

@@ -11,7 +11,7 @@ import javax.inject.Inject
 class WasteMaterialTranslator: AbstractTranslator<WasteMaterial, fi.metatavu.rapurc.api.model.WasteMaterial>() {
 
     @Inject
-    private lateinit var metadataTranslator: MetadataTranslator
+    lateinit var metadataTranslator: MetadataTranslator
 
     override fun translate(entity: WasteMaterial): fi.metatavu.rapurc.api.model.WasteMaterial {
         val wasteMaterial = fi.metatavu.rapurc.api.model.WasteMaterial()

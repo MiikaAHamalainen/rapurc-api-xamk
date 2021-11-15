@@ -15,7 +15,7 @@ import javax.inject.Inject
 class OwnerInformationController {
 
     @Inject
-    private lateinit var ownerInformationDAO: OwnerInformationDAO
+    lateinit var ownerInformationDAO: OwnerInformationDAO
 
     /**
      * Creates new owner information entity

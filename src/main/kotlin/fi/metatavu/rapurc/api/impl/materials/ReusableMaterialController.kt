@@ -13,7 +13,7 @@ import javax.inject.Inject
 class ReusableMaterialController {
 
     @Inject
-    private lateinit var reusableMaterialDAO: ReusableMaterialDAO
+    lateinit var reusableMaterialDAO: ReusableMaterialDAO
 
     /**
      * Lists all materials
