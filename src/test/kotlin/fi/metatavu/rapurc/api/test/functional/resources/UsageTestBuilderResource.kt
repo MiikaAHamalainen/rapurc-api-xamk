@@ -125,11 +125,10 @@ class UsageTestBuilderResource(
      * Asserts create status fails with given status code
      *
      * @param expectedStatus expected status code
-     * @param usage usage id
      */
-    fun assertCreateFailStatus(expectedStatus: Int, usage: Usage) {
+    fun assertCreateFailStatus(expectedStatus: Int) {
         try {
-            api.createUsage(usage)
+            create()
             fail(String.format("Expected create to fail with status %d", expectedStatus))
         } catch (e: ClientException) {
             Assert.assertEquals(expectedStatus.toLong(), e.statusCode.toLong())

@@ -27,6 +27,7 @@ class UsageTestIT {
     @Test
     fun create() {
         TestBuilder().use { testBuilder ->
+            testBuilder.userA.usages.assertCreateFailStatus(403)
             val createdUsage = testBuilder.admin.usages.create()
             assertEquals("default_usage", createdUsage.name)
             assertNotNull(createdUsage.id)
@@ -71,7 +72,8 @@ class UsageTestIT {
                 metadata = Metadata()
             )
 
-            val updated = testBuilder.admin.usages.update(createdUsage.id!!, updateData)
+            testBuilder.userA.usages.assertUpdateFailStatus(403, createdUsage.id!!, updateData)
+            val updated = testBuilder.admin.usages.update(createdUsage.id, updateData)
             assertEquals(updateData.name, updated.name)
         }
     }
@@ -83,7 +85,8 @@ class UsageTestIT {
     fun delete() {
         TestBuilder().use { testBuilder ->
             val createdUsage = testBuilder.admin.usages.create()
-            testBuilder.admin.usages.delete(createdUsage.id!!)
+            testBuilder.userA.usages.assertDeleteFailStatus(403, createdUsage.id!!)
+            testBuilder.admin.usages.delete(createdUsage.id)
             testBuilder.admin.usages.assertCount(0)
         }
     }
