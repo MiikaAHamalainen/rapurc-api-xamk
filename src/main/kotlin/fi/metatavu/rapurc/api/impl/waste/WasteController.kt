@@ -85,7 +85,8 @@ class WasteController {
         val result = wasteDAO.updateUsage(wasteToUpdate, newUsage, userId)
         wasteDAO.updateWasteMaterial(result, newWasteMaterial, userId)
         wasteDAO.updateAmount(result, waste.amount, userId)
-        return wasteDAO.updateDescription(result, waste.description, userId)
+        wasteDAO.updateDescription(result, waste.description, userId)
+        return result
     }
 
     /**
