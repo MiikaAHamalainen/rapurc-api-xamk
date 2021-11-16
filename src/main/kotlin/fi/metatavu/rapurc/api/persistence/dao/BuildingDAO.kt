@@ -42,7 +42,7 @@ class BuildingDAO: AbstractDAO<Building>() {
      */
     fun create(
         id: UUID?,
-        survey: Survey?,
+        survey: Survey,
         propertyId: String?,
         buildingId: String?,
         classificationCode: String?,

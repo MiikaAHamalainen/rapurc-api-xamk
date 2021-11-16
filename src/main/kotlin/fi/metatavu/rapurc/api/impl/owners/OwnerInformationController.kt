@@ -29,9 +29,9 @@ class OwnerInformationController {
      */
     fun create(
         survey: Survey,
-        ownerName: String,
-        businessId: String,
-        contactPerson: ContactPerson,
+        ownerName: String?,
+        businessId: String?,
+        contactPerson: ContactPerson?,
         creatorId: UUID
     ): OwnerInformation {
         return ownerInformationDAO.create(
@@ -39,11 +39,11 @@ class OwnerInformationController {
             survey = survey,
             ownerName = ownerName,
             businessId = businessId,
-            firstName = contactPerson.firstName,
-            lastName = contactPerson.lastName,
-            phone = contactPerson.phone,
-            email = contactPerson.email,
-            profession = contactPerson.profession,
+            firstName = contactPerson?.firstName,
+            lastName = contactPerson?.lastName,
+            phone = contactPerson?.phone,
+            email = contactPerson?.email,
+            profession = contactPerson?.profession,
             creatorId = creatorId,
             lastModifierId = creatorId
         )

@@ -29,7 +29,7 @@ class OwnerInformationTranslator: AbstractTranslator<OwnerInformation, fi.metata
         contactPerson.lastName = entity.lastName
         contactPerson.profession = entity.profession
         result.contactPerson = contactPerson
-        result.metadata =metadataTranslator.translate(entity)
+        result.metadata = metadataTranslator.translate(entity)
         return result
     }
 }

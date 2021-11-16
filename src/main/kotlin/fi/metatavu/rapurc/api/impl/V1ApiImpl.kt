@@ -203,7 +203,6 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun createOwnerInformation(surveyId: UUID, ownerInformation: OwnerInformation): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        ownerInformation.contactPerson ?: return createBadRequest(createMissingObjectFromRequestMessage(CONTACT_PERSON))
 
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 
@@ -246,7 +245,6 @@ class V1ApiImpl : V1Api, AbstractApi() {
         payload: OwnerInformation
     ): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        payload.contactPerson ?: return createBadRequest(createMissingObjectFromRequestMessage(CONTACT_PERSON))
 
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 
@@ -294,7 +292,6 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun createBuilding(surveyId: UUID, building: Building): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        building.address ?: return createBadRequest(createMissingObjectFromRequestMessage(ADDRESS))
 
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 
@@ -331,7 +328,6 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun updateBuilding(surveyId: UUID, buildingId: UUID, payload: Building): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        payload.address ?: return createBadRequest(createMissingObjectFromRequestMessage(ADDRESS))
 
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 

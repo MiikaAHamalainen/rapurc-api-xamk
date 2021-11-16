@@ -41,11 +41,14 @@ class BuildingTranslator: AbstractTranslator<Building, fi.metatavu.rapurc.api.mo
             OtherStructure().name(jpaStructure.name).description(jpaStructure.description)
         }
 
-        val address = Address()
-        address.city = entity.city
-        address.streetAddress = entity.streetAddress
-        address.postCode = entity.postCode
-        result.address = address
+        if (entity.city != null && entity.streetAddress != null && entity.postCode != null) {
+            val address = Address()
+            address.city = entity.city
+            address.streetAddress = entity.streetAddress
+            address.postCode = entity.postCode
+            result.address = address
+        }
+
         return result
     }
 
