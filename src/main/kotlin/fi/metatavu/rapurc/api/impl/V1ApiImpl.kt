@@ -9,6 +9,8 @@ import fi.metatavu.rapurc.api.impl.materials.WasteMaterialController
 import fi.metatavu.rapurc.api.impl.owners.OwnerInformationController
 import fi.metatavu.rapurc.api.impl.surveys.SurveyController
 import fi.metatavu.rapurc.api.impl.translate.*
+import fi.metatavu.rapurc.api.impl.waste.UsageController
+import fi.metatavu.rapurc.api.impl.waste.WasteController
 import fi.metatavu.rapurc.api.model.*
 import fi.metatavu.rapurc.api.spec.V1Api
 import java.time.LocalDate
@@ -72,6 +74,18 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
     @Inject
     lateinit var wasteCategoryTranslator: WasteCategoryTranslator
+
+    @Inject
+    lateinit var wasteController: WasteController
+
+    @Inject
+    lateinit var wasteTranslator: WasteTranslator
+
+    @Inject
+    lateinit var usageController: UsageController
+
+    @Inject
+    lateinit var usageTranslator: UsageTranslator
 
     /* SURVEYS */
 
@@ -189,7 +203,6 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun createOwnerInformation(surveyId: UUID, ownerInformation: OwnerInformation): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        ownerInformation.contactPerson ?: return createBadRequest(createMissingObjectFromRequestMessage(CONTACT_PERSON))
 
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 
@@ -232,7 +245,6 @@ class V1ApiImpl : V1Api, AbstractApi() {
         payload: OwnerInformation
     ): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        payload.contactPerson ?: return createBadRequest(createMissingObjectFromRequestMessage(CONTACT_PERSON))
 
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 
@@ -280,7 +292,6 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun createBuilding(surveyId: UUID, building: Building): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        building.address ?: return createBadRequest(createMissingObjectFromRequestMessage(ADDRESS))
 
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 
@@ -317,7 +328,6 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun updateBuilding(surveyId: UUID, buildingId: UUID, payload: Building): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        payload.address ?: return createBadRequest(createMissingObjectFromRequestMessage(ADDRESS))
 
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
 
@@ -587,6 +597,216 @@ class V1ApiImpl : V1Api, AbstractApi() {
         return createNoContent()
     }
 
+    /* Survey waste */
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun listSurveyWastes(surveyId: UUID): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val wastes = wasteController.list(survey = survey)
+        return createOk(wastes.map(wasteTranslator::translate))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun createSurveyWaste(surveyId: UUID, waste: Waste): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+        val wasteMaterial = wasteMaterialController.find(waste.wasteMaterialId) ?: return createNotFound(createNotFoundMessage(target = WASTE_MATERIAL, id = waste.wasteMaterialId))
+        val usage = usageController.find(waste.usageId) ?: return createNotFound(createNotFoundMessage(target = USAGE, id = waste.usageId))
+
+        val createdWaste = wasteController.create(
+            usage = usage,
+            wasteMaterial = wasteMaterial,
+            amount = waste.amount,
+            survey = survey,
+            description = waste.description,
+            userId = userId
+        )
+
+        return createOk(wasteTranslator.translate(createdWaste))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun findSurveyWaste(surveyId: UUID, wasteId: UUID): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val foundWaste = wasteController.findById(wasteId) ?: return createNotFound(createNotFoundMessage(target = WASTE, id = wasteId))
+
+        if (foundWaste.survey != survey) {
+            return createForbidden(createWrongSurveyMessage(target = WASTE, surveyId = surveyId))
+        }
+
+        return createOk(wasteTranslator.translate(foundWaste))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun updateSurveyWaste(surveyId: UUID, wasteId: UUID, waste: Waste): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val wasteToUpdate = wasteController.findById(wasteId) ?: return createNotFound(createNotFoundMessage(target = WASTE, id = wasteId))
+
+        if (wasteToUpdate.survey != survey) {
+            return createForbidden(createWrongSurveyMessage(WASTE, surveyId))
+        }
+
+        val wasteMaterial = wasteMaterialController.find(waste.wasteMaterialId) ?: return createNotFound(createNotFoundMessage(target = WASTE_MATERIAL, id = waste.wasteMaterialId))
+        val usage = usageController.find(waste.usageId) ?: return createNotFound(createNotFoundMessage(target = USAGE, id = waste.usageId))
+
+        val updatedWaste = wasteController.updateWaste(
+            wasteToUpdate = wasteToUpdate,
+            waste = waste,
+            newWasteMaterial = wasteMaterial,
+            newUsage = usage,
+            userId = userId
+        )
+
+        return createOk(wasteTranslator.translate(updatedWaste))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun deleteSurveyWaste(surveyId: UUID, wasteId: UUID): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val wasteToDelete = wasteController.findById(wasteId) ?: return createNotFound(createNotFoundMessage(target = WASTE, id= wasteId))
+
+        if (wasteToDelete.survey != survey) {
+            return createForbidden(createWrongSurveyMessage(target = WASTE, surveyId = surveyId))
+        }
+
+        wasteController.delete(wasteToDelete)
+        return createNoContent()
+    }
+
+    /* Usages */
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun listUsages(): Response {
+        return createOk(usageController.list().map(usageTranslator::translate))
+    }
+
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
+    override fun createUsage(usage: Usage): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+
+        val createdUsage = usageController.create(
+            name = usage.name,
+            userId = userId
+        )
+
+        return createOk(usageTranslator.translate(createdUsage))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun findUsage(usageId: UUID): Response {
+        val foundUsage = usageController.find(usageId) ?: return createNotFound(createNotFoundMessage(target = USAGE, id = usageId))
+
+        return createOk(usageTranslator.translate(foundUsage))
+    }
+
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
+    override fun updateUsage(usageId: UUID, usage: Usage): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+
+        val usageToUpdate = usageController.find(usageId) ?: return createNotFound(createNotFoundMessage(target = USAGE, id = usageId))
+        val updatedUsage = usageController.update(
+            oldUsage = usageToUpdate,
+            newUsage = usage,
+            userId = userId
+        )
+
+        return createOk(usageTranslator.translate(updatedUsage))
+    }
+
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
+    override fun deleteUsage(usageId: UUID): Response {
+        val usageToDelete = usageController.find(usageId) ?: return createNotFound(createNotFoundMessage(target = USAGE, id = usageId))
+
+        usageController.delete(usageToDelete)
+        return createNoContent()
+    }
+
+    /* Hazardous materials */
+
+    override fun listHazardousMaterials(): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun createHazardousMaterial(hazardousMaterial: HazardousMaterial?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun findHazardousMaterial(hazardousMaterialId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateHazardousMaterial(hazardousMaterialId: UUID?, hazardousMaterial: HazardousMaterial?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteHazardousMaterial(hazardousMaterialId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    /* Waste specifiers */
+
+    override fun listWasteSpecifiers(): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun createWasteSpecifier(wasteSpecifier: WasteSpecifier?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun findWasteSpecifier(wasteSpecifierId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateWasteSpecifier(wasteSpecifierId: UUID?, wasteSpecifier: WasteSpecifier?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteWasteSpecifier(wasteSpecifierId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    /* Survey hazardous waste */
+
+    override fun listSurveyHazardousWastes(surveyId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun createSurveyHazardousWaste(surveyId: UUID?, hazardousWaste: HazardousWaste?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun findSurveyHazardousWaste(surveyId: UUID?, hazardousWasteId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateSurveyHazardousWaste(
+        surveyId: UUID?,
+        hazardousWasteId: UUID?,
+        hazardousWaste: HazardousWaste?
+    ): Response {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteSurveyHazardousWaste(surveyId: UUID?, hazardousWasteId: UUID?): Response {
+        TODO("Not yet implemented")
+    }
+
     override fun ping(): Response {
         return createOk("pong")
     }
@@ -649,7 +869,8 @@ class V1ApiImpl : V1Api, AbstractApi() {
         const val REUSABLE_MATERIAL = "Reusable materials"
         const val WASTE_CATEGORY = "Waste category"
         const val WASTE_MATERIAL = "Waste material"
-
+        const val WASTE = "Waste"
+        const val USAGE = "Usage"
     }
 
 }

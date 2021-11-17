@@ -36,7 +36,7 @@ class ReusableDAO: AbstractDAO<Reusable>() {
         survey: Survey,
         componentName: String,
         materialId: UUID,
-        usability: Usability?,
+        usability: Usability,
         amount: Double?,
         unit: Unit?,
         description: String?,
@@ -93,13 +93,13 @@ class ReusableDAO: AbstractDAO<Reusable>() {
         return persist(reusableToUpdate)
     }
 
-    fun updateMaterialId(reusable: Reusable, materialId: UUID?, userId: UUID): Reusable {
+    fun updateMaterialId(reusable: Reusable, materialId: UUID, userId: UUID): Reusable {
         reusable.materialId = materialId
         reusable.lastModifierId = userId
         return persist(reusable)
     }
 
-    fun updateUsability(reusable: Reusable, usability: Usability?, userId: UUID): Reusable {
+    fun updateUsability(reusable: Reusable, usability: Usability, userId: UUID): Reusable {
         reusable.usability = usability
         reusable.lastModifierId = userId
         return persist(reusable)

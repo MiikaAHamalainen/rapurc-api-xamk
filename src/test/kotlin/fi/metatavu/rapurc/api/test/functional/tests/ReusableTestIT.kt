@@ -47,7 +47,7 @@ class ReusableTestIT {
             testBuilder.userA.reusables.assertCreateFailStatus(404, survey1.id!!, reusable)
             val createdReusable = testBuilder.userA.reusables.create(survey1.id, reusable.copy(reusableMaterialId = material.id!!))
             assertNotNull(createdReusable!!.id)
-            assertNotNull(createdReusable.metadata!!.createdAt)
+            assertNotNull(createdReusable.metadata.createdAt)
             assertEquals(reusable.componentName, createdReusable.componentName)
             assertEquals(reusable.usability, createdReusable.usability)
             assertEquals(reusable.amount, createdReusable.amount)

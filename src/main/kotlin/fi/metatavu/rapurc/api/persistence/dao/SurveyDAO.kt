@@ -37,7 +37,7 @@ class SurveyDAO: AbstractDAO<Survey>() {
         id: UUID,
         status: SurveyStatus,
         keycloakGroupId: UUID,
-        type: SurveyType?,
+        type: SurveyType,
         startDate: LocalDate?,
         endDate: LocalDate?,
         creatorId: UUID,

@@ -69,7 +69,7 @@ class SurveyController {
     fun create(
         status: SurveyStatus,
         keycloakGroupId: UUID,
-        type: SurveyType?, //todo is type always not null?
+        type: SurveyType,
         startDate: LocalDate?,
         endDate: LocalDate?,
         creatorId: UUID

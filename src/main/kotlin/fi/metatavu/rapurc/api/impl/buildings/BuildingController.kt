@@ -15,10 +15,10 @@ import javax.inject.Inject
 class BuildingController {
 
     @Inject
-    private lateinit var buildingDAO: BuildingDAO
+    lateinit var buildingDAO: BuildingDAO
 
     @Inject
-    private lateinit var otherStuctureDao: OtherStructureDAO
+    lateinit var otherStuctureDao: OtherStructureDAO
 
     /**
      * Lists buildings based on survey
@@ -54,9 +54,9 @@ class BuildingController {
             supportStructure = building.supportingStructure,
             facadeMaterial = building.facadeMaterial,
             roofType = building.roofType,
-            streetAddress = building.address.streetAddress,
-            city = building.address.city,
-            postCode = building.address.postCode,
+            streetAddress = building.address?.streetAddress,
+            city = building.address?.city,
+            postCode = building.address?.postCode,
             creatorId = creatorId,
             lastModifierId = creatorId
         )
@@ -104,9 +104,9 @@ class BuildingController {
         buildingDAO.updateSupportStructure(result, building.supportingStructure, userId)
         buildingDAO.updateFacadeMateria(result, building.facadeMaterial, userId)
         buildingDAO.updateRoofType(result, building.roofType, userId)
-        buildingDAO.updateStreetAddress(result, building.address.streetAddress, userId)
-        buildingDAO.updateCity(result, building.address.city, userId)
-        buildingDAO.updatePostCode(result, building.address.postCode, userId)
+        buildingDAO.updateStreetAddress(result, building.address?.streetAddress, userId)
+        buildingDAO.updateCity(result, building.address?.city, userId)
+        buildingDAO.updatePostCode(result, building.address?.postCode, userId)
 
         otherStuctureDao.listByBuilding(buildingToUpdate)?.forEach(otherStuctureDao::delete)
         building.otherStructures?.forEach { otherStructure ->

@@ -13,7 +13,7 @@ import javax.inject.Inject
 class WasteCategoryController {
 
     @Inject
-    private lateinit var wasteCategoryDAO: WasteCategoryDAO
+    lateinit var wasteCategoryDAO: WasteCategoryDAO
 
     /**
      * Lists all waste categories

@@ -16,27 +16,27 @@ class KeycloakController {
 
     @Inject
     @ConfigProperty(name = "keycloak.url")
-    private lateinit var authServerUrl: String
+    lateinit var authServerUrl: String
 
     @Inject
     @ConfigProperty(name = "keycloak.realm")
-    private lateinit var realm: String
+    lateinit var realm: String
 
     @Inject
     @ConfigProperty(name = "rapurc.keycloak.api-admin.secret")
-    private lateinit var clientSecret: String
+    lateinit var clientSecret: String
 
     @Inject
     @ConfigProperty(name = "rapurc.keycloak.api-admin.client")
-    private lateinit var clientId: String
+    lateinit var clientId: String
 
     @Inject
     @ConfigProperty(name = "rapurc.keycloak.api-admin.user")
-    private lateinit var apiAdminUser: String
+    lateinit var apiAdminUser: String
 
     @Inject
     @ConfigProperty(name = "rapurc.keycloak.api-admin.password")
-    private lateinit var apiAdminPassword: String
+    lateinit var apiAdminPassword: String
 
     /**
      * Gets ID of the group user belongs to
