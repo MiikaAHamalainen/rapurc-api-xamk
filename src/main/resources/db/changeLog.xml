@@ -309,4 +309,33 @@
       </column>
     </createTable>
   </changeSet>
+
+  <changeSet id="haz_materials" author="katja danilova">
+    <createTable tableName="hazardousmaterial">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="wastecategory_id" type="binary(16)">
+        <constraints foreignKeyName="FK_WASTE_MATERIAL_WASTE CATEGORY_ID" referencedColumnNames="id" referencedTableName="wastecategory"/>
+      </column>
+      <column name="name" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ewcspecificationcode" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
 </databaseChangeLog>

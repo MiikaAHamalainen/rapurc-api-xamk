@@ -2,9 +2,10 @@ package fi.metatavu.rapurc.api.impl
 
 import fi.metatavu.rapurc.api.UserRole
 import fi.metatavu.rapurc.api.impl.buildings.BuildingController
+import fi.metatavu.rapurc.api.impl.materials.HazardousMaterialController
 import fi.metatavu.rapurc.api.impl.materials.ReusableController
 import fi.metatavu.rapurc.api.impl.materials.ReusableMaterialController
-import fi.metatavu.rapurc.api.impl.materials.WasteCategoryController
+import fi.metatavu.rapurc.api.impl.waste.WasteCategoryController
 import fi.metatavu.rapurc.api.impl.materials.WasteMaterialController
 import fi.metatavu.rapurc.api.impl.owners.OwnerInformationController
 import fi.metatavu.rapurc.api.impl.surveys.SurveyController
@@ -86,6 +87,12 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
     @Inject
     lateinit var usageTranslator: UsageTranslator
+
+    @Inject
+    lateinit var hazardousMaterialController: HazardousMaterialController
+
+    @Inject
+    lateinit var hazardousMaterialTranslator: HazardousMaterialTranslator
 
     /* SURVEYS */
 
@@ -540,8 +547,10 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun deleteWasteCategory(wasteCategoryId: UUID): Response {
         val foundWasteCategory = wasteCategoryController.find(wasteCategoryId = wasteCategoryId) ?: return createNotFound(createNotFoundMessage(target = WASTE_CATEGORY, id = wasteCategoryId))
+
         val materialsForCategory = wasteMaterialController.list(wasteCategory = foundWasteCategory)
-        if (materialsForCategory.isNotEmpty()) {
+        val hazMaterialsForCategory = hazardousMaterialController.list(wasteCategory = foundWasteCategory)
+        if (materialsForCategory.isNotEmpty() || hazMaterialsForCategory.isNotEmpty()) {
             return createConflict("Materials belong to this category")
         }
 
@@ -739,24 +748,49 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
     /* Hazardous materials */
 
+    @RolesAllowed(value = [ UserRole.USER.name ])
     override fun listHazardousMaterials(): Response {
-        TODO("Not yet implemented")
+        val hazardousMaterials = hazardousMaterialController.list(wasteCategory = null)
+        return createOk(hazardousMaterials.map(hazardousMaterialTranslator::translate))
     }
 
-    override fun createHazardousMaterial(hazardousMaterial: HazardousMaterial?): Response {
-        TODO("Not yet implemented")
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
+    override fun createHazardousMaterial(hazardousMaterial: HazardousMaterial): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val foundWasteCategory = wasteCategoryController.find(wasteCategoryId = hazardousMaterial.wasteCategoryId) ?: return createNotFound(createNotFoundMessage(target = WASTE_CATEGORY, id = hazardousMaterial.wasteCategoryId))
+        val foundHazardousMaterial = hazardousMaterialController.create(hazardousMaterial, foundWasteCategory, userId)
+
+        return createOk(hazardousMaterialTranslator.translate(foundHazardousMaterial))
     }
 
-    override fun findHazardousMaterial(hazardousMaterialId: UUID?): Response {
-        TODO("Not yet implemented")
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun findHazardousMaterial(hazardousMaterialId: UUID): Response {
+        val hazardousMaterial = hazardousMaterialController.find(materialId = hazardousMaterialId) ?: return createNotFound(createNotFoundMessage(target = HAZ_MATERIAL, id = hazardousMaterialId))
+        return createOk(hazardousMaterialTranslator.translate(hazardousMaterial))
     }
 
-    override fun updateHazardousMaterial(hazardousMaterialId: UUID?, hazardousMaterial: HazardousMaterial?): Response {
-        TODO("Not yet implemented")
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
+    override fun updateHazardousMaterial(hazardousMaterialId: UUID, hazardousMaterial: HazardousMaterial): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+
+        val materialToUpdate = hazardousMaterialController.find(materialId = hazardousMaterialId) ?: return createNotFound(createNotFoundMessage(target = HAZ_MATERIAL, id = hazardousMaterialId))
+        val newWasteCategory = wasteCategoryController.find(wasteCategoryId = hazardousMaterial.wasteCategoryId) ?: return createNotFound(createNotFoundMessage(target = WASTE_CATEGORY, id = hazardousMaterial.wasteCategoryId))
+        val updatedMaterial = hazardousMaterialController.update(
+            hazardousMaterial = materialToUpdate,
+            newHazardousMaterial = hazardousMaterial,
+            newWasteCategory = newWasteCategory,
+            userId = userId
+        )
+
+        return createOk(hazardousMaterialTranslator.translate(updatedMaterial))
     }
 
-    override fun deleteHazardousMaterial(hazardousMaterialId: UUID?): Response {
-        TODO("Not yet implemented")
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
+    override fun deleteHazardousMaterial(hazardousMaterialId: UUID): Response {
+        val materialToDelete = hazardousMaterialController.find(materialId = hazardousMaterialId) ?: return createNotFound(createNotFoundMessage(target = HAZ_MATERIAL, id = hazardousMaterialId))
+
+        hazardousMaterialController.delete(materialToDelete)
+        return createNoContent()
     }
 
     /* Waste specifiers */
@@ -863,14 +897,13 @@ class V1ApiImpl : V1Api, AbstractApi() {
         const val SURVEY = "Survey"
         const val OWNER_INFORMATION = "Owner information"
         const val BUILDING = "Building"
-        const val CONTACT_PERSON = "Contact person"
-        const val ADDRESS = "Address"
         const val REUSABLE = "Reusable"
         const val REUSABLE_MATERIAL = "Reusable materials"
         const val WASTE_CATEGORY = "Waste category"
         const val WASTE_MATERIAL = "Waste material"
         const val WASTE = "Waste"
         const val USAGE = "Usage"
+        const val HAZ_MATERIAL = "Hazardous material"
     }
 
 }
