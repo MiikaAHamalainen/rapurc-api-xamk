@@ -79,7 +79,7 @@ class WasteMaterialDAO: AbstractDAO<WasteMaterial>(){
         return persist(wasteMaterial)
     }
 
-    fun updateEwcSpecificationCode(wasteMaterial: WasteMaterial, ewcSpecificationCode: String?, userId: UUID): WasteMaterial {
+    fun updateEwcSpecificationCode(wasteMaterial: WasteMaterial, ewcSpecificationCode: String, userId: UUID): WasteMaterial {
         wasteMaterial.ewcSpecificationCode = ewcSpecificationCode
         wasteMaterial.lastModifierId = userId
         return persist(wasteMaterial)
