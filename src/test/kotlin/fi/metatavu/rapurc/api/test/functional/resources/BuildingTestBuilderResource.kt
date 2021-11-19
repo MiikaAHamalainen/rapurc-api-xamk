@@ -4,7 +4,7 @@ import fi.metatavu.jaxrs.test.functional.builder.auth.AccessTokenProvider
 import fi.metatavu.rapurc.api.client.apis.BuildingsApi
 import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.rapurc.api.client.infrastructure.ClientException
-import fi.metatavu.rapurc.api.client.models.Building
+import fi.metatavu.rapurc.api.client.models.*
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
 import fi.metatavu.rapurc.api.test.functional.impl.ApiTestBuilderResource
 import org.junit.Assert.assertEquals
@@ -20,6 +20,27 @@ class BuildingTestBuilderResource(
     apiClient: ApiClient
 ): ApiTestBuilderResource<Building, ApiClient?>(testBuilder, apiClient) {
 
+    val buildingData = Building(
+        surveyId = UUID.randomUUID(),
+        propertyId = "property id 1",
+        buildingId = "building id 1",
+        floors = 5,
+        basements = 1,
+        facadeMaterial = "red bricks",
+        otherStructures = arrayOf(
+            OtherStructure(
+                name = "bike house",
+                description = "bike house"
+            )
+        ),
+        address = Address(
+            city = "mikkeli",
+            postCode = "1222",
+            streetAddress = "qqq"
+        ),
+        metadata = Metadata()
+    )
+
     override fun getApi(): BuildingsApi {
         ApiClient.accessToken = accessTokenProvider?.accessToken
         return BuildingsApi(testBuilder.settings.apiBasePath)
@@ -34,6 +55,18 @@ class BuildingTestBuilderResource(
      */
     fun create(surveyId: UUID, building: Building): Building? {
         val result = api.createBuilding(surveyId, building)
+        return addClosable(result)
+    }
+
+    /**
+     * Creates new building object from default
+     *
+     * @param surveyId survey id it belongs to
+     * @param buildingSurveyId building survey id
+     * @return created building
+     */
+    fun create(surveyId: UUID, buildingSurveyId: UUID): Building? {
+        val result = api.createBuilding(surveyId, buildingData.copy(surveyId = buildingSurveyId))
         return addClosable(result)
     }
 
@@ -132,6 +165,23 @@ class BuildingTestBuilderResource(
         }
     }
 
+
+    /**
+     * Asserts create status fails with given status code
+     *
+     * @param expectedStatus expected status code
+     * @param surveyId survey id
+     * @param buildingSurveyId building survey id
+     */
+    fun assertCreateFailStatus(expectedStatus: Int, surveyId: UUID?, buildingSurveyId: UUID) {
+        try {
+            create(surveyId!!, buildingData.copy(surveyId = buildingSurveyId))
+            fail(String.format("Expected create to fail with status %d", expectedStatus))
+        } catch (e: ClientException) {
+            assertEquals(expectedStatus.toLong(), e.statusCode.toLong())
+        }
+    }
+
     /**
      * Asserts update status fails with given status code
      *
@@ -185,4 +235,17 @@ class BuildingTestBuilderResource(
         api.deleteBuilding(building.surveyId, building.id!!)
     }
 
+    /**
+     * Removes the building info from the closables list
+     *
+     * @param building building info
+     */
+    fun markAsDeleted(building: Building) {
+        removeCloseable { closable: Any? ->
+            if (closable !is Building) {
+                return@removeCloseable false
+            }
+            closable.id == building.id
+        }
+    }
 }

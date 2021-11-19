@@ -193,12 +193,21 @@ class OwnerInformationTestIT {
                     surveyId = createdSurveyB1.id
                 )
             )
+            val ownerInformation3 = it.userB.owners.create(
+                createdSurveyB1.id, ownerInformation.copy(
+                    surveyId = createdSurveyB1.id
+                )
+            )
 
             it.userA.owners.assertDeleteFailStatus(403, ownerInformation2!!)
             it.userA.owners.delete(ownerInformation1!!)
             it.userB.owners.delete(ownerInformation2)
             it.admin.owners.assertCount(0, createdSurveyA1.id)
-            it.admin.owners.assertCount(0, createdSurveyB1.id)
+            it.admin.owners.assertCount(1, createdSurveyB1.id)
+
+            it.admin.surveys.delete(createdSurveyB1)
+            it.admin.owners.markAsDeleted(ownerInformation3!!)
+            it.admin.owners.assertListFailStatus(404, createdSurveyB1.id)
         }
     }
 

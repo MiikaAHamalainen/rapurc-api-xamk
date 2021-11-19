@@ -175,12 +175,20 @@ class WasteTestIT {
                 wasteMaterialId = wasteMaterial.id!!,
                 usageId = usage.id!!
             )
+            val createdWasteB = it.userA.wastes.create(
+                surveyId = surveyB.id!!,
+                wasteMaterialId = wasteMaterial.id,
+                usageId = usage.id
+            )
 
-            it.userB.wastes.assertDeleteFailStatus(403, surveyB.id!!, createdWaste.id!!)
+            it.userB.wastes.assertDeleteFailStatus(403, surveyB.id, createdWaste.id!!)
             it.userA.wastes.assertDeleteFailStatus(404, UUID.randomUUID(), createdWaste.id)
 
             it.userA.wastes.delete(surveyA.id, createdWaste.id)
             assertEquals(0, it.userA.wastes.list(surveyA.id).size)
+            it.admin.surveys.delete(surveyB)
+            it.admin.wastes.markAsDeleted(createdWasteB)
+            it.userB.wastes.assertListFailStatus(404, surveyB.id)
         }
     }
 }

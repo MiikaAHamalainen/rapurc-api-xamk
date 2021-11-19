@@ -1,5 +1,9 @@
 package fi.metatavu.rapurc.api.impl.surveys
 
+import fi.metatavu.rapurc.api.impl.buildings.BuildingController
+import fi.metatavu.rapurc.api.impl.materials.ReusableController
+import fi.metatavu.rapurc.api.impl.owners.OwnerInformationController
+import fi.metatavu.rapurc.api.impl.waste.WasteController
 import fi.metatavu.rapurc.api.model.SurveyStatus
 import fi.metatavu.rapurc.api.model.SurveyType
 import fi.metatavu.rapurc.api.persistence.dao.SurveyDAO
@@ -19,6 +23,21 @@ class SurveyController {
 
     @Inject
     lateinit var surveyDAO: SurveyDAO
+
+    @Inject
+    lateinit var buildingController: BuildingController
+
+    @Inject
+    lateinit var otherStructureController: BuildingController
+
+    @Inject
+    lateinit var ownerInformationController: OwnerInformationController
+
+    @Inject
+    lateinit var reusableController: ReusableController
+
+    @Inject
+    lateinit var wasteController: WasteController
 
     /**
      * Lists surveys with given filters
@@ -114,6 +133,11 @@ class SurveyController {
      * @param survey survey to delete
      */
     fun deleteSurvey(survey: Survey) {
+        buildingController.list(survey).forEach(buildingController::delete)
+        ownerInformationController.list(survey).forEach(ownerInformationController::delete)
+        reusableController.list(survey, null)?.forEach(reusableController::delete)
+        wasteController.list(survey).forEach(wasteController::delete)
+
         surveyDAO.delete(survey)
     }
 }
