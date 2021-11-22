@@ -29,6 +29,7 @@ class TestBuilderAuthentication(
     val wasteMaterials: WasteMaterialTestBuilderResource = WasteMaterialTestBuilderResource(testBuilder, this.accessTokenProvider, createClient())
     val usages: UsageTestBuilderResource = UsageTestBuilderResource(testBuilder, this.accessTokenProvider, createClient())
     val wastes: SurveyWasteTestBuilderResource = SurveyWasteTestBuilderResource(testBuilder, this.accessTokenProvider, createClient())
+    val hazMaterials: HazardousMaterialTestBuilderResource = HazardousMaterialTestBuilderResource(testBuilder, this.accessTokenProvider, createClient())
 
     /**
      * Creates a API client

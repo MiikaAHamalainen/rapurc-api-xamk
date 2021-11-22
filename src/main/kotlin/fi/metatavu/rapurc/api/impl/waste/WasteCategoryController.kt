@@ -1,4 +1,4 @@
-package fi.metatavu.rapurc.api.impl.materials
+package fi.metatavu.rapurc.api.impl.waste
 
 import fi.metatavu.rapurc.api.persistence.dao.WasteCategoryDAO
 import fi.metatavu.rapurc.api.persistence.model.WasteCategory
