@@ -155,6 +155,7 @@ class ReusableTestIT {
 
             val created1 = testBuilder.userA.reusables.create(survey1.id!!, reusable.copy(reusableMaterialId = material.id!!))
             val created2 = testBuilder.userB.reusables.create(survey2.id!!, reusable.copy(reusableMaterialId = material.id))
+            val created3 = testBuilder.userB.reusables.create(survey2.id, reusable.copy(reusableMaterialId = material.id))
 
             testBuilder.userA.reusables.assertDeleteFailStatus(403, survey2.id, created1!!.id!!)
             testBuilder.userA.reusables.assertDeleteFailStatus(403, survey1.id, created2!!.id!!)
@@ -165,7 +166,10 @@ class ReusableTestIT {
             testBuilder.admin.reusables.delete(survey2.id, created2.id!!)
 
             testBuilder.admin.reusables.assertCount(0, survey1.id)
-            testBuilder.admin.reusables.assertCount(0, survey2.id)
+            testBuilder.admin.reusables.assertCount(1, survey2.id)
+            testBuilder.admin.surveys.delete(survey2)
+            testBuilder.admin.reusables.markAsDeleted(created3!!)
+            testBuilder.admin.reusables.assertListFailStatus(404, survey2.id)
         }
 
     }

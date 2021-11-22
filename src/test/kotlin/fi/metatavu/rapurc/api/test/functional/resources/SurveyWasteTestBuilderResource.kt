@@ -212,4 +212,18 @@ class SurveyWasteTestBuilderResource(
         api.deleteSurveyWaste(surveyId!!, waste.id)
     }
 
+    /**
+     * Marks waste as deleted and removes it from closables
+     *
+     * @param waste waste
+     */
+    fun markAsDeleted(waste: Waste) {
+        removeCloseable { closable: Any? ->
+            if (closable !is Waste) {
+                return@removeCloseable false
+            }
+            closable.id == waste.id
+        }
+    }
+
 }

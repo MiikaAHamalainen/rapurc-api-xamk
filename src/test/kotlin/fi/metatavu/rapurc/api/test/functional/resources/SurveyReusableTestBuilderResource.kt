@@ -4,6 +4,7 @@ import fi.metatavu.jaxrs.test.functional.builder.auth.AccessTokenProvider
 import fi.metatavu.rapurc.api.client.apis.SurveyReusablesApi
 import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.rapurc.api.client.infrastructure.ClientException
+import fi.metatavu.rapurc.api.client.models.OwnerInformation
 import fi.metatavu.rapurc.api.model.Reusable
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
 import fi.metatavu.rapurc.api.test.functional.impl.ApiTestBuilderResource
@@ -193,4 +194,17 @@ class SurveyReusableTestBuilderResource(
         api.deleteSurveyReusable(reusableSurveyMap[reusable]!!, reusable.id!!)
     }
 
+    /**
+     * Removes the reusable info from the closables list
+     *
+     * @param reusable reusable info
+     */
+    fun markAsDeleted(reusable: fi.metatavu.rapurc.api.client.models.Reusable) {
+        removeCloseable { closable: Any? ->
+            if (closable !is fi.metatavu.rapurc.api.client.models.Reusable) {
+                return@removeCloseable false
+            }
+            closable.id == reusable.id
+        }
+    }
 }

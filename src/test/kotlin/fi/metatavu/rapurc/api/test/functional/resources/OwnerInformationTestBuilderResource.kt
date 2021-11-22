@@ -185,4 +185,18 @@ class OwnerInformationTestBuilderResource(
         api.deleteOwnerInformation(ownerInfo.surveyId, ownerInfo.id!!)
     }
 
+    /**
+     * Removes the owner info from the closables list
+     *
+     * @param ownerInfo owner info
+     */
+    fun markAsDeleted(ownerInfo: OwnerInformation) {
+        removeCloseable { closable: Any? ->
+            if (closable !is OwnerInformation) {
+                return@removeCloseable false
+            }
+            closable.id == ownerInfo.id
+        }
+    }
+
 }
