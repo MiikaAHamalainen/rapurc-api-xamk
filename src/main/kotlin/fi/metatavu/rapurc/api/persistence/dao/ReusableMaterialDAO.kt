@@ -33,9 +33,17 @@ class ReusableMaterialDAO: AbstractDAO<ReusableMaterial>() {
         return persist(reusableMaterial)
     }
 
-    fun updateName(materialToUpdate: ReusableMaterial, name: String, userId: UUID): ReusableMaterial {
+    /**
+     * Updates name
+     *
+     * @param materialToUpdate material to update
+     * @param name new name
+     * @param modifierId modifier id
+     * @return updated material
+     */
+    fun updateName(materialToUpdate: ReusableMaterial, name: String, modifierId: UUID): ReusableMaterial {
         materialToUpdate.name = name
-        materialToUpdate.lastModifierId = userId
+        materialToUpdate.lastModifierId = modifierId
         return persist(materialToUpdate)
     }
 }

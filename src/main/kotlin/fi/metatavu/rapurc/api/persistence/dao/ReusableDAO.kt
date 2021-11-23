@@ -87,39 +87,87 @@ class ReusableDAO: AbstractDAO<Reusable>() {
         return query.resultList
     }
 
-    fun updateComponentName(reusableToUpdate: Reusable, componentName: String, userId: UUID): Reusable {
-        reusableToUpdate.componentName = componentName
-        reusableToUpdate.lastModifierId = userId
-        return persist(reusableToUpdate)
+    /**
+     * Updates reusable component name
+     *
+     * @param reusable reusable to update
+     * @param componentName component name
+     * @param modifierId modifier id
+     * @return updated reusable
+     */
+    fun updateComponentName(reusable: Reusable, componentName: String, modifierId: UUID): Reusable {
+        reusable.componentName = componentName
+        reusable.lastModifierId = modifierId
+        return persist(reusable)
     }
 
-    fun updateMaterialId(reusable: Reusable, materialId: UUID, userId: UUID): Reusable {
+    /**
+     * Updates reusable materialId
+     *
+     * @param reusable reusable to update
+     * @param materialId materialId
+     * @param modifierId modifier id
+     * @return updated reusable
+     */
+    fun updateMaterialId(reusable: Reusable, materialId: UUID, modifierId: UUID): Reusable {
         reusable.materialId = materialId
-        reusable.lastModifierId = userId
+        reusable.lastModifierId = modifierId
         return persist(reusable)
     }
 
-    fun updateUsability(reusable: Reusable, usability: Usability, userId: UUID): Reusable {
+    /**
+     * Updates reusable usability
+     *
+     * @param reusable reusable to update
+     * @param usability usability
+     * @param modifierId modifier id
+     * @return updated reusable
+     */
+    fun updateUsability(reusable: Reusable, usability: Usability, modifierId: UUID): Reusable {
         reusable.usability = usability
-        reusable.lastModifierId = userId
+        reusable.lastModifierId = modifierId
         return persist(reusable)
     }
 
-    fun updateAmount(reusable: Reusable, amount: Double?, userId: UUID): Reusable {
+    /**
+     * Updates reusable amount
+     *
+     * @param reusable reusable to update
+     * @param amount amount
+     * @param modifierId modifier id
+     * @return updated reusable
+     */
+    fun updateAmount(reusable: Reusable, amount: Double?, modifierId: UUID): Reusable {
         reusable.amount = amount
-        reusable.lastModifierId = userId
+        reusable.lastModifierId = modifierId
         return persist(reusable)
     }
 
-    fun updateUnit(reusable: Reusable, unit: Unit?, userId: UUID): Reusable {
+    /**
+     * Updates reusable unit
+     *
+     * @param reusable reusable to update
+     * @param unit unit
+     * @param modifierId modifier id
+     * @return updated reusable
+     */
+    fun updateUnit(reusable: Reusable, unit: Unit?, modifierId: UUID): Reusable {
         reusable.unit = unit
-        reusable.lastModifierId = userId
+        reusable.lastModifierId = modifierId
         return persist(reusable)
     }
 
-    fun updateDescription(reusable: Reusable, description: String?, userId: UUID): Reusable {
+    /**
+     * Updates reusable description
+     *
+     * @param reusable reusable to update
+     * @param description description
+     * @param modifierId modifier id
+     * @return updated reusable
+     */
+    fun updateDescription(reusable: Reusable, description: String?, modifierId: UUID): Reusable {
         reusable.description = description
-        reusable.lastModifierId = userId
+        reusable.lastModifierId = modifierId
         return persist(reusable)
     }
 }
