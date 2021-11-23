@@ -138,7 +138,7 @@ class BuildingDAO: AbstractDAO<Building>() {
         return persist(building)
     }
 
-    fun updateFloors(building: Building, floors: Int, userId: UUID): Building {
+    fun updateFloors(building: Building, floors: Int?, userId: UUID): Building {
         building.floors = floors
         building.lastModifierId = userId
         return persist(building)
