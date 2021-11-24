@@ -54,6 +54,22 @@ class WasteSpecifierTestBuilderResource(
     }
 
     /**
+     * Creates new waste specifier object
+     *
+     * @return created waste specifier
+     */
+    fun create(): WasteSpecifier {
+        return addClosable(
+            api.createWasteSpecifier(
+                WasteSpecifier(
+                    name = "waste specifier",
+                    metadata = Metadata()
+                )
+            )
+        )
+    }
+
+    /**
      * Finds waste specifier
      *
      * @param id waste specifier id
