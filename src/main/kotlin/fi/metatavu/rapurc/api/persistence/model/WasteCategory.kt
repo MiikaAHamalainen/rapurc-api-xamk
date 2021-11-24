@@ -4,6 +4,7 @@ import java.util.*
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
+import javax.validation.constraints.NotEmpty
 
 /**
  * Waste category entity
@@ -14,9 +15,11 @@ class WasteCategory: Metadata() {
     @Id
     var id: UUID? = null
 
+    @NotEmpty
     @Column(nullable = false)
     var name: String? = null
 
+    @NotEmpty
     @Column(nullable = false)
     var ewcCode: String? = null
 }

@@ -136,7 +136,7 @@ class SurveyController {
     }
 
     /**
-     * Deletes survey
+     * Deletes survey and all entities that depend on it
      *
      * @param survey survey to delete
      */
@@ -144,9 +144,8 @@ class SurveyController {
         buildingController.list(survey = survey).forEach(buildingController::delete)
         ownerInformationController.list(survey = survey).forEach(ownerInformationController::delete)
         reusableController.list(survey = survey, material = null)?.forEach(reusableController::delete)
-        wasteController.list(survey = survey).forEach(wasteController::delete)
-        hazardousWasteController.list(survey = survey, wasteSpecifier = null).forEach(hazardousWasteController::delete)
-
+        wasteController.list(survey = survey, wasteMaterial = null, usage = null).forEach(wasteController::delete)
+        hazardousWasteController.list(survey = survey, wasteSpecifier = null, hazardousMaterial = null).forEach(hazardousWasteController::delete)
         surveyDAO.delete(survey)
     }
 }

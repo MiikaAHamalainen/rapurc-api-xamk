@@ -4,6 +4,7 @@ import fi.metatavu.rapurc.api.model.Unit
 import fi.metatavu.rapurc.api.model.Usability
 import java.util.*
 import javax.persistence.*
+import javax.validation.constraints.NotEmpty
 
 /**
  * Entity class for Reusable
@@ -17,6 +18,7 @@ class Reusable: Metadata() {
     @ManyToOne
     var survey: Survey? = null
 
+    @NotEmpty
     @Column(nullable = false)
     var componentName: String? = null
 

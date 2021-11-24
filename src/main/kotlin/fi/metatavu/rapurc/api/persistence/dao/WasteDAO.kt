@@ -18,9 +18,11 @@ class WasteDAO: AbstractDAO<Waste>() {
      * Lists waste objects
      *
      * @param survey survey filter
+     * @param wasteMaterial waste material filter
+     * @param usage usage filer
      * @return wastes
      */
-    fun list(survey: Survey): List<Waste> {
+    fun list(survey: Survey?, wasteMaterial: WasteMaterial?, usage: WasteUsage?): List<Waste> {
         val entityManager = getEntityManager()
         val criteriaBuilder = entityManager.criteriaBuilder
         val criteria: CriteriaQuery<Waste> = criteriaBuilder.createQuery(Waste::class.java)
@@ -30,7 +32,17 @@ class WasteDAO: AbstractDAO<Waste>() {
 
         val restrictions = ArrayList<Predicate>()
 
-        restrictions.add(criteriaBuilder.equal(root.get(Waste_.survey), survey))
+        if (survey != null) {
+            restrictions.add(criteriaBuilder.equal(root.get(Waste_.survey), survey))
+        }
+
+        if (wasteMaterial != null) {
+            restrictions.add(criteriaBuilder.equal(root.get(Waste_.wasteMaterial), wasteMaterial))
+        }
+
+        if (usage != null) {
+            restrictions.add(criteriaBuilder.equal(root.get(Waste_.usage), usage))
+        }
 
         criteria.where(*restrictions.toTypedArray())
         val query: TypedQuery<Waste> = entityManager.createQuery(criteria)

@@ -613,6 +613,10 @@ class V1ApiImpl : V1Api, AbstractApi() {
     override fun deleteWasteMaterial(wasteMaterialId: UUID): Response {
         val materialToDelete = wasteMaterialController.find(wasteMaterialId = wasteMaterialId) ?: return createNotFound(createNotFoundMessage(target = WASTE_MATERIAL, id = wasteMaterialId))
 
+        if (wasteController.list(survey = null, wasteMaterial = materialToDelete, usage = null).isNotEmpty()) {
+            return createConflict(createDeleteConflictMessage(target = WASTE_MATERIAL, dependentObject = WASTE, id = wasteMaterialId))
+        }
+
         wasteMaterialController.delete(materialToDelete)
         return createNoContent()
     }
@@ -626,7 +630,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
 
-        val wastes = wasteController.list(survey = survey)
+        val wastes = wasteController.list(survey = survey, wasteMaterial = null, usage = null)
         return createOk(wastes.map(wasteTranslator::translate))
     }
 
@@ -753,6 +757,10 @@ class V1ApiImpl : V1Api, AbstractApi() {
     override fun deleteUsage(usageId: UUID): Response {
         val usageToDelete = usageController.find(usageId) ?: return createNotFound(createNotFoundMessage(target = USAGE, id = usageId))
 
+        if (wasteController.list(survey = null, wasteMaterial = null, usage = usageToDelete).isNotEmpty()) {
+            return createConflict(createDeleteConflictMessage(target = USAGE, dependentObject = WASTE, id = usageId))
+        }
+
         usageController.delete(usageToDelete)
         return createNoContent()
     }
@@ -799,6 +807,10 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun deleteHazardousMaterial(hazardousMaterialId: UUID): Response {
         val materialToDelete = hazardousMaterialController.find(materialId = hazardousMaterialId) ?: return createNotFound(createNotFoundMessage(target = HAZ_MATERIAL, id = hazardousMaterialId))
+
+        if (hazardousWasteController.list(survey = null, wasteSpecifier = null, hazardousMaterial = materialToDelete).isNotEmpty()) {
+            return createConflict(createDeleteConflictMessage(target = HAZ_MATERIAL, dependentObject = HAZARDOUS_WASTE, id = hazardousMaterialId))
+        }
 
         hazardousMaterialController.delete(materialToDelete)
         return createNoContent()
@@ -850,9 +862,14 @@ class V1ApiImpl : V1Api, AbstractApi() {
     override fun deleteWasteSpecifier(wasteSpecifierId: UUID): Response {
         val specifierToDelete = wasteSpecifierController.find(wasteSpecifierId = wasteSpecifierId) ?: return createNotFound(createNotFoundMessage(target = WASTE_SPECIFIER, id = wasteSpecifierId))
 
-        val dependentHazWastes = hazardousWasteController.list(survey = null, wasteSpecifier = specifierToDelete)
+        val dependentHazWastes = hazardousWasteController.list(
+            survey = null,
+            wasteSpecifier = specifierToDelete,
+            hazardousMaterial = null
+        )
+
         if (dependentHazWastes.isNotEmpty()) {
-            return createConflict(deleteConflictMessage(target = WASTE_SPECIFIER, dependentObject = HAZARDOUS_WASTE, id = wasteSpecifierId))
+            return createConflict(createDeleteConflictMessage(target = WASTE_SPECIFIER, dependentObject = HAZARDOUS_WASTE, id = wasteSpecifierId))
         }
 
         wasteSpecifierController.delete(specifierToDelete)
@@ -868,7 +885,11 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
 
-        val hazardousWasteList = hazardousWasteController.list(survey = survey, wasteSpecifier = null)
+        val hazardousWasteList = hazardousWasteController.list(
+            survey = survey,
+            wasteSpecifier = null,
+            hazardousMaterial = null
+        )
         return createOk(hazardousWasteList.map(hazardousWasteTranslator::translate))
     }
 
@@ -1017,7 +1038,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
          * @param id object id
          * @return error message
          */
-        protected fun deleteConflictMessage(target: String, dependentObject: String, id: UUID): String {
+        protected fun createDeleteConflictMessage(target: String, dependentObject: String, id: UUID): String {
             return "$dependentObject depend on $target $id"
         }
 

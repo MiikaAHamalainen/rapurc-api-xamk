@@ -19,14 +19,18 @@ class WasteController {
     lateinit var wasteDAO: WasteDAO
 
     /**
-     * Lists waste based filters
+     * Lists waste based on filters
      *
      * @param survey survey filter
+     * @param wasteMaterial waste material filter
+     * @param usage usage filter
      * @return waste entries
      */
-    fun list(survey: Survey): List<Waste> {
+    fun list(survey: Survey?, wasteMaterial: WasteMaterial?, usage: WasteUsage?): List<Waste> {
         return wasteDAO.list(
-            survey = survey
+            survey = survey,
+            wasteMaterial = wasteMaterial,
+            usage = usage
         )
     }
 

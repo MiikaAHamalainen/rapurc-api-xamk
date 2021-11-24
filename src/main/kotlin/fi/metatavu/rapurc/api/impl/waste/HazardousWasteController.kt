@@ -20,12 +20,14 @@ class HazardousWasteController {
      *
      * @param survey survey filter
      * @param wasteSpecifier waste specifier filter
+     * @param hazardousMaterial hazardous material filter
      * @return hazardous waste entries
      */
-    fun list(survey: Survey?, wasteSpecifier: WasteSpecifier?): List<HazardousWaste> {
+    fun list(survey: Survey?, wasteSpecifier: WasteSpecifier?, hazardousMaterial: HazardousMaterial?): List<HazardousWaste> {
         return hazardousWasteDAO.list(
             survey = survey,
-            wasteSpecifier = wasteSpecifier
+            wasteSpecifier = wasteSpecifier,
+            hazardousMaterial = hazardousMaterial
         )
     }
 

@@ -19,9 +19,10 @@ class HazardousWasteDAO: AbstractDAO<HazardousWaste>() {
      *
      * @param survey survey filter
      * @param wasteSpecifier waste specifier filter
+     * @param hazardousMaterial hazardous material filter
      * @return Hazardous wastes
      */
-    fun list(survey: Survey?, wasteSpecifier: WasteSpecifier?): List<HazardousWaste> {
+    fun list(survey: Survey?, wasteSpecifier: WasteSpecifier?, hazardousMaterial: HazardousMaterial?): List<HazardousWaste> {
         val entityManager = getEntityManager()
         val criteriaBuilder = entityManager.criteriaBuilder
         val criteria: CriteriaQuery<HazardousWaste> = criteriaBuilder.createQuery(HazardousWaste::class.java)
@@ -37,6 +38,10 @@ class HazardousWasteDAO: AbstractDAO<HazardousWaste>() {
 
         if (wasteSpecifier != null) {
             restrictions.add(criteriaBuilder.equal(root.get(HazardousWaste_.wasteSpecifier), wasteSpecifier))
+        }
+
+        if (hazardousMaterial != null) {
+            restrictions.add(criteriaBuilder.equal(root.get(HazardousWaste_.hazardousMaterial), hazardousMaterial))
         }
 
         criteria.where(*restrictions.toTypedArray())
