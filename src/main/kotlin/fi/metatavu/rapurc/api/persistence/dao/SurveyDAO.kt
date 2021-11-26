@@ -111,6 +111,7 @@ class SurveyDAO: AbstractDAO<Survey>() {
 
         criteria.select(root)
         criteria.where(*restrictions.toTypedArray())
+        criteria.orderBy(criteriaBuilder.desc(root.get(Survey_.modifiedAt)))
         val query: TypedQuery<Survey> = entityManager.createQuery(criteria)
         query.firstResult = firstResult
         query.maxResults = maxResults
