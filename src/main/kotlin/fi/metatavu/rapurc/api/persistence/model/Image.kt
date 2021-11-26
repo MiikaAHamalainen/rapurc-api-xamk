@@ -5,6 +5,7 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.ManyToOne
+import javax.validation.constraints.NotEmpty
 
 /**
  * Image entity
@@ -15,6 +16,7 @@ class Image {
     @Id
     var id: UUID? = null
 
+    @NotEmpty
     @Column(nullable = false)
     var imageUri: String? = null
 

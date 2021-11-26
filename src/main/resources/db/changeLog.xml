@@ -361,4 +361,37 @@
       </column>
     </createTable>
   </changeSet>
+
+  <changeSet id="hazardous_waste" author="katja danilova">
+    <createTable tableName="hazardouswaste">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="survey_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_HAZARDOUS_WASTE_SURVEY_ID" referencedColumnNames="id" referencedTableName="survey"/>
+      </column>
+      <column name="hazardousmaterial_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_HAZARDOUS_WASTE_HAZARDOUS_MATERIAL_ID" referencedColumnNames="id" referencedTableName="hazardousmaterial"/>
+      </column>
+      <column name="wastespecifier_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_HAZARDOUS_WASTE_SPECIFIER_ID" referencedColumnNames="id" referencedTableName="wastespecifier"/>
+      </column>
+      <column name="amount" type="double">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="longtext"/>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
 </databaseChangeLog>

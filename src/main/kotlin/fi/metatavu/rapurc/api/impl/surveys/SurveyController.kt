@@ -3,6 +3,8 @@ package fi.metatavu.rapurc.api.impl.surveys
 import fi.metatavu.rapurc.api.impl.buildings.BuildingController
 import fi.metatavu.rapurc.api.impl.materials.ReusableController
 import fi.metatavu.rapurc.api.impl.owners.OwnerInformationController
+import fi.metatavu.rapurc.api.impl.translate.HazardousWasteTranslator
+import fi.metatavu.rapurc.api.impl.waste.HazardousWasteController
 import fi.metatavu.rapurc.api.impl.waste.WasteController
 import fi.metatavu.rapurc.api.model.SurveyStatus
 import fi.metatavu.rapurc.api.model.SurveyType
@@ -38,6 +40,12 @@ class SurveyController {
 
     @Inject
     lateinit var wasteController: WasteController
+
+    @Inject
+    lateinit var hazardousWasteController: HazardousWasteController
+
+    @Inject
+    lateinit var hazardousWasteTranslator: HazardousWasteTranslator
 
     /**
      * Lists surveys with given filters
@@ -128,16 +136,16 @@ class SurveyController {
     }
 
     /**
-     * Deletes survey
+     * Deletes survey and all entities that depend on it
      *
      * @param survey survey to delete
      */
     fun deleteSurvey(survey: Survey) {
-        buildingController.list(survey).forEach(buildingController::delete)
-        ownerInformationController.list(survey).forEach(ownerInformationController::delete)
-        reusableController.list(survey, null)?.forEach(reusableController::delete)
-        wasteController.list(survey).forEach(wasteController::delete)
-
+        buildingController.list(survey = survey).forEach(buildingController::delete)
+        ownerInformationController.list(survey = survey).forEach(ownerInformationController::delete)
+        reusableController.list(survey = survey, material = null)?.forEach(reusableController::delete)
+        wasteController.list(survey = survey, wasteMaterial = null, usage = null).forEach(wasteController::delete)
+        hazardousWasteController.list(survey = survey, wasteSpecifier = null, hazardousMaterial = null).forEach(hazardousWasteController::delete)
         surveyDAO.delete(survey)
     }
 }
