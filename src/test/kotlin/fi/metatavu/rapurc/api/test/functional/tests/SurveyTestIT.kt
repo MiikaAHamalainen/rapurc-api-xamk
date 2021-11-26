@@ -79,7 +79,7 @@ class SurveyTestIT {
             it.userB.surveys.create(
                 Survey(
                     status = SurveyStatus.dRAFT,
-                    type = SurveyType.rENOVATION,
+                    type = SurveyType.pARTIALDEMOLITION,
                     metadata = Metadata()
                 )
             )
@@ -95,6 +95,7 @@ class SurveyTestIT {
             )
 
             assertEquals(3, listWithThreeItems.size)
+            assertEquals(SurveyType.pARTIALDEMOLITION, listWithThreeItems[0].type)
 
             val listWithDraftStatus = it.admin.surveys.listSurveys(
                 firstResult = null,
@@ -128,7 +129,7 @@ class SurveyTestIT {
                 startDate = null,
                 endDate = null
             )
-            assertEquals(2, listByType.size)
+            assertEquals(1, listByType.size)
 
             val listFilteredByDate = it.admin.surveys.listSurveys(
                 firstResult = null,
