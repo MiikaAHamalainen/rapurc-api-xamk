@@ -12,6 +12,7 @@ import fi.metatavu.rapurc.api.impl.surveys.SurveyController
 import fi.metatavu.rapurc.api.impl.translate.*
 import fi.metatavu.rapurc.api.impl.waste.UsageController
 import fi.metatavu.rapurc.api.impl.waste.WasteController
+import fi.metatavu.rapurc.api.impl.waste.WasteSpecifierController
 import fi.metatavu.rapurc.api.model.*
 import fi.metatavu.rapurc.api.spec.V1Api
 import java.time.LocalDate
@@ -93,6 +94,12 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
     @Inject
     lateinit var hazardousMaterialTranslator: HazardousMaterialTranslator
+
+    @Inject
+    lateinit var wasteSpecifierController: WasteSpecifierController
+
+    @Inject
+    lateinit var wasteSpecifierTranslator: WasteSpecifierTranslator
 
     /* SURVEYS */
 
@@ -795,24 +802,52 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
     /* Waste specifiers */
 
+    @RolesAllowed(value = [ UserRole.USER.name ])
     override fun listWasteSpecifiers(): Response {
-        TODO("Not yet implemented")
+        val wasteSpecifiers = wasteSpecifierController.list()
+
+        return createOk(wasteSpecifiers.map(wasteSpecifierTranslator::translate))
     }
 
-    override fun createWasteSpecifier(wasteSpecifier: WasteSpecifier?): Response {
-        TODO("Not yet implemented")
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
+    override fun createWasteSpecifier(wasteSpecifier: WasteSpecifier): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+
+        val createdWasteSpecifier = wasteSpecifierController.create(
+            wasteSpecifier = wasteSpecifier,
+            userId = userId
+        )
+
+        return createOk(wasteSpecifierTranslator.translate(createdWasteSpecifier))
     }
 
-    override fun findWasteSpecifier(wasteSpecifierId: UUID?): Response {
-        TODO("Not yet implemented")
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun findWasteSpecifier(wasteSpecifierId: UUID): Response {
+        val foundWasteSpecifier = wasteSpecifierController.find(wasteSpecifierId = wasteSpecifierId) ?: return createNotFound(createNotFoundMessage(target = WASTE_SPECIFIER, id = wasteSpecifierId))
+
+        return createOk(wasteSpecifierTranslator.translate(foundWasteSpecifier))
     }
 
-    override fun updateWasteSpecifier(wasteSpecifierId: UUID?, wasteSpecifier: WasteSpecifier?): Response {
-        TODO("Not yet implemented")
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
+    override fun updateWasteSpecifier(wasteSpecifierId: UUID, wasteSpecifier: WasteSpecifier): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+
+        val wasteSpecifierToUpdate = wasteSpecifierController.find(wasteSpecifierId = wasteSpecifierId) ?: return createNotFound(createNotFoundMessage(target = WASTE_SPECIFIER, id = wasteSpecifierId))
+        val updatedWasteSpecifier = wasteSpecifierController.update(
+            wasteSpecifierToUpdate = wasteSpecifierToUpdate,
+            wasteSpecifier = wasteSpecifier,
+            userId = userId
+        )
+
+        return createOk(wasteSpecifierTranslator.translate(updatedWasteSpecifier))
     }
 
-    override fun deleteWasteSpecifier(wasteSpecifierId: UUID?): Response {
-        TODO("Not yet implemented")
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
+    override fun deleteWasteSpecifier(wasteSpecifierId: UUID): Response {
+        val specifierToDelete = wasteSpecifierController.find(wasteSpecifierId = wasteSpecifierId) ?: return createNotFound(createNotFoundMessage(target = WASTE_SPECIFIER, id = wasteSpecifierId))
+
+        wasteSpecifierController.delete(specifierToDelete)
+        return createNoContent()
     }
 
     /* Survey hazardous waste */
@@ -904,6 +939,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         const val WASTE = "Waste"
         const val USAGE = "Usage"
         const val HAZ_MATERIAL = "Hazardous material"
+        const val WASTE_SPECIFIER = "Waste specifier"
     }
 
 }
