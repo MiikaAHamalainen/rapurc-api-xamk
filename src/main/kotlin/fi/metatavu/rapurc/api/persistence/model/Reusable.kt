@@ -37,4 +37,7 @@ class Reusable: Metadata() {
     @Column
     var description: String? = null
 
+    @Column
+    var amountAsWaste: Double? = null
+
 }

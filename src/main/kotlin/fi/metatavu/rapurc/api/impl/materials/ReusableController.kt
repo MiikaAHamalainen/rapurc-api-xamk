@@ -50,6 +50,7 @@ class ReusableController {
             amount = reusable.amount,
             unit = reusable.unit,
             description = reusable.description,
+            amountAsWaste = reusable.amountAsWaste,
             creatorId = userId,
             lastModifierId = userId
         )
@@ -98,7 +99,8 @@ class ReusableController {
         reusableDAO.updateUsability(result, reusable.usability, userId)
         reusableDAO.updateAmount(result, reusable.amount, userId)
         reusableDAO.updateUnit(result, reusable.unit, userId)
-        return reusableDAO.updateDescription(result, reusable.description, userId)
+        reusableDAO.updateDescription(result, reusable.description, userId)
+        return reusableDAO.updateAmountAsWaste(result, reusable.amountAsWaste, userId)
     }
 
     /**

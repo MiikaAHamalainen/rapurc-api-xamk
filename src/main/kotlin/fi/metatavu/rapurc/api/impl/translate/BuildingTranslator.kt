@@ -25,7 +25,7 @@ class BuildingTranslator: AbstractTranslator<Building, fi.metatavu.rapurc.api.mo
         result.surveyId = entity.survey?.id
         result.propertyId = entity.propertyId
         result.buildingId = entity.buildingId
-        result.classificationCode = entity.classificationCode
+        result.buildingTypeId = entity.buildingType?.id
         result.constructionYear = entity.constructionYear
         result.space = entity.space
         result.volume = entity.volume

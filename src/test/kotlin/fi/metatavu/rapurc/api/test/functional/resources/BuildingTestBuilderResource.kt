@@ -63,10 +63,11 @@ class BuildingTestBuilderResource(
      *
      * @param surveyId survey id it belongs to
      * @param buildingSurveyId building survey id
+     * @param buildingTypeId building type id optional
      * @return created building
      */
-    fun create(surveyId: UUID, buildingSurveyId: UUID): Building? {
-        val result = api.createBuilding(surveyId, buildingData.copy(surveyId = buildingSurveyId))
+    fun create(surveyId: UUID, buildingSurveyId: UUID, buildingTypeId: UUID?): Building? {
+        val result = api.createBuilding(surveyId, buildingData.copy(surveyId = buildingSurveyId, buildingTypeId = buildingTypeId))
         return addClosable(result)
     }
 

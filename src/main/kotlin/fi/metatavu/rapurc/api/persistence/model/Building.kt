@@ -15,14 +15,14 @@ class Building: Metadata() {
     @ManyToOne
     var survey: Survey? = null
 
+    @ManyToOne
+    var buildingType: BuildingType? = null
+
     @Column
     var propertyId: String? = null
 
     @Column
     var buildingId: String? = null
-
-    @Column
-    var classificationCode: String? = null
 
     @Column
     var constructionYear: Int? = null
