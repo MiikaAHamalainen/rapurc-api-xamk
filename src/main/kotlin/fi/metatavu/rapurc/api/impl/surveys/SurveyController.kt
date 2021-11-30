@@ -139,7 +139,7 @@ class SurveyController {
      * @param userId user id
      */
     fun deleteSurvey(survey: Survey, userId: UUID) {
-        buildingController.list(survey = survey).forEach { buildingController.delete(it, userId) }
+        buildingController.list(survey = survey, buildingType = null).forEach { buildingController.delete(it, userId) }
         ownerInformationController.list(survey = survey).forEach { ownerInformationController.delete(it, userId) }
         reusableController.list(survey = survey, material = null)?.forEach { reusableController.delete(it, userId)}
         wasteController.list(survey = survey, wasteMaterial = null, usage = null).forEach { wasteController.delete(it, userId) }
