@@ -200,7 +200,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         surveyAccessRightsCheck(userId, surveyToDelete)?.let { return it }
 
-        surveyController.deleteSurvey(surveyToDelete)
+        surveyController.deleteSurvey(surveyToDelete, userId)
 
         return createNoContent()
     }
@@ -290,7 +290,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
             return createForbidden(createWrongSurveyMessage(target = OWNER_INFORMATION, surveyId = surveyId))
         }
 
-        ownerInformationController.delete(ownerInformationToDelete)
+        ownerInformationController.delete(ownerInformationToDelete, userId)
         return createNoContent()
     }
 
@@ -373,7 +373,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
             return createForbidden(createWrongSurveyMessage(target = BUILDING, surveyId = surveyId))
         }
 
-        buildingController.delete(buildingToDelete)
+        buildingController.delete(buildingToDelete, userId)
         return createNoContent()
     }
 
@@ -510,7 +510,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
             return createForbidden(createWrongSurveyMessage(target = REUSABLE, surveyId = surveyId))
         }
 
-        reusableController.delete(reusableToDelete)
+        reusableController.delete(reusableToDelete, userId)
         return createNoContent()
     }
 
@@ -709,7 +709,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
             return createForbidden(createWrongSurveyMessage(target = WASTE, surveyId = surveyId))
         }
 
-        wasteController.delete(wasteToDelete)
+        wasteController.delete(wasteToDelete, userId)
         return createNoContent()
     }
 
@@ -972,7 +972,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
             return createForbidden(createWrongSurveyMessage(target = HAZARDOUS_WASTE, surveyId = surveyId))
         }
 
-        hazardousWasteController.delete(hazardousWasteToDelete)
+        hazardousWasteController.delete(hazardousWasteToDelete, userId)
         return createNoContent()
     }
 

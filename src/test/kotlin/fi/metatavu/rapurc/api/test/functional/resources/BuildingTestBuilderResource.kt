@@ -29,7 +29,11 @@ class BuildingTestBuilderResource(
         facadeMaterial = "red bricks",
         otherStructures = arrayOf(
             OtherStructure(
-                name = "bike house",
+                name = "b bike house",
+                description = "bike house"
+            ),
+            OtherStructure(
+                name = "a bike house",
                 description = "bike house"
             )
         ),

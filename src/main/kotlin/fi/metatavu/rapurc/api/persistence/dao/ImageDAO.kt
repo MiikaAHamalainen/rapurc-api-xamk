@@ -49,6 +49,7 @@ class ImageDAO: AbstractDAO<Image>() {
         criteria.where(criteriaBuilder.equal(root.get(Image_.reusable), reusable))
 
         val query: TypedQuery<Image> = entityManager.createQuery(criteria)
+        criteria.orderBy(criteriaBuilder.asc(root.get(Image_.reusable)))
         return query.resultList
     }
 }

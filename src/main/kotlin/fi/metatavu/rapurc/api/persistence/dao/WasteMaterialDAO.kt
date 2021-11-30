@@ -63,6 +63,7 @@ class WasteMaterialDAO: AbstractDAO<WasteMaterial>(){
         }
 
         criteria.where(criteriaBuilder.and(*restrictions.toTypedArray()))
+        criteria.orderBy(criteriaBuilder.asc(root.get(WasteMaterial_.createdAt)))
         val query: TypedQuery<WasteMaterial> = entityManager.createQuery(criteria)
         return query.resultList
     }

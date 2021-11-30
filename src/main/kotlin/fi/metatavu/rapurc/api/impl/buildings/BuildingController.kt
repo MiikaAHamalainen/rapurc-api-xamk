@@ -2,6 +2,7 @@ package fi.metatavu.rapurc.api.impl.buildings
 
 import fi.metatavu.rapurc.api.persistence.dao.BuildingDAO
 import fi.metatavu.rapurc.api.persistence.dao.OtherStructureDAO
+import fi.metatavu.rapurc.api.persistence.dao.SurveyDAO
 import fi.metatavu.rapurc.api.persistence.model.Building
 import fi.metatavu.rapurc.api.persistence.model.Survey
 import java.util.*
@@ -19,6 +20,9 @@ class BuildingController {
 
     @Inject
     lateinit var otherStuctureDao: OtherStructureDAO
+
+    @Inject
+    lateinit var surveyDAO: SurveyDAO
 
     /**
      * Lists buildings based on survey
@@ -70,6 +74,7 @@ class BuildingController {
             )
         }
 
+        surveyDAO.update(survey, creatorId)
         return createdBuilding
     }
 
@@ -117,6 +122,8 @@ class BuildingController {
                 building = result
             )
         }
+
+        surveyDAO.update(buildingToUpdate.survey!!, userId)
         return result
     }
 
@@ -124,10 +131,12 @@ class BuildingController {
      * Deletes building
      *
      * @param buildingToDelete building to delete
+     * @param userId user id
      */
-    fun delete(buildingToDelete: Building) {
+    fun delete(buildingToDelete: Building, userId: UUID) {
         otherStuctureDao.listByBuilding(buildingToDelete)?.forEach(otherStuctureDao::delete)
         buildingDAO.delete(buildingToDelete)
+        surveyDAO.update(buildingToDelete.survey!!, userId)
     }
 
 }

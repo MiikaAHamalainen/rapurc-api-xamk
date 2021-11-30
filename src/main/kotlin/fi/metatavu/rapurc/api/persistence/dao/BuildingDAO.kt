@@ -1,9 +1,6 @@
 package fi.metatavu.rapurc.api.persistence.dao
 
-import fi.metatavu.rapurc.api.persistence.model.Building
-import fi.metatavu.rapurc.api.persistence.model.Building_
-import fi.metatavu.rapurc.api.persistence.model.OtherStructure
-import fi.metatavu.rapurc.api.persistence.model.Survey
+import fi.metatavu.rapurc.api.persistence.model.*
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.persistence.TypedQuery
@@ -98,6 +95,7 @@ class BuildingDAO: AbstractDAO<Building>() {
 
         criteria.select(root)
         criteria.where(criteriaBuilder.equal(root.get(Building_.survey), survey))
+        criteria.orderBy(criteriaBuilder.asc(root.get(Building_.createdAt)))
         val query: TypedQuery<Building> = entityManager.createQuery(criteria)
         return query.resultList
     }

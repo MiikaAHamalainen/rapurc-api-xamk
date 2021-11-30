@@ -45,6 +45,7 @@ class WasteDAO: AbstractDAO<Waste>() {
         }
 
         criteria.where(*restrictions.toTypedArray())
+        criteria.orderBy(criteriaBuilder.asc(root.get(Waste_.createdAt)))
         val query: TypedQuery<Waste> = entityManager.createQuery(criteria)
         return query.resultList
     }

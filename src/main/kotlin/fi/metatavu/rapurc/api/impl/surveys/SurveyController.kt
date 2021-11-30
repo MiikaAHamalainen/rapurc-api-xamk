@@ -30,9 +30,6 @@ class SurveyController {
     lateinit var buildingController: BuildingController
 
     @Inject
-    lateinit var otherStructureController: BuildingController
-
-    @Inject
     lateinit var ownerInformationController: OwnerInformationController
 
     @Inject
@@ -139,13 +136,14 @@ class SurveyController {
      * Deletes survey and all entities that depend on it
      *
      * @param survey survey to delete
+     * @param userId user id
      */
-    fun deleteSurvey(survey: Survey) {
-        buildingController.list(survey = survey).forEach(buildingController::delete)
-        ownerInformationController.list(survey = survey).forEach(ownerInformationController::delete)
-        reusableController.list(survey = survey, material = null)?.forEach(reusableController::delete)
-        wasteController.list(survey = survey, wasteMaterial = null, usage = null).forEach(wasteController::delete)
-        hazardousWasteController.list(survey = survey, wasteSpecifier = null, hazardousMaterial = null).forEach(hazardousWasteController::delete)
+    fun deleteSurvey(survey: Survey, userId: UUID) {
+        buildingController.list(survey = survey).forEach { buildingController.delete(it, userId) }
+        ownerInformationController.list(survey = survey).forEach { ownerInformationController.delete(it, userId) }
+        reusableController.list(survey = survey, material = null)?.forEach { reusableController.delete(it, userId)}
+        wasteController.list(survey = survey, wasteMaterial = null, usage = null).forEach { wasteController.delete(it, userId) }
+        hazardousWasteController.list(survey = survey, wasteSpecifier = null, hazardousMaterial = null).forEach { hazardousWasteController.delete(it, userId)}
         surveyDAO.delete(survey)
     }
 }

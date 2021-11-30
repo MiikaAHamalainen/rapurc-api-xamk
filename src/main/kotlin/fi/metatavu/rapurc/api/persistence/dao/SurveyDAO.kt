@@ -132,4 +132,17 @@ class SurveyDAO: AbstractDAO<Survey>() {
         return persist(survey)
     }
 
+    /**
+     * Updates survey with only modifier id
+     *
+     * @param survey survey to update
+     * @param lastModifierId last modifier's id
+     * @return updated survey
+     */
+    fun update(survey: Survey, lastModifierId: UUID): Survey {
+        survey.lastModifierId = lastModifierId
+        val updated = persist(survey)
+        return updated
+    }
+
 }
