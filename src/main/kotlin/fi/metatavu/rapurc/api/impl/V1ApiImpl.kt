@@ -2,6 +2,7 @@ package fi.metatavu.rapurc.api.impl
 
 import fi.metatavu.rapurc.api.UserRole
 import fi.metatavu.rapurc.api.impl.buildings.BuildingController
+import fi.metatavu.rapurc.api.impl.buildings.BuildingTypeController
 import fi.metatavu.rapurc.api.impl.materials.HazardousMaterialController
 import fi.metatavu.rapurc.api.impl.materials.ReusableController
 import fi.metatavu.rapurc.api.impl.materials.ReusableMaterialController
@@ -49,6 +50,12 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
     @Inject
     lateinit var buildingTranslator: BuildingTranslator
+
+    @Inject
+    lateinit var buildingTypeController: BuildingTypeController
+
+    @Inject
+    lateinit var buildingTypeTranslator: BuildingTypeTranslator
 
     @Inject
     lateinit var reusableController: ReusableController
@@ -294,6 +301,59 @@ class V1ApiImpl : V1Api, AbstractApi() {
         return createNoContent()
     }
 
+    /* Building types */
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun listBuildingTypes(): Response {
+        return createOk(buildingTypeController.list().map(buildingTypeTranslator::translate))
+    }
+
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
+    override fun createBuildingType(buildingType: BuildingType): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+
+        val createdBuildingType = buildingTypeController.create(
+            name = buildingType.name,
+            code = buildingType.code,
+            userId = userId
+        )
+
+        return createOk(buildingTypeTranslator.translate(createdBuildingType))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun findBuildingType(buildingTypeId: UUID): Response {
+        val foundBuildingType = buildingTypeController.find(buildingTypeId) ?: return createNotFound(createNotFoundMessage(target = BUILDING_TYPE, id = buildingTypeId))
+
+        return createOk(buildingTypeTranslator.translate(foundBuildingType))
+    }
+
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
+    override fun updateBuildingType(buildingTypeId: UUID, buildingType: BuildingType): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+
+        val buildingTypeToUpdate = buildingTypeController.find(buildingTypeId) ?: return createNotFound(createNotFoundMessage(target = BUILDING_TYPE, id = buildingTypeId))
+        val updatedBuildingType = buildingTypeController.update(
+            oldBuildingType = buildingTypeToUpdate,
+            newBuildingType = buildingType,
+            modifierId = userId
+        )
+
+        return createOk(buildingTypeTranslator.translate(updatedBuildingType))
+    }
+
+    @RolesAllowed(value = [ UserRole.ADMIN.name ])
+    override fun deleteBuildingType(buildingTypeId: UUID): Response {
+        val buildingTypeToDelete = buildingTypeController.find(buildingTypeId) ?: return createNotFound(createNotFoundMessage(target = BUILDING_TYPE, id = buildingTypeId))
+
+        if (buildingController.list(survey = null, buildingType = buildingTypeToDelete).isNotEmpty()) {
+            return createConflict(createDeleteConflictMessage(target = BUILDING_TYPE, dependentObject = BUILDING, id = buildingTypeId))
+        }
+
+        buildingTypeController.delete(buildingTypeToDelete)
+        return createNoContent()
+    }
+
     /* Buildings */
 
     @RolesAllowed(value = [ UserRole.USER.name ])
@@ -303,7 +363,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
 
-        val buildings = buildingController.list(survey = survey)
+        val buildings = buildingController.list(survey = survey, buildingType = null)
         return createOk(buildings.map(buildingTranslator::translate))
     }
 
@@ -319,9 +379,15 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
 
+        var buildingType: fi.metatavu.rapurc.api.persistence.model.BuildingType? = null
+        if (building.buildingTypeId != null) {
+            buildingType = buildingTypeController.find(buildingTypeId = building.buildingTypeId) ?: return createNotFound(createNotFoundMessage(target = BUILDING_TYPE, id = building.buildingTypeId))
+        }
+
         val createdBuilding = buildingController.create(
             survey = survey,
             building = building,
+            buildingType = buildingType,
             creatorId = userId
         )
 
@@ -356,7 +422,18 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         surveyAccessRightsCheck(userId, survey)?.let { return it }
 
-        val updatedBuilding = buildingController.update(buildingToUpdate, payload, userId)
+        var buildingType: fi.metatavu.rapurc.api.persistence.model.BuildingType? = null
+        if (payload.buildingTypeId != null) {
+            buildingType = buildingTypeController.find(buildingTypeId = payload.buildingTypeId) ?: return createNotFound(createNotFoundMessage(target = BUILDING_TYPE, id = payload.buildingTypeId))
+        }
+
+        val updatedBuilding = buildingController.update(
+            buildingToUpdate = buildingToUpdate,
+            building = payload,
+            newBuildingType = buildingType,
+            userId = userId
+        )
+
         return createOk(buildingTranslator.translate(updatedBuilding))
     }
 
@@ -1054,6 +1131,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         const val HAZ_MATERIAL = "Hazardous material"
         const val WASTE_SPECIFIER = "Waste specifier"
         const val HAZARDOUS_WASTE = "Hazardous waste"
+        const val BUILDING_TYPE = "Building type"
     }
 
 }

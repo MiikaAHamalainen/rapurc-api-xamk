@@ -27,6 +27,7 @@ class ReusableDAO: AbstractDAO<Reusable>() {
      * @param amount amount
      * @param unit unit
      * @param description description
+     * @param amountAsWaste amount marked as waste
      * @param creatorId creator id
      * @param lastModifierId modifier id
      * @return created reusable
@@ -40,6 +41,7 @@ class ReusableDAO: AbstractDAO<Reusable>() {
         amount: Double?,
         unit: Unit?,
         description: String?,
+        amountAsWaste: Double?,
         creatorId: UUID,
         lastModifierId: UUID
     ): Reusable {
@@ -168,6 +170,20 @@ class ReusableDAO: AbstractDAO<Reusable>() {
      */
     fun updateDescription(reusable: Reusable, description: String?, modifierId: UUID): Reusable {
         reusable.description = description
+        reusable.lastModifierId = modifierId
+        return persist(reusable)
+    }
+
+    /**
+     * Updates reusable amountAsWaste
+     *
+     * @param reusable reusable to update
+     * @param amountAsWaste amount As Waste
+     * @param modifierId modifier id
+     * @return updated reusable
+     */
+    fun updateAmountAsWaste(reusable: Reusable, amountAsWaste: Double?, modifierId: UUID): Reusable {
+        reusable.amountAsWaste = amountAsWaste
         reusable.lastModifierId = modifierId
         return persist(reusable)
     }

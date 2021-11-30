@@ -54,6 +54,7 @@ class ReusableController {
             amount = reusable.amount,
             unit = reusable.unit,
             description = reusable.description,
+            amountAsWaste = reusable.amountAsWaste,
             creatorId = userId,
             lastModifierId = userId
         )
@@ -98,15 +99,15 @@ class ReusableController {
             )
         }
 
+        surveyDAO.update(reusableToUpdate.survey!!, userId)
+
         val result = reusableDAO.updateComponentName(reusableToUpdate, reusable.componentName, userId)
         reusableDAO.updateMaterialId(result, reusable.reusableMaterialId, userId)
         reusableDAO.updateUsability(result, reusable.usability, userId)
         reusableDAO.updateAmount(result, reusable.amount, userId)
         reusableDAO.updateUnit(result, reusable.unit, userId)
         reusableDAO.updateDescription(result, reusable.description, userId)
-
-        surveyDAO.update(reusableToUpdate.survey!!, userId)
-        return result
+        return reusableDAO.updateAmountAsWaste(result, reusable.amountAsWaste, userId)
     }
 
     /**
