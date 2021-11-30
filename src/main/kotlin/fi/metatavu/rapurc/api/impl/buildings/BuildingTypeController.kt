@@ -61,7 +61,8 @@ class BuildingTypeController {
      */
     fun update(oldBuildingType: BuildingType, newBuildingType: fi.metatavu.rapurc.api.model.BuildingType, modifierId: UUID): BuildingType {
         val result = buildingTypeDAO.updateName(oldBuildingType, newBuildingType.name, modifierId)
-        return buildingTypeDAO.updateCode(result, newBuildingType.code, modifierId)
+        buildingTypeDAO.updateCode(result, newBuildingType.code, modifierId)
+        return result
     }
 
     /**
