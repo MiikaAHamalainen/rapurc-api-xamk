@@ -3,6 +3,7 @@ package fi.metatavu.rapurc.api.impl.buildings
 import fi.metatavu.rapurc.api.persistence.dao.BuildingDAO
 import fi.metatavu.rapurc.api.persistence.dao.OtherStructureDAO
 import fi.metatavu.rapurc.api.persistence.model.Building
+import fi.metatavu.rapurc.api.persistence.model.BuildingType
 import fi.metatavu.rapurc.api.persistence.model.Survey
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
@@ -24,10 +25,11 @@ class BuildingController {
      * Lists buildings based on survey
      *
      * @param survey survey
+     * @param buildingType building type
      * @return filtered building list
      */
-    fun list(survey: Survey): List<Building> {
-        return buildingDAO.list(survey)
+    fun list(survey: Survey?, buildingType: BuildingType?): List<Building> {
+        return buildingDAO.list(survey, buildingType)
     }
 
     /**
@@ -35,16 +37,17 @@ class BuildingController {
      *
      * @param survey survey which the building belongs to
      * @param building building data
+     * @param buildingType new building type
      * @param creatorId creator id
      * @return created Building
      */
-    fun create(survey: Survey, building: fi.metatavu.rapurc.api.model.Building, creatorId: UUID): Building {
+    fun create(survey: Survey, building: fi.metatavu.rapurc.api.model.Building, buildingType: BuildingType?, creatorId: UUID): Building {
         val createdBuilding = buildingDAO.create(
             id = UUID.randomUUID(),
             survey = survey,
             propertyId = building.propertyId,
             buildingId = building.buildingId,
-            classificationCode = building.classificationCode,
+            buildingType = buildingType,
             constructionYear = building.constructionYear,
             space = building.space,
             volume = building.volume,
@@ -88,13 +91,19 @@ class BuildingController {
      *
      * @param buildingToUpdate original building to update
      * @param building new building data
+     * @param newBuildingType new building type
      * @param userId modifier id
      * @return update Building
      */
-    fun update(buildingToUpdate: Building, building: fi.metatavu.rapurc.api.model.Building, userId: UUID): Building {
+    fun update(
+        buildingToUpdate: Building,
+        building: fi.metatavu.rapurc.api.model.Building,
+        newBuildingType: BuildingType?,
+        userId: UUID
+    ): Building {
         val result = buildingDAO.updatePropertyId(buildingToUpdate, building.propertyId, userId)
         buildingDAO.updateBuildingId(result, building.buildingId, userId)
-        buildingDAO.updateClassificationCode(result, building.classificationCode, userId)
+        buildingDAO.updateBuildingType(result, newBuildingType, userId)
         buildingDAO.updateConstructionYear(result, building.constructionYear, userId)
         buildingDAO.updateSpace(result, building.space, userId)
         buildingDAO.updateVolume(result, building.volume, userId)

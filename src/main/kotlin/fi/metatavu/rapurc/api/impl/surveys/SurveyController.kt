@@ -141,7 +141,7 @@ class SurveyController {
      * @param survey survey to delete
      */
     fun deleteSurvey(survey: Survey) {
-        buildingController.list(survey = survey).forEach(buildingController::delete)
+        buildingController.list(survey = survey, buildingType = null).forEach(buildingController::delete)
         ownerInformationController.list(survey = survey).forEach(ownerInformationController::delete)
         reusableController.list(survey = survey, material = null)?.forEach(reusableController::delete)
         wasteController.list(survey = survey, wasteMaterial = null, usage = null).forEach(wasteController::delete)

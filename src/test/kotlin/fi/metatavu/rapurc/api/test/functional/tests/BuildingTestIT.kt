@@ -40,7 +40,8 @@ class BuildingTestIT {
 
             val createdBuilding = it.userA.buildings.create(
                 surveyId = createdSurveyA1.id,
-                buildingSurveyId = createdSurveyA1.id
+                buildingSurveyId = createdSurveyA1.id,
+                buildingTypeId = null
             )
 
             assertNotNull(createdBuilding)
@@ -70,12 +71,14 @@ class BuildingTestIT {
             val createdSurveyA2 = it.userA.surveys.create()
             it.userA.buildings.create(
                 surveyId = createdSurveyA1.id!!,
-                buildingSurveyId = createdSurveyA1.id
+                buildingSurveyId = createdSurveyA1.id,
+                buildingTypeId = null
             )
 
             it.userA.buildings.create(
                 surveyId = createdSurveyA2.id!!,
-                buildingSurveyId = createdSurveyA2.id
+                buildingSurveyId = createdSurveyA2.id,
+                buildingTypeId = null
             )
 
             it.userA.buildings.assertCount(1, createdSurveyA1.id)
@@ -95,12 +98,14 @@ class BuildingTestIT {
             val createdSurveyB1 = it.userB.surveys.create()
             val building1 = it.userA.buildings.create(
                 surveyId = createdSurveyA1.id!!,
-                buildingSurveyId = createdSurveyA1.id
+                buildingSurveyId = createdSurveyA1.id,
+                buildingTypeId = null
             )
 
             val building2 = it.userB.buildings.create(
                 surveyId = createdSurveyB1.id!!,
-                buildingSurveyId = createdSurveyB1.id
+                buildingSurveyId = createdSurveyB1.id,
+                buildingTypeId = null
             )
 
             val foundBuilding = it.userA.buildings.findBuilding(createdSurveyA1.id, building1!!.id!!)
@@ -120,13 +125,13 @@ class BuildingTestIT {
             val createdSurveyA1 = it.userA.surveys.create()
             val building1 = it.userA.buildings.create(
                 surveyId = createdSurveyA1.id!!,
-                buildingSurveyId = createdSurveyA1.id
+                buildingSurveyId = createdSurveyA1.id,
+                buildingTypeId = null
             )
 
             val newBuldingInfo = building1!!.copy(
                 propertyId = "property id 2",
                 facadeMaterial = "concrete",
-                classificationCode = "code3",
                 constructionYear = 1993,
                 otherStructures = arrayOf(
                     OtherStructure(
@@ -159,15 +164,18 @@ class BuildingTestIT {
             val createdSurveyB1 = it.userB.surveys.create()
             val building1 = it.userA.buildings.create(
                 surveyId = createdSurveyA1.id!!,
-                buildingSurveyId = createdSurveyA1.id
+                buildingSurveyId = createdSurveyA1.id,
+                buildingTypeId = null
             )
             val building2 = it.userB.buildings.create(
                 surveyId = createdSurveyB1.id!!,
-                buildingSurveyId = createdSurveyB1.id
+                buildingSurveyId = createdSurveyB1.id,
+                buildingTypeId = null
             )
             val building3 = it.userB.buildings.create(
                 surveyId = createdSurveyB1.id,
-                buildingSurveyId = createdSurveyB1.id
+                buildingSurveyId = createdSurveyB1.id,
+                buildingTypeId = null
             )
 
             it.userA.buildings.assertDeleteFailStatus(403, building2!!)

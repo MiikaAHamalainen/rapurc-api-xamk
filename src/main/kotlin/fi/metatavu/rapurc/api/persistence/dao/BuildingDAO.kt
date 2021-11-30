@@ -1,13 +1,11 @@
 package fi.metatavu.rapurc.api.persistence.dao
 
-import fi.metatavu.rapurc.api.persistence.model.Building
-import fi.metatavu.rapurc.api.persistence.model.Building_
-import fi.metatavu.rapurc.api.persistence.model.OtherStructure
-import fi.metatavu.rapurc.api.persistence.model.Survey
+import fi.metatavu.rapurc.api.persistence.model.*
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.persistence.TypedQuery
 import javax.persistence.criteria.CriteriaQuery
+import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 /**
@@ -23,7 +21,7 @@ class BuildingDAO: AbstractDAO<Building>() {
      * @param survey survey
      * @param propertyId property id
      * @param buildingId building id
-     * @param classificationCode classification code
+     * @param buildingType building type
      * @param constructionYear construction year
      * @param space space of building
      * @param volume volume of building
@@ -45,7 +43,7 @@ class BuildingDAO: AbstractDAO<Building>() {
         survey: Survey,
         propertyId: String?,
         buildingId: String?,
-        classificationCode: String?,
+        buildingType: BuildingType?,
         constructionYear: Int?,
         space: Int?,
         volume: Int?,
@@ -66,7 +64,7 @@ class BuildingDAO: AbstractDAO<Building>() {
         building.survey = survey
         building.propertyId = propertyId
         building.buildingId = buildingId
-        building.classificationCode = classificationCode
+        building.buildingType = buildingType
         building.constructionYear = constructionYear
         building.space = space
         building.volume = volume
@@ -88,107 +86,239 @@ class BuildingDAO: AbstractDAO<Building>() {
      * Lists buildings added in survey
      *
      * @param survey survey
+     * @param buildingType building type
      * @return filtered buildings list
      */
-    fun list(survey: Survey): List<Building> {
+    fun list(survey: Survey?, buildingType: BuildingType?): List<Building> {
         val entityManager = getEntityManager()
         val criteriaBuilder = entityManager.criteriaBuilder
         val criteria: CriteriaQuery<Building> = criteriaBuilder.createQuery(Building::class.java)
         val root: Root<Building> = criteria.from(Building::class.java)
 
         criteria.select(root)
-        criteria.where(criteriaBuilder.equal(root.get(Building_.survey), survey))
+        val restrictions = ArrayList<Predicate>()
+
+        if (survey != null) {
+            restrictions.add(criteriaBuilder.equal(root.get(Building_.survey), survey))
+        }
+
+        if (buildingType != null) {
+            restrictions.add(criteriaBuilder.equal(root.get(Building_.buildingType), buildingType))
+        }
+
+        criteria.select(root)
+        criteria.where(*restrictions.toTypedArray())
         val query: TypedQuery<Building> = entityManager.createQuery(criteria)
         return query.resultList
     }
 
-    fun updatePropertyId(building: Building, propertyId: String?, userId: UUID): Building {
+    /**
+     * Updates property id of the building
+     *
+     * @param building building to update
+     * @param propertyId new property id
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updatePropertyId(building: Building, propertyId: String?, modifierId: UUID): Building {
         building.propertyId = propertyId
-        building.lastModifierId = userId
+        building.lastModifierId = modifierId
         return persist(building)
     }
 
-    fun updateBuildingId(building: Building, buildingId: String?, userId: UUID): Building {
+    /**
+     * Updates building id of the building
+     *
+     * @param building building to update
+     * @param buildingId new building id
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updateBuildingId(building: Building, buildingId: String?, modifierId: UUID): Building {
         building.buildingId = buildingId
-        building.lastModifierId = userId
+        building.lastModifierId = modifierId
         return persist(building)
     }
 
-    fun updateClassificationCode(building: Building, classificationCode: String?, userId: UUID): Building {
-        building.classificationCode = classificationCode
-        building.lastModifierId = userId
+    /**
+     * Updates building type of the building
+     *
+     * @param building building to update
+     * @param buildingType new building type
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updateBuildingType(building: Building, buildingType: BuildingType?, modifierId: UUID): Building {
+        building.buildingType = buildingType
+        building.lastModifierId = modifierId
         return persist(building)
     }
 
-    fun updateConstructionYear(building: Building, constructionYear: Int?, userId: UUID): Building {
+    /**
+     * Updates construction year of the building
+     *
+     * @param building building to update
+     * @param constructionYear new construction year
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updateConstructionYear(building: Building, constructionYear: Int?, modifierId: UUID): Building {
         building.constructionYear = constructionYear
-        building.lastModifierId = userId
+        building.lastModifierId = modifierId
         return persist(building)
     }
 
-    fun updateSpace(building: Building, space: Int?, userId: UUID): Building {
+    /**
+     * Updates space of the building
+     *
+     * @param building building to update
+     * @param space new space
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updateSpace(building: Building, space: Int?, modifierId: UUID): Building {
         building.space = space
-        building.lastModifierId = userId
+        building.lastModifierId = modifierId
         return persist(building)
     }
 
-    fun updateVolume(building: Building, volume: Int?, userId: UUID): Building {
+    /**
+     * Updates volume of the building
+     *
+     * @param building building to update
+     * @param volume new volume
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updateVolume(building: Building, volume: Int?, modifierId: UUID): Building {
         building.volume = volume
-        building.lastModifierId = userId
+        building.lastModifierId = modifierId
         return persist(building)
     }
 
-    fun updateFloors(building: Building, floors: Int?, userId: UUID): Building {
+    /**
+     * Updates floors of the building
+     *
+     * @param building building to update
+     * @param floors new floors
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updateFloors(building: Building, floors: Int?, modifierId: UUID): Building {
         building.floors = floors
-        building.lastModifierId = userId
+        building.lastModifierId = modifierId
         return persist(building)
     }
 
-    fun updateBasements(building: Building, basements: Int?, userId: UUID): Building {
+    /**
+     * Updates basements of the building
+     *
+     * @param building building to update
+     * @param basements new basements
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updateBasements(building: Building, basements: Int?, modifierId: UUID): Building {
         building.basements = basements
-        building.lastModifierId = userId
+        building.lastModifierId = modifierId
         return persist(building)
     }
 
-    fun updateFoundation(building: Building, foundation: String?, userId: UUID): Building {
+    /**
+     * Updates foundation of the building
+     *
+     * @param building building to update
+     * @param foundation new foundation
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updateFoundation(building: Building, foundation: String?, modifierId: UUID): Building {
         building.foundation = foundation
-        building.lastModifierId = userId
+        building.lastModifierId = modifierId
         return persist(building)
     }
 
-    fun updateSupportStructure(building: Building, supportingStructure: String?, userId: UUID): Building {
+    /**
+     * Updates supporting structure of the building
+     *
+     * @param building building to update
+     * @param supportingStructure new supporting structure
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updateSupportStructure(building: Building, supportingStructure: String?, modifierId: UUID): Building {
         building.supportStructure = supportingStructure
-        building.lastModifierId = userId
+        building.lastModifierId = modifierId
         return persist(building)
     }
 
-    fun updateFacadeMateria(building: Building, facadeMaterial: String?, userId: UUID): Building {
+    /**
+     * Updates facade material of the building
+     *
+     * @param building building to update
+     * @param facadeMaterial new facade material
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updateFacadeMateria(building: Building, facadeMaterial: String?, modifierId: UUID): Building {
         building.facadeMaterial = facadeMaterial
-        building.lastModifierId = userId
+        building.lastModifierId = modifierId
         return persist(building)
     }
 
-    fun updateRoofType(building: Building, roofType: String?, userId: UUID): Building {
+    /**
+     * Updates oof type of the building
+     *
+     * @param building building to update
+     * @param roofType new roof type
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updateRoofType(building: Building, roofType: String?, modifierId: UUID): Building {
         building.roofType = roofType
-        building.lastModifierId = userId
+        building.lastModifierId = modifierId
         return persist(building)
     }
 
-    fun updateStreetAddress(building: Building, streetAddress: String?, userId: UUID): Building {
+    /**
+     * Updates street address of the building
+     *
+     * @param building building to update
+     * @param streetAddress new street address
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updateStreetAddress(building: Building, streetAddress: String?, modifierId: UUID): Building {
         building.streetAddress = streetAddress
-        building.lastModifierId = userId
+        building.lastModifierId = modifierId
         return persist(building)
     }
 
-    fun updateCity(building: Building, city: String?, userId: UUID): Building {
+    /**
+     * Updates city of the building
+     *
+     * @param building building to update
+     * @param city new city
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updateCity(building: Building, city: String?, modifierId: UUID): Building {
         building.city = city
-        building.lastModifierId = userId
+        building.lastModifierId = modifierId
         return persist(building)
     }
 
-    fun updatePostCode(building: Building, postCode: String?, userId: UUID): Building {
+    /**
+     * Updates postCode of the building
+     *
+     * @param building building to update
+     * @param postCode new postCode
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updatePostCode(building: Building, postCode: String?, modifierId: UUID): Building {
         building.postCode = postCode
-        building.lastModifierId = userId
+        building.lastModifierId = modifierId
         return persist(building)
     }
 
