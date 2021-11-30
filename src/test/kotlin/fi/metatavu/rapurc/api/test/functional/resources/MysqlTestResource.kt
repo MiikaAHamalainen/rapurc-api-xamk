@@ -13,7 +13,7 @@ internal class SpecifiedMySQLContainer(image: String):MySQLContainer<SpecifiedMy
  */
 class MysqlTestResource : QuarkusTestResourceLifecycleManager {
 
-    private val db: MySQLContainer<*> = SpecifiedMySQLContainer("mysql:5.7")
+    private val db: MySQLContainer<*> = SpecifiedMySQLContainer("mysql:5.6")
         .withDatabaseName(DATABASE)
         .withUsername(USERNAME)
         .withPassword(PASSWORD)
@@ -37,8 +37,8 @@ class MysqlTestResource : QuarkusTestResourceLifecycleManager {
     }
 
     companion object {
-        const val DATABASE = "pages-api"
-        const val USERNAME = "pages-api"
+        const val DATABASE = "rapurc-api"
+        const val USERNAME = "rapurc-api"
         const val PASSWORD = "password"
     }
 

@@ -4,7 +4,7 @@ plugins {
     kotlin("jvm") version "1.5.31"
     kotlin("plugin.allopen") version "1.5.31"
     id("io.quarkus")
-    id("org.openapi.generator") version "5.2.1"
+    id("org.openapi.generator") version "5.1.1"
     id("org.jetbrains.kotlin.kapt") version "1.5.31"
 }
 
@@ -32,11 +32,13 @@ dependencies {
     implementation("io.quarkus:quarkus-resteasy-jackson")
     implementation("io.quarkus:quarkus-liquibase")
     implementation("io.quarkus:quarkus-jdbc-mysql")
+    implementation ("io.quarkus:quarkus-keycloak-admin-client")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.quarkus:quarkus-arc")
     implementation("org.apache.commons:commons-lang3")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.jboss.logging:commons-logging-jboss-logging")
 
     testImplementation("com.squareup.okhttp3:okhttp")
     testImplementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
@@ -50,7 +52,7 @@ dependencies {
     kapt("org.hibernate:hibernate-jpamodelgen:5.5.7.Final")
 }
 
-group = "fi.metatavu.example"
+group = "fi.metatavu.rapurc"
 version = "1.0.0-SNAPSHOT"
 
 java {
@@ -82,9 +84,9 @@ val generateApiSpec = tasks.register("generateApiSpec",GenerateTask::class){
     setProperty("generatorName", "jaxrs-spec")
     setProperty("inputSpec",  "$rootDir/rapurc-api-spec/swagger.yaml")
     setProperty("outputDir", "$buildDir/generated/api-spec")
-    setProperty("apiPackage", "fi.metatavu.example.api.spec")
-    setProperty("invokerPackage", "fi.metatavu.example.api.invoker")
-    setProperty("modelPackage", "fi.metatavu.example.api.model")
+    setProperty("apiPackage", "fi.metatavu.rapurc.api.spec")
+    setProperty("invokerPackage", "fi.metatavu.rapurc.api.invoker")
+    setProperty("modelPackage", "fi.metatavu.rapurc.api.model")
     this.configOptions.put("dateLibrary", "java8")
     this.configOptions.put("interfaceOnly", "true")
     this.configOptions.put("returnResponse", "true")
@@ -97,7 +99,8 @@ val generateApiClient = tasks.register("generateApiClient",GenerateTask::class){
     setProperty("library", "jvm-okhttp3")
     setProperty("inputSpec",  "$rootDir/rapurc-api-spec/swagger.yaml")
     setProperty("outputDir", "$buildDir/generated/api-client")
-    setProperty("packageName", "fi.metatavu.example.api.client")
+    setProperty("packageName", "fi.metatavu.rapurc.api.client")
+    this.typeMappings.put("URI", "kotlin.String")
     this.configOptions.put("dateLibrary", "string")
     this.configOptions.put("collectionType", "array")
 }

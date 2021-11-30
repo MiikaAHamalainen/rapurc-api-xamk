@@ -1,6 +1,6 @@
 package fi.metatavu.rapurc.api.test.functional
 
-import fi.metatavu.example.api.client.infrastructure.ApiClient
+import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.jaxrs.test.functional.builder.AbstractTestBuilder
 import fi.metatavu.jaxrs.test.functional.builder.auth.AccessTokenProvider
 import fi.metatavu.jaxrs.test.functional.builder.auth.AuthorizedTestBuilderAuthentication
@@ -8,7 +8,6 @@ import fi.metatavu.jaxrs.test.functional.builder.auth.KeycloakAccessTokenProvide
 import fi.metatavu.rapurc.api.test.functional.auth.TestBuilderAuthentication
 import fi.metatavu.rapurc.api.test.functional.settings.ApiTestSettings
 import org.eclipse.microprofile.config.ConfigProvider
-import java.io.IOException
 
 /**
  * Abstract test builder class
@@ -19,7 +18,9 @@ class TestBuilder: AbstractTestBuilder<ApiClient>() {
 
     val settings = ApiTestSettings()
 
-    private var manager: TestBuilderAuthentication? = null
+    val admin = createTestBuilderAuthentication(username = "admin", password = "adminPassword")
+    val userA = createTestBuilderAuthentication(username = "user_a", password = "passworda")
+    val userB = createTestBuilderAuthentication(username = "user_b", password = "passwordb")
 
     override fun createTestBuilderAuthentication(
         testBuilder: AbstractTestBuilder<ApiClient>,
@@ -29,22 +30,16 @@ class TestBuilder: AbstractTestBuilder<ApiClient>() {
     }
 
     /**
-     * Returns authentication resource authenticated as manager
+     * Creates test builder authenticatior for given user
      *
-     * @return authentication resource authenticated as manager
-     * @throws IOException
+     * @param username username
+     * @param password password
+     * @return test builder authenticatior for given user
      */
-    @kotlin.jvm.Throws(IOException::class)
-    fun manager(): TestBuilderAuthentication {
-        if (manager == null) {
-            val authServerUrl: String = ConfigProvider.getConfig().getValue("keycloak.url", String::class.java)
-            val realm: String = ConfigProvider.getConfig().getValue("keycloak.realm", String::class.java)
-            val clientId = "test"
-            val username = "manager"
-            val password = "test"
-            manager = TestBuilderAuthentication(this, KeycloakAccessTokenProvider(authServerUrl, realm, clientId, username, password, null))
-        }
-
-        return manager!!
+    private fun createTestBuilderAuthentication(username: String, password: String): TestBuilderAuthentication {
+        val authServerUrl: String = ConfigProvider.getConfig().getValue("keycloak.url", String::class.java)
+        val realm: String = ConfigProvider.getConfig().getValue("keycloak.realm", String::class.java)
+        val clientId = "test"
+        return TestBuilderAuthentication(this, KeycloakAccessTokenProvider(authServerUrl, realm, clientId, username, password, null))
     }
 }

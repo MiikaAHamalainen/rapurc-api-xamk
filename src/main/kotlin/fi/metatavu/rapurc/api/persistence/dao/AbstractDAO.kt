@@ -1,6 +1,6 @@
 package fi.metatavu.rapurc.api.persistence.dao
 
-import org.slf4j.Logger
+import org.jboss.logging.Logger
 import java.lang.reflect.ParameterizedType
 import java.util.*
 import javax.inject.Inject
@@ -126,7 +126,7 @@ abstract class AbstractDAO<T> {
      * @return entity or null if result is empty
      */
     protected open fun <X> getSingleResult(query: TypedQuery<X>): X? {
-        val list: List<X> = query.getResultList()
+        val list: List<X> = query.resultList
         if (list.isEmpty()) return null
         if (list.size > 1) {
             logger.error(String.format("SingleResult query returned %d elements from %s", list.size, genericTypeClass!!.name))

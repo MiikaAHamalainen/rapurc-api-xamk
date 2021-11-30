@@ -17,6 +17,11 @@ class KeycloakTestResource: QuarkusTestResourceLifecycleManager {
         config["quarkus.oidc.client-id"] = "api"
         config["quarkus.oidc.credentials.secret"] = "bb6a066e-3728-460f-a97c-aa73b0318475"
 
+        config["rapurc.keycloak.api-admin.secret"] = "4f9fb574-f5c1-4e85-b99f-82b14fd1af12"
+        config["rapurc.keycloak.api-admin.client"] = "admin-client"
+        config["rapurc.keycloak.api-admin.password"] = "3455cbd2-1127-440d-853a-1c409d36880b"
+        config["rapurc.keycloak.api-admin.user"] = "api-admin"
+
         config["keycloak.url"] = keycloak.authServerUrl
         config["keycloak.realm"] = "rapurc"
 
