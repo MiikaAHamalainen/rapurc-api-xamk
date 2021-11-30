@@ -1,6 +1,7 @@
 package fi.metatavu.rapurc.api.impl.waste
 
 import fi.metatavu.rapurc.api.persistence.dao.HazardousWasteDAO
+import fi.metatavu.rapurc.api.persistence.dao.SurveyDAO
 import fi.metatavu.rapurc.api.persistence.model.*
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
@@ -14,6 +15,9 @@ class HazardousWasteController {
 
     @Inject
     lateinit var hazardousWasteDAO: HazardousWasteDAO
+
+    @Inject
+    lateinit var surveyDAO: SurveyDAO
 
     /**
      * Lists hazardous waste
@@ -50,6 +54,7 @@ class HazardousWasteController {
         description: String?,
         userId: UUID
     ): HazardousWaste {
+        surveyDAO.update(survey, userId)
         return hazardousWasteDAO.create(
             id = UUID.randomUUID(),
             survey = survey,
@@ -89,6 +94,7 @@ class HazardousWasteController {
         wasteSpecifier: WasteSpecifier,
         userId: UUID
     ): HazardousWaste {
+        surveyDAO.update(hazardousWaste.survey!!, userId)
         val result = hazardousWasteDAO.updateHazardousMaterial(hazardousWaste, hazardousMaterial, userId)
         hazardousWasteDAO.updateWasteSpecifier(result, wasteSpecifier, userId)
         hazardousWasteDAO.updateAmount(result, newHazardousWaste.amount, userId)
@@ -99,8 +105,10 @@ class HazardousWasteController {
      * Deletes hazardous
      *
      * @param hazardousWaste hazardous waste to delete
+     * @param userId user id
      */
-    fun delete(hazardousWaste: HazardousWaste) {
+    fun delete(hazardousWaste: HazardousWaste, userId: UUID) {
+        surveyDAO.update(hazardousWaste.survey!!, userId)
         hazardousWasteDAO.delete(hazardousWaste)
     }
 

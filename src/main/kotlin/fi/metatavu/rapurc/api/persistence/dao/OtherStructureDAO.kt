@@ -50,6 +50,7 @@ class OtherStructureDAO: AbstractDAO<OtherStructure>() {
 
         criteria.select(root)
         criteria.where(criteriaBuilder.equal(root.get(OtherStructure_.building), building))
+        criteria.orderBy(criteriaBuilder.asc(root.get(OtherStructure_.name)))
         val query: TypedQuery<OtherStructure> = entityManager.createQuery(criteria)
 
         return query.resultList

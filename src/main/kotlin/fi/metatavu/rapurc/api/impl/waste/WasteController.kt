@@ -1,5 +1,6 @@
 package fi.metatavu.rapurc.api.impl.waste
 
+import fi.metatavu.rapurc.api.persistence.dao.SurveyDAO
 import fi.metatavu.rapurc.api.persistence.dao.WasteDAO
 import fi.metatavu.rapurc.api.persistence.model.Survey
 import fi.metatavu.rapurc.api.persistence.model.WasteUsage
@@ -17,6 +18,9 @@ class WasteController {
 
     @Inject
     lateinit var wasteDAO: WasteDAO
+
+    @Inject
+    lateinit var surveyDAO: SurveyDAO
 
     /**
      * Lists waste based on filters
@@ -53,6 +57,7 @@ class WasteController {
         description: String?,
         userId: UUID
     ): Waste {
+        surveyDAO.update(survey, userId)
         return wasteDAO.create(
             id = UUID.randomUUID(),
             usage = usage,
@@ -86,6 +91,7 @@ class WasteController {
      * @return updated waste
      */
     fun updateWaste(wasteToUpdate: Waste, waste: fi.metatavu.rapurc.api.model.Waste, newWasteMaterial: WasteMaterial, newUsage: WasteUsage, userId: UUID): Waste {
+        surveyDAO.update(wasteToUpdate.survey!!, userId)
         val result = wasteDAO.updateUsage(wasteToUpdate, newUsage, userId)
         wasteDAO.updateWasteMaterial(result, newWasteMaterial, userId)
         wasteDAO.updateAmount(result, waste.amount, userId)
@@ -98,7 +104,8 @@ class WasteController {
      *
      * @param waste waste to delete
      */
-    fun delete(waste: Waste) {
+    fun delete(waste: Waste, userId:UUID) {
+        surveyDAO.update(waste.survey!!, userId)
         wasteDAO.delete(waste)
     }
 

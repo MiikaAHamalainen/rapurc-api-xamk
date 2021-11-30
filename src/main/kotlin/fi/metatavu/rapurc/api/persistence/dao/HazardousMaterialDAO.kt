@@ -63,6 +63,7 @@ class HazardousMaterialDAO: AbstractDAO<HazardousMaterial>(){
         }
 
         criteria.where(criteriaBuilder.and(*restrictions.toTypedArray()))
+        criteria.orderBy(criteriaBuilder.asc(root.get(HazardousMaterial_.createdAt)))
         val query: TypedQuery<HazardousMaterial> = entityManager.createQuery(criteria)
         return query.resultList
     }

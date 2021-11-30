@@ -85,6 +85,7 @@ class ReusableDAO: AbstractDAO<Reusable>() {
         }
 
         criteria.where(*restrictions.toTypedArray())
+        criteria.orderBy(criteriaBuilder.asc(root.get(Reusable_.createdAt)))
         val query: TypedQuery<Reusable> = entityManager.createQuery(criteria)
         return query.resultList
     }

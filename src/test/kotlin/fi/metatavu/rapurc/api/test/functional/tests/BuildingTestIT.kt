@@ -51,12 +51,8 @@ class BuildingTestIT {
             assertEquals(it.userA.buildings.buildingData.facadeMaterial, createdBuilding.facadeMaterial)
 
             assertEquals(
-                it.userA.buildings.buildingData.otherStructures!![0].name,
+                "a bike house",
                 createdBuilding.otherStructures!![0].name
-            )
-            assertEquals(
-                it.userA.buildings.buildingData.otherStructures[0].description,
-                createdBuilding.otherStructures[0].description
             )
         }
     }

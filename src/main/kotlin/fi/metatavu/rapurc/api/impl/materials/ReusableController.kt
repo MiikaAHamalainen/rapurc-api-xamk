@@ -2,6 +2,7 @@ package fi.metatavu.rapurc.api.impl.materials
 
 import fi.metatavu.rapurc.api.persistence.dao.ImageDAO
 import fi.metatavu.rapurc.api.persistence.dao.ReusableDAO
+import fi.metatavu.rapurc.api.persistence.dao.SurveyDAO
 import fi.metatavu.rapurc.api.persistence.model.Reusable
 import fi.metatavu.rapurc.api.persistence.model.ReusableMaterial
 import fi.metatavu.rapurc.api.persistence.model.Survey
@@ -20,6 +21,9 @@ class ReusableController {
 
     @Inject
     lateinit var imageDAO: ImageDAO
+
+    @Inject
+    lateinit var surveyDAO: SurveyDAO
 
     /**
      * Lists Reusables by survey
@@ -63,6 +67,7 @@ class ReusableController {
             )
         }
 
+        surveyDAO.update(survey, userId)
         return createdReusable
     }
 
@@ -94,6 +99,8 @@ class ReusableController {
             )
         }
 
+        surveyDAO.update(reusableToUpdate.survey!!, userId)
+
         val result = reusableDAO.updateComponentName(reusableToUpdate, reusable.componentName, userId)
         reusableDAO.updateMaterialId(result, reusable.reusableMaterialId, userId)
         reusableDAO.updateUsability(result, reusable.usability, userId)
@@ -107,13 +114,15 @@ class ReusableController {
      * Deletes reusable
      *
      * @param reusableToDelete reusable to delete
+     * @param userId user id
      */
-    fun delete(reusableToDelete: Reusable) {
+    fun delete(reusableToDelete: Reusable, userId: UUID) {
         imageDAO.list(reusableToDelete).forEach { image ->
             imageDAO.delete(image)
         }
 
         reusableDAO.delete(reusableToDelete)
+        surveyDAO.update(reusableToDelete.survey!!, userId)
     }
 
 }

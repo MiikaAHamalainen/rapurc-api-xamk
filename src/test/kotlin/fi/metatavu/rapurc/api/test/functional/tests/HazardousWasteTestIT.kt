@@ -58,7 +58,7 @@ class HazardousWasteTestIT {
     }
 
     /**
-     * Tests hazardous waste listing
+     * Tests hazardous waste listing and ordering
      */
     @Test
     fun list() {
@@ -75,14 +75,21 @@ class HazardousWasteTestIT {
                 wasteSpecifierId = wasteSpecifier.id!!
             )
 
-            it.userA.hazWastes.create(
+            val createdWaste = it.userA.hazWastes.create(
                 surveyId = surveyA2.id!!,
                 hazardousMaterialId = hazardousMaterial.id,
                 wasteSpecifierId = wasteSpecifier.id
             )
 
+            it.userA.hazWastes.create(
+                surveyId = surveyA2.id,
+                hazardousMaterialId = hazardousMaterial.id,
+                wasteSpecifierId = wasteSpecifier.id
+            )
+
             assertEquals(1,it.userA.hazWastes.list(surveyA1.id).size)
-            assertEquals(1,it.userA.hazWastes.list(surveyA2.id).size)
+            assertEquals(2,it.userA.hazWastes.list(surveyA2.id).size)
+            assertEquals(createdWaste.id, it.userA.hazWastes.list(surveyA2.id)[0].id)
             it.userB.hazWastes.assertListFailStatus(403, surveyA1.id)
         }
     }

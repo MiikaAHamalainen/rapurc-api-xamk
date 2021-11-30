@@ -73,6 +73,7 @@ class OwnerInformationDAO: AbstractDAO<OwnerInformation>() {
 
         criteria.select(root)
         criteria.where(criteriaBuilder.equal(root.get(OwnerInformation_.survey), survey))
+        criteria.orderBy(criteriaBuilder.asc(root.get(OwnerInformation_.createdAt)))
         val query: TypedQuery<OwnerInformation> = entityManager.createQuery(criteria)
 
         return query.resultList

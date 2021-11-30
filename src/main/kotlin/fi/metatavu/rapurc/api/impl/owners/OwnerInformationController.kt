@@ -2,6 +2,7 @@ package fi.metatavu.rapurc.api.impl.owners
 
 import fi.metatavu.rapurc.api.model.ContactPerson
 import fi.metatavu.rapurc.api.persistence.dao.OwnerInformationDAO
+import fi.metatavu.rapurc.api.persistence.dao.SurveyDAO
 import fi.metatavu.rapurc.api.persistence.model.OwnerInformation
 import fi.metatavu.rapurc.api.persistence.model.Survey
 import java.util.*
@@ -16,6 +17,9 @@ class OwnerInformationController {
 
     @Inject
     lateinit var ownerInformationDAO: OwnerInformationDAO
+
+    @Inject
+    lateinit var surveyDAO: SurveyDAO
 
     /**
      * Creates new owner information entity
@@ -34,6 +38,7 @@ class OwnerInformationController {
         contactPerson: ContactPerson?,
         creatorId: UUID
     ): OwnerInformation {
+        surveyDAO.update(survey, creatorId)
         return ownerInformationDAO.create(
             id = UUID.randomUUID(),
             survey = survey,
@@ -82,6 +87,7 @@ class OwnerInformationController {
         newOwnerInformation: fi.metatavu.rapurc.api.model.OwnerInformation,
         userId: UUID
     ): OwnerInformation {
+        surveyDAO.update(ownerInformationToUpdate.survey!!, userId)
         var result = ownerInformationDAO.updateOwnerName(ownerInformationToUpdate, newOwnerInformation.ownerName, userId)
         ownerInformationDAO.updateBusinessId(result, newOwnerInformation.businessId, userId)
         ownerInformationDAO.updateFirstName(result, newOwnerInformation.contactPerson?.firstName, userId)
@@ -96,8 +102,10 @@ class OwnerInformationController {
      * Deletes owner information
      *
      * @param ownerInformationToDelete owner information to delete
+     * @param userId user id
      */
-    fun delete(ownerInformationToDelete: OwnerInformation) {
+    fun delete(ownerInformationToDelete: OwnerInformation, userId: UUID) {
+        surveyDAO.update(ownerInformationToDelete.survey!!, userId)
         ownerInformationDAO.delete(ownerInformationToDelete)
     }
 

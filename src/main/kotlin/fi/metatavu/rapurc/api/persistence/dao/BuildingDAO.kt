@@ -108,6 +108,7 @@ class BuildingDAO: AbstractDAO<Building>() {
 
         criteria.select(root)
         criteria.where(*restrictions.toTypedArray())
+        criteria.orderBy(criteriaBuilder.asc(root.get(Building_.createdAt)))
         val query: TypedQuery<Building> = entityManager.createQuery(criteria)
         return query.resultList
     }
