@@ -434,4 +434,48 @@
       <column name="amountAsWaste" type="double"/>
     </addColumn>
   </changeSet>
+
+  <changeSet id="surveyors" author="jari nykanen">
+    <createTable tableName="surveyor">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="survey_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_SURVEYOR_SURVEY_ID_SURVEY_ID" referencedColumnNames="id" referencedTableName="survey"/>
+      </column>
+      <column name="firstname" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastname" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="company" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="phone" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="role" type="varchar(192)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="email" type="varchar(192)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="reportdate" type="datetime(6)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
 </databaseChangeLog>

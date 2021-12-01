@@ -3,6 +3,7 @@ package fi.metatavu.rapurc.api.impl.surveys
 import fi.metatavu.rapurc.api.impl.buildings.BuildingController
 import fi.metatavu.rapurc.api.impl.materials.ReusableController
 import fi.metatavu.rapurc.api.impl.owners.OwnerInformationController
+import fi.metatavu.rapurc.api.impl.surveyors.SurveyorController
 import fi.metatavu.rapurc.api.impl.translate.HazardousWasteTranslator
 import fi.metatavu.rapurc.api.impl.waste.HazardousWasteController
 import fi.metatavu.rapurc.api.impl.waste.WasteController
@@ -25,6 +26,9 @@ class SurveyController {
 
     @Inject
     lateinit var surveyDAO: SurveyDAO
+
+    @Inject
+    lateinit var surveyorController: SurveyorController
 
     @Inject
     lateinit var buildingController: BuildingController
@@ -125,11 +129,22 @@ class SurveyController {
      *
      * @param survey survey to update
      * @param status new status
+     * @param startDate start date
+     * @param endDate end date
      * @param lastModifierId last modifier's id
      * @return updated survey
      */
-    fun update(survey: Survey, status: SurveyStatus, lastModifierId: UUID): Survey {
-        return surveyDAO.updateStatus(survey = survey, status = status, lastModifierId = lastModifierId)
+    fun update(
+        survey: Survey,
+        status: SurveyStatus,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+        lastModifierId: UUID
+    ): Survey {
+        val result = surveyDAO.updateStatus(survey = survey, status = status, lastModifierId = lastModifierId)
+        surveyDAO.updateStartDate(survey = result, startDate = startDate, lastModifierId = lastModifierId)
+        surveyDAO.updateEndDate(survey = result, endDate = endDate, lastModifierId = lastModifierId)
+        return result
     }
 
     /**
@@ -139,6 +154,7 @@ class SurveyController {
      * @param userId user id
      */
     fun deleteSurvey(survey: Survey, userId: UUID) {
+        surveyorController.list(survey = survey).forEach { surveyorController.delete(it, userId) }
         buildingController.list(survey = survey, buildingType = null).forEach { buildingController.delete(it, userId) }
         ownerInformationController.list(survey = survey).forEach { ownerInformationController.delete(it, userId) }
         reusableController.list(survey = survey, material = null)?.forEach { reusableController.delete(it, userId)}

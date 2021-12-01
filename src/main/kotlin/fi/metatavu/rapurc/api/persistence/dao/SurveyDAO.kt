@@ -119,6 +119,34 @@ class SurveyDAO: AbstractDAO<Survey>() {
     }
 
     /**
+     * Updates start date
+     *
+     * @param survey survey to update
+     * @param startDate new start date
+     * @param lastModifierId last modifier's id
+     * @return updated survey
+     */
+    fun updateStartDate(survey: Survey, startDate: LocalDate?, lastModifierId: UUID): Survey {
+        survey.startDate = startDate
+        survey.lastModifierId = lastModifierId
+        return persist(survey)
+    }
+
+    /**
+     * Updates end date
+     *
+     * @param survey survey to update
+     * @param endDate new end date
+     * @param lastModifierId last modifier's id
+     * @return updated survey
+     */
+    fun updateEndDate(survey: Survey, endDate: LocalDate?, lastModifierId: UUID): Survey {
+        survey.endDate = endDate
+        survey.lastModifierId = lastModifierId
+        return persist(survey)
+    }
+
+    /**
      * Updates status
      *
      * @param survey survey to update
@@ -141,8 +169,7 @@ class SurveyDAO: AbstractDAO<Survey>() {
      */
     fun update(survey: Survey, lastModifierId: UUID): Survey {
         survey.lastModifierId = lastModifierId
-        val updated = persist(survey)
-        return updated
+        return persist(survey)
     }
 
 }
