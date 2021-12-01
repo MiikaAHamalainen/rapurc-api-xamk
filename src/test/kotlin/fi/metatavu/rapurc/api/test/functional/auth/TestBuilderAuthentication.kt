@@ -21,6 +21,7 @@ class TestBuilderAuthentication(
 
     private var accessTokenProvider: AccessTokenProvider? = accessTokenProvider
     val surveys: SurveyTestBuilderResource = SurveyTestBuilderResource(testBuilder, this.accessTokenProvider, createClient())
+    val surveyors: SurveyorTestBuilderResource = SurveyorTestBuilderResource(testBuilder, this.accessTokenProvider, createClient())
     val owners: OwnerInformationTestBuilderResource = OwnerInformationTestBuilderResource(testBuilder, this.accessTokenProvider, createClient())
     val buildings: BuildingTestBuilderResource = BuildingTestBuilderResource(testBuilder, this.accessTokenProvider, createClient())
     val materials: ReusableMaterialTestBuilderResource = ReusableMaterialTestBuilderResource(testBuilder, this.accessTokenProvider, createClient())

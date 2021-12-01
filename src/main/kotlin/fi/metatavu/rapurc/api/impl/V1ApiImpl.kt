@@ -8,6 +8,7 @@ import fi.metatavu.rapurc.api.impl.materials.ReusableController
 import fi.metatavu.rapurc.api.impl.materials.ReusableMaterialController
 import fi.metatavu.rapurc.api.impl.materials.WasteMaterialController
 import fi.metatavu.rapurc.api.impl.owners.OwnerInformationController
+import fi.metatavu.rapurc.api.impl.surveyors.SurveyorController
 import fi.metatavu.rapurc.api.impl.surveys.SurveyController
 import fi.metatavu.rapurc.api.impl.translate.*
 import fi.metatavu.rapurc.api.impl.waste.*
@@ -38,6 +39,12 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
     @Inject
     lateinit var surveyTranslator: SurveyTranslator
+
+    @Inject
+    lateinit var surveyorController: SurveyorController
+
+    @Inject
+    lateinit var surveyorTranslator: SurveyorTranslator
 
     @Inject
     lateinit var ownerInformationController: OwnerInformationController
@@ -187,10 +194,11 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
         surveyAccessRightsCheck(userId, surveyToUpdate)?.let { return it }
 
-        val status = survey.status
         val updatedSurvey = surveyController.update(
             survey = surveyToUpdate,
-            status = status,
+            status = survey.status,
+            startDate = survey.startDate,
+            endDate = survey.endDate,
             lastModifierId = userId
         )
 
@@ -208,6 +216,75 @@ class V1ApiImpl : V1Api, AbstractApi() {
         surveyAccessRightsCheck(userId, surveyToDelete)?.let { return it }
 
         surveyController.deleteSurvey(surveyToDelete, userId)
+
+        return createNoContent()
+    }
+
+    /** Surveyors */
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun listSurveyors(surveyId: UUID): Response {
+        loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        val surveyors = surveyorController.list(survey = survey)
+        return createOk(surveyors.map(surveyorTranslator::translate))
+    }
+
+    override fun createSurveyor(surveyId: UUID, surveyor: Surveyor): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val createdSurveyor = surveyorController.create(
+            survey = survey,
+            surveyor = surveyor,
+            creatorId = userId
+        )
+
+        return createOk(surveyorTranslator.translate(createdSurveyor))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun findSurveyor(surveyId: UUID, surveyorId: UUID): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val foundSurveyor = surveyorController.find(surveyorId = surveyorId) ?: return createNotFound(createNotFoundMessage(target = SURVEYOR, id = surveyorId))
+
+        return createOk(surveyorTranslator.translate(foundSurveyor))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun updateSurveyor(surveyId: UUID, surveyorId: UUID, surveyor: Surveyor): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val foundSurveyor = surveyorController.find(surveyorId = surveyorId) ?: return createNotFound(createNotFoundMessage(target = SURVEYOR, id = surveyorId))
+
+        val updatedSurveyor = surveyorController.update(
+            surveyorToUpdate = foundSurveyor,
+            surveyor = surveyor,
+            lastModifierId = userId
+        )
+
+        return createOk(surveyorTranslator.translate(updatedSurveyor))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun deleteSurveyor(surveyId: UUID, surveyorId: UUID): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val foundSurveyor = surveyorController.find(surveyorId = surveyorId) ?: return createNotFound(createNotFoundMessage(target = SURVEYOR, id = surveyorId))
+        surveyorController.delete(surveyorToDelete = foundSurveyor, userId = userId)
 
         return createNoContent()
     }
@@ -1120,6 +1197,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         }
 
         const val SURVEY = "Survey"
+        const val SURVEYOR = "Surveyor"
         const val OWNER_INFORMATION = "Owner information"
         const val BUILDING = "Building"
         const val REUSABLE = "Reusable"
