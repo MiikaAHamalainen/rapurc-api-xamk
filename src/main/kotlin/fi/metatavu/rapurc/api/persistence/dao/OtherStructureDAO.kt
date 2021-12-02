@@ -20,19 +20,25 @@ class OtherStructureDAO: AbstractDAO<OtherStructure>() {
      * @param name name
      * @param description description
      * @param building building
+     * @param creatorId creator id
+     * @param modifierId creator id
      * @return created other structure
      */
     fun create(
         id: UUID,
         name: String,
         description: String,
-        building: Building
+        building: Building,
+        creatorId: UUID,
+        modifierId: UUID
     ): OtherStructure {
         val otherStructure = OtherStructure()
         otherStructure.id = id
         otherStructure.name = name
         otherStructure.description = description
         otherStructure.building = building
+        otherStructure.creatorId = creatorId
+        otherStructure.lastModifierId = modifierId
         return persist(otherStructure)
     }
 
@@ -50,7 +56,7 @@ class OtherStructureDAO: AbstractDAO<OtherStructure>() {
 
         criteria.select(root)
         criteria.where(criteriaBuilder.equal(root.get(OtherStructure_.building), building))
-        criteria.orderBy(criteriaBuilder.asc(root.get(OtherStructure_.name)))
+        criteria.orderBy(criteriaBuilder.asc(root.get(OtherStructure_.createdAt)))
         val query: TypedQuery<OtherStructure> = entityManager.createQuery(criteria)
 
         return query.resultList

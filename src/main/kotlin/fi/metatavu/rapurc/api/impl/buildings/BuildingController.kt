@@ -73,7 +73,9 @@ class BuildingController {
                 id = UUID.randomUUID(),
                 name = otherStructure.name,
                 description = otherStructure.description,
-                building = createdBuilding
+                building = createdBuilding,
+                creatorId = creatorId,
+                modifierId = creatorId
             )
         }
 
@@ -128,7 +130,9 @@ class BuildingController {
                 id = UUID.randomUUID(),
                 name = otherStructure.name,
                 description = otherStructure.description,
-                building = result
+                building = result,
+                creatorId = userId,
+                modifierId = userId
             )
         }
 
