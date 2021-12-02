@@ -478,4 +478,22 @@
       </column>
     </createTable>
   </changeSet>
+
+  <changeSet id="other_structure_metadata" author="katja danilova">
+    <addColumn tableName="otherstructure">
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+
+  </changeSet>
 </databaseChangeLog>

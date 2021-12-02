@@ -7,7 +7,7 @@ import javax.persistence.*
  * Other building structure to be demolished
  */
 @Entity
-class OtherStructure {
+class OtherStructure: Metadata() {
 
     @Id
     var id: UUID? = null
