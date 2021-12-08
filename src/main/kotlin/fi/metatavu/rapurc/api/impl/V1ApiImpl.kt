@@ -9,6 +9,7 @@ import fi.metatavu.rapurc.api.impl.materials.ReusableMaterialController
 import fi.metatavu.rapurc.api.impl.materials.WasteMaterialController
 import fi.metatavu.rapurc.api.impl.owners.OwnerInformationController
 import fi.metatavu.rapurc.api.impl.surveyors.SurveyorController
+import fi.metatavu.rapurc.api.impl.surveys.AttachmentController
 import fi.metatavu.rapurc.api.impl.surveys.SurveyController
 import fi.metatavu.rapurc.api.impl.translate.*
 import fi.metatavu.rapurc.api.impl.waste.*
@@ -117,6 +118,12 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
     @Inject
     lateinit var hazardousWasteTranslator: HazardousWasteTranslator
+
+    @Inject
+    lateinit var attachmentsController: AttachmentController
+
+    @Inject
+    lateinit var attachmentTranslator: AttachmentTranslator
 
 
     /* SURVEYS */
@@ -1130,6 +1137,94 @@ class V1ApiImpl : V1Api, AbstractApi() {
         return createNoContent()
     }
 
+    /* ATTACHMENTS */
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun listSurveyAttachments(surveyId: UUID): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val attachments = attachmentsController.list(survey = survey)
+        return createOk(attachments.map(attachmentTranslator::translate))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun createSurveyAttachment(surveyId: UUID, attachment: Attachment): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val createdAttachment = attachmentsController.create(
+                attachment,
+                survey,
+                userId
+        )
+
+        return createOk(attachmentTranslator.translate(createdAttachment))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun findSurveyAttachment(surveyId: UUID, attachmentId: UUID): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val attachment = attachmentsController.findById(attachmentId) ?: return createNotFound(createNotFoundMessage(target = ATTACHMENT, id = attachmentId))
+
+        if (attachment.survey != survey) {
+            return createForbidden(createWrongSurveyMessage(target = ATTACHMENT, surveyId = surveyId))
+        }
+
+        return createOk(attachmentTranslator.translate(attachment))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun updateSurveyAttachment(
+            surveyId: UUID,
+            attachmentId: UUID,
+            attachment: Attachment
+    ): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val attachmentToUpdate = attachmentsController.findById(attachmentId) ?: return createNotFound(createNotFoundMessage(target = ATTACHMENT, id = attachmentId))
+
+        if (attachmentToUpdate.survey != survey) {
+            return createForbidden(createWrongSurveyMessage(ATTACHMENT, surveyId))
+        }
+
+        val updatedAttachment = attachmentsController.updateAttachment(
+                attachmentToUpdate = attachmentToUpdate,
+                attachment = attachment,
+                userId = userId
+        )
+
+        return createOk(attachmentTranslator.translate(updatedAttachment))
+    }
+
+    @RolesAllowed(value = [ UserRole.USER.name ])
+    override fun deleteSurveyAttachment(surveyId: UUID, attachmentId: UUID): Response {
+        val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
+
+        surveyAccessRightsCheck(userId, survey)?.let { return it }
+
+        val attachmentToDelete = attachmentsController.findById(attachmentId) ?: return createNotFound(createNotFoundMessage(target = ATTACHMENT, id= attachmentId))
+
+        if (attachmentToDelete.survey != survey) {
+            return createForbidden(createWrongSurveyMessage(target = ATTACHMENT, surveyId = surveyId))
+        }
+
+        attachmentsController.delete(attachmentToDelete, userId)
+        return createNoContent()
+    }
+
     override fun ping(): Response {
         return createOk("pong")
     }
@@ -1210,6 +1305,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         const val WASTE_SPECIFIER = "Waste specifier"
         const val HAZARDOUS_WASTE = "Hazardous waste"
         const val BUILDING_TYPE = "Building type"
+        const val ATTACHMENT = "Attachment"
     }
 
 }

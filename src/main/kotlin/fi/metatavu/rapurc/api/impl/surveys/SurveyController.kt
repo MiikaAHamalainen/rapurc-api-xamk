@@ -46,7 +46,7 @@ class SurveyController {
     lateinit var hazardousWasteController: HazardousWasteController
 
     @Inject
-    lateinit var hazardousWasteTranslator: HazardousWasteTranslator
+    lateinit var attachmentController: AttachmentController
 
     /**
      * Lists surveys with given filters
@@ -160,6 +160,7 @@ class SurveyController {
         reusableController.list(survey = survey, material = null)?.forEach { reusableController.delete(it, userId)}
         wasteController.list(survey = survey, wasteMaterial = null, usage = null).forEach { wasteController.delete(it, userId) }
         hazardousWasteController.list(survey = survey, wasteSpecifier = null, hazardousMaterial = null).forEach { hazardousWasteController.delete(it, userId)}
+        attachmentController.list(survey).forEach { attachmentController.delete(it, userId) }
         surveyDAO.delete(survey)
     }
 }
