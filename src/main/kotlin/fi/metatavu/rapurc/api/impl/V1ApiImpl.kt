@@ -1158,9 +1158,9 @@ class V1ApiImpl : V1Api, AbstractApi() {
         surveyAccessRightsCheck(userId, survey)?.let { return it }
 
         val createdAttachment = attachmentsController.create(
-                attachment,
-                survey,
-                userId
+            attachment = attachment,
+            survey = survey,
+            userId = userId
         )
 
         return createOk(attachmentTranslator.translate(createdAttachment))
@@ -1184,9 +1184,9 @@ class V1ApiImpl : V1Api, AbstractApi() {
 
     @RolesAllowed(value = [ UserRole.USER.name ])
     override fun updateSurveyAttachment(
-            surveyId: UUID,
-            attachmentId: UUID,
-            attachment: Attachment
+        surveyId: UUID,
+        attachmentId: UUID,
+        attachment: Attachment
     ): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
         val survey = surveyController.find(surveyId = surveyId) ?: return createNotFound(createNotFoundMessage(target = SURVEY, id = surveyId))
@@ -1200,9 +1200,9 @@ class V1ApiImpl : V1Api, AbstractApi() {
         }
 
         val updatedAttachment = attachmentsController.updateAttachment(
-                attachmentToUpdate = attachmentToUpdate,
-                attachment = attachment,
-                userId = userId
+            attachmentToUpdate = attachmentToUpdate,
+            attachment = attachment,
+            userId = userId
         )
 
         return createOk(attachmentTranslator.translate(updatedAttachment))

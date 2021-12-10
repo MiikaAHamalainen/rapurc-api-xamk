@@ -75,7 +75,8 @@ class AttachmentController {
     ): Attachment {
         val result = attachmentDAO.updateName(attachmentToUpdate, attachment.name, userId)
         attachmentDAO.updateURL(result, attachment.url, userId)
-        return attachmentDAO.updateDescription(result, attachment.description, userId)
+        attachmentDAO.updateDescription(result, attachment.description, userId)
+        return result
     }
 
     /**

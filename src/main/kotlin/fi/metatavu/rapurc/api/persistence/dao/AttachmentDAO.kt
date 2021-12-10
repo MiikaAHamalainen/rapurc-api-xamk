@@ -36,7 +36,7 @@ class AttachmentDAO: AbstractDAO<Attachment>() {
         description: String?,
         creatorId: UUID,
         lastModifierId: UUID
-    ) : Attachment {
+    ): Attachment {
         val attachment = Attachment()
         attachment.id = id
         attachment.name = name
@@ -57,11 +57,9 @@ class AttachmentDAO: AbstractDAO<Attachment>() {
     fun list(survey: Survey): List<Attachment> {
         val entityManager = getEntityManager()
         val criteriaBuilder = entityManager.criteriaBuilder
-        val criteria: CriteriaQuery<Attachment> =
-            criteriaBuilder.createQuery(Attachment::class.java)
+        val criteria: CriteriaQuery<Attachment> = criteriaBuilder.createQuery(Attachment::class.java)
         val root: Root<Attachment> = criteria.from(Attachment::class.java)
 
-        criteria.select(root)
         criteria.select(root)
         criteria.where(criteriaBuilder.equal(root.get(Attachment_.survey), survey))
         criteria.orderBy(criteriaBuilder.asc(root.get(Attachment_.createdAt)))

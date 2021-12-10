@@ -8,8 +8,7 @@ import javax.enterprise.context.ApplicationScoped
  * Translates JPA attachment to REST Attachment object
  */
 @ApplicationScoped
-class AttachmentTranslator:
-    AbstractTranslator<Attachment, fi.metatavu.rapurc.api.model.Attachment>() {
+class AttachmentTranslator: AbstractTranslator<Attachment, fi.metatavu.rapurc.api.model.Attachment>() {
     override fun translate(entity: Attachment): fi.metatavu.rapurc.api.model.Attachment {
         val attachment = fi.metatavu.rapurc.api.model.Attachment()
         attachment.id = entity.id
