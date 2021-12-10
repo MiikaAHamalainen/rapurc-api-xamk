@@ -496,4 +496,8 @@
     </addColumn>
 
   </changeSet>
+
+  <changeSet id="reusable_field_types" author="katja danilova">
+    <modifyDataType tableName="reusable" columnName="amount" newDataType="double"/>
+  </changeSet>
 </databaseChangeLog>

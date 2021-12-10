@@ -26,6 +26,7 @@ class ReusableTestIT {
         componentName = "brick house",
         reusableMaterialId = UUID.randomUUID(),
         usability = Usability.gOOD,
+        amountAsWaste = 99923.3,
         amount = 1000.0,
         unit = Unit.kG,
         images = arrayOf("http://photo1.png", "http://photo2.png"),
@@ -52,6 +53,7 @@ class ReusableTestIT {
             assertEquals(reusable.usability, createdReusable.usability)
             assertEquals(reusable.amount, createdReusable.amount)
             assertEquals(reusable.unit, createdReusable.unit)
+            assertEquals(reusable.amountAsWaste, createdReusable.amountAsWaste)
             assertEquals(2, createdReusable.images!!.size)
         }
     }
