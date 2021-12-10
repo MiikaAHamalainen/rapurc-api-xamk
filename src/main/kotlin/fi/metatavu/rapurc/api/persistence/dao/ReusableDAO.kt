@@ -54,6 +54,7 @@ class ReusableDAO: AbstractDAO<Reusable>() {
         reusable.amount = amount
         reusable.unit = unit
         reusable.description = description
+        reusable.amountAsWaste = amountAsWaste
         reusable.creatorId = creatorId
         reusable.lastModifierId = lastModifierId
         return persist(reusable)
