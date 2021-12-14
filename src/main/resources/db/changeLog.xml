@@ -500,4 +500,34 @@
   <changeSet id="reusable_field_types" author="katja danilova">
     <modifyDataType tableName="reusable" columnName="amount" newDataType="double"/>
   </changeSet>
+
+  <changeSet id="attachments" author="katja danilova">
+    <createTable tableName="attachment">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="survey_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_ATTACHMENT_SURVEY_ID" referencedColumnNames="id" referencedTableName="survey"/>
+      </column>
+      <column name="url" type="longtext">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="varchar(191)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="longtext"/>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
 </databaseChangeLog>
