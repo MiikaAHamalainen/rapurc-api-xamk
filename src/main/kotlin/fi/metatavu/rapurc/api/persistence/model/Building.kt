@@ -34,7 +34,7 @@ class Building: Metadata() {
     var volume: Int? = null
 
     @Column
-    var floors: Int? = null
+    var floors: String? = null
 
     @Column
     var basements: Int? = null

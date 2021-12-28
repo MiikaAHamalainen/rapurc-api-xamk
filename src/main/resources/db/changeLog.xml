@@ -530,4 +530,9 @@
       </column>
     </createTable>
   </changeSet>
+
+  <changeSet id="waste_specifier_nullable_floor_string" author="tianxing wu">
+    <dropNotNullConstraint columnDataType="binary(16)" columnName="wastespecifier_id" tableName="hazardouswaste"/>
+    <modifyDataType tableName="building" columnName="floors" newDataType="varchar(100)"/>
+  </changeSet>
 </databaseChangeLog>

@@ -67,7 +67,7 @@ class HazardousWasteDAO: AbstractDAO<HazardousWaste>() {
         id: UUID,
         survey: Survey,
         hazardousMaterial: HazardousMaterial,
-        wasteSpecifier: WasteSpecifier,
+        wasteSpecifier: WasteSpecifier?,
         amount: Double,
         description: String?,
         creatorId: UUID,
