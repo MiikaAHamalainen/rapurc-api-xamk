@@ -1062,7 +1062,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         surveyAccessRightsCheck(userId, survey)?.let { return it }
 
         val hazardousMaterial = hazardousMaterialController.find(hazardousWaste.hazardousMaterialId) ?: return createNotFound(createNotFoundMessage(target = HAZ_MATERIAL, id = hazardousWaste.hazardousMaterialId))
-        val wasteSpecifier = wasteSpecifierController.find(hazardousWaste.wasteSpecifierId) ?: return createNotFound(createNotFoundMessage(target = WASTE_SPECIFIER, id = hazardousWaste.wasteSpecifierId))
+        val wasteSpecifier = if (hazardousWaste.wasteSpecifierId == null) null else wasteSpecifierController.find(hazardousWaste.wasteSpecifierId) ?: return createNotFound(createNotFoundMessage(target = WASTE_SPECIFIER, id = hazardousWaste.wasteSpecifierId))
 
         val createdHazardousWaste = hazardousWasteController.create(
             survey = survey,

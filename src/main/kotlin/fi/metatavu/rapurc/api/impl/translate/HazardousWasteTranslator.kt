@@ -17,7 +17,7 @@ class HazardousWasteTranslator: AbstractTranslator<fi.metatavu.rapurc.api.persis
         val hazardousWaste = HazardousWaste()
         hazardousWaste.id = entity.id
         hazardousWaste.hazardousMaterialId = entity.hazardousMaterial!!.id
-        hazardousWaste.wasteSpecifierId = entity.wasteSpecifier!!.id
+        hazardousWaste.wasteSpecifierId = entity.wasteSpecifier?.id
         hazardousWaste.amount = entity.amount
         hazardousWaste.description = entity.description
         hazardousWaste.metadata = metadataTranslator.translate(entity)

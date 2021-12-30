@@ -49,7 +49,7 @@ class HazardousWasteController {
     fun create(
         survey: Survey,
         hazardousMaterial: HazardousMaterial,
-        wasteSpecifier: WasteSpecifier,
+        wasteSpecifier: WasteSpecifier?,
         amount: Double,
         description: String?,
         userId: UUID

@@ -1,10 +1,7 @@
 package fi.metatavu.rapurc.api.persistence.model
 
 import java.util.*
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.ManyToOne
+import javax.persistence.*
 
 /**
  * Entity class for Hazardous Waste
@@ -21,7 +18,7 @@ class HazardousWaste: Metadata() {
     @ManyToOne
     var hazardousMaterial: HazardousMaterial? = null
 
-    @ManyToOne
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     var wasteSpecifier: WasteSpecifier? = null
 
     @Column(nullable = false)

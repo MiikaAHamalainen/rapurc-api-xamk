@@ -47,7 +47,7 @@ class BuildingDAO: AbstractDAO<Building>() {
         constructionYear: Int?,
         space: Int?,
         volume: Int?,
-        floors: Int?,
+        floors: String?,
         basements: Int?,
         foundation: String?,
         supportStructure: String?,
@@ -205,7 +205,7 @@ class BuildingDAO: AbstractDAO<Building>() {
      * @param modifierId modifier id
      * @return updated building
      */
-    fun updateFloors(building: Building, floors: Int?, modifierId: UUID): Building {
+    fun updateFloors(building: Building, floors: String?, modifierId: UUID): Building {
         building.floors = floors
         building.lastModifierId = modifierId
         return persist(building)
