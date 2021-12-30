@@ -8,6 +8,7 @@ import fi.metatavu.rapurc.api.test.functional.resources.MysqlTestResource
 import io.quarkus.test.common.QuarkusTestResource
 import io.quarkus.test.junit.QuarkusTest
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import java.util.*
 
@@ -41,15 +42,29 @@ class HazardousWasteTestIT {
                 description = "waste"
             )
 
+            val hazardousWasteNullSpecifier = HazardousWaste(
+                hazardousMaterialId = hazardousMaterial.id!!,
+                amount = 100.0,
+                metadata = Metadata(),
+                wasteSpecifierId = null,
+                description = "waste"
+            )
+
             val createdWaste = it.userA.hazWastes.create(
                 surveyId = surveyA.id!!,
                 waste = hazardousWaste
+            )
+
+            val createdWasteNullSpecifier = it.userA.hazWastes.create(
+                surveyId = surveyA.id!!,
+                waste = hazardousWasteNullSpecifier
             )
 
             assertEquals(hazardousWaste.amount, createdWaste.amount)
             assertEquals(wastespecifier.id, createdWaste.wasteSpecifierId)
             assertEquals(hazardousMaterial.id, createdWaste.hazardousMaterialId)
             assertEquals(hazardousWaste.description, createdWaste.description)
+            assertNull(createdWasteNullSpecifier.wasteSpecifierId)
 
             it.userA.hazWastes.assertCreateFailStatus(404, surveyA.id, createdWaste.copy(hazardousMaterialId = UUID.randomUUID()))
             it.userA.hazWastes.assertCreateFailStatus(404, surveyA.id, createdWaste.copy(wasteSpecifierId = UUID.randomUUID()))
@@ -146,6 +161,7 @@ class HazardousWasteTestIT {
 
             val updateData = createdWaste.copy(
                 amount = 1000.0,
+                wasteSpecifierId = null,
                 description = "update data"
             )
 

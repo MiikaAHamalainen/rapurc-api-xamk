@@ -24,7 +24,7 @@ class BuildingTestBuilderResource(
         surveyId = UUID.randomUUID(),
         propertyId = "property id 1",
         buildingId = "building id 1",
-        floors = 5,
+        floors = "5",
         basements = 1,
         facadeMaterial = "red bricks",
         otherStructures = arrayOf(
