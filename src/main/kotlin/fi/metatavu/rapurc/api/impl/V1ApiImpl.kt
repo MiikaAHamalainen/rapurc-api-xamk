@@ -1108,7 +1108,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
         }
 
         val hazardousMaterial = hazardousMaterialController.find(hazardousWaste.hazardousMaterialId) ?: return createNotFound(createNotFoundMessage(target = HAZ_MATERIAL, id = hazardousWaste.hazardousMaterialId))
-        val wasteSpecifier = wasteSpecifierController.find(hazardousWaste.wasteSpecifierId) ?: return createNotFound(createNotFoundMessage(target = WASTE_SPECIFIER, id = hazardousWaste.wasteSpecifierId))
+        val wasteSpecifier = if (hazardousWaste.wasteSpecifierId == null) null else wasteSpecifierController.find(hazardousWaste.wasteSpecifierId) ?: return createNotFound(createNotFoundMessage(target = WASTE_SPECIFIER, id = hazardousWaste.wasteSpecifierId))
 
         val updatedHazardousWaste = hazardousWasteController.updateWaste(
             hazardousWaste = hazardousWasteToUpdate,

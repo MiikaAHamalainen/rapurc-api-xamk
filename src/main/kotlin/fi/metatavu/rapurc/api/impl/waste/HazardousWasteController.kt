@@ -91,7 +91,7 @@ class HazardousWasteController {
         hazardousWaste: HazardousWaste,
         newHazardousWaste: fi.metatavu.rapurc.api.model.HazardousWaste,
         hazardousMaterial: HazardousMaterial,
-        wasteSpecifier: WasteSpecifier,
+        wasteSpecifier: WasteSpecifier?,
         userId: UUID
     ): HazardousWaste {
         surveyDAO.update(hazardousWaste.survey!!, userId)

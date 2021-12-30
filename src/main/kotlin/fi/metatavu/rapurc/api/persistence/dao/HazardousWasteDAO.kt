@@ -107,7 +107,7 @@ class HazardousWasteDAO: AbstractDAO<HazardousWaste>() {
      * @param modifierId modifier id
      * @return updated hazardous waste
      */
-    fun updateWasteSpecifier(hazardousWaste: HazardousWaste, wasteSpecifier: WasteSpecifier, modifierId: UUID): HazardousWaste {
+    fun updateWasteSpecifier(hazardousWaste: HazardousWaste, wasteSpecifier: WasteSpecifier?, modifierId: UUID): HazardousWaste {
         hazardousWaste.wasteSpecifier = wasteSpecifier
         hazardousWaste.lastModifierId = modifierId
         return persist(hazardousWaste)

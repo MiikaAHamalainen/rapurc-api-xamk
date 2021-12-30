@@ -161,6 +161,7 @@ class HazardousWasteTestIT {
 
             val updateData = createdWaste.copy(
                 amount = 1000.0,
+                wasteSpecifierId = null,
                 description = "update data"
             )
 
