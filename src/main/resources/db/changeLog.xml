@@ -1,0 +1,538 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+>
+
+  <changeSet id="surveys" author="Jari Nykänen">
+    <createTable tableName="survey">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="status" type="varchar(191)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="survey_group_id" author="katja danilova">
+    <addColumn tableName="survey">
+      <column name="keycloakgroupid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
+  <changeSet id="owner_information" author="katja danilova">
+    <createTable tableName="ownerinformation">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="survey_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_OWNER_INFORMATION_SURVEY_ID" referencedColumnNames="id" referencedTableName="survey"/>
+      </column>
+      <column name="ownername" type="varchar(100)" />
+      <column name="businessid" type="varchar(100)" />
+      <column name="firstname" type="varchar(100)" />
+      <column name="lastname" type="varchar(100)" />
+      <column name="phone" type="varchar(50)" />
+      <column name="email" type="varchar(100)" />
+      <column name="profession" type="varchar(100)" />
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="building" author="katja danilova">
+    <createTable tableName="building">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="survey_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_BUILDING_SURVEY_ID" referencedColumnNames="id" referencedTableName="survey"/>
+      </column>
+      <column name="propertyId" type="varchar(100)" />
+      <column name="buildingId" type="varchar(100)" />
+      <column name="classificationcode" type="varchar(100)" />
+      <column name="constructionyear" type="int" />
+      <column name="space" type="int" />
+      <column name="volume" type="int" />
+      <column name="floors" type="int" />
+      <column name="basements" type="int" />
+      <column name="foundation" type="varchar(255)" />
+      <column name="supportstructure" type="varchar(255)" />
+      <column name="facadematerial" type="varchar(255)" />
+      <column name="rooftype" type="varchar(255)" />
+      <column name="streetaddress" type="varchar(255)" />
+      <column name="city" type="varchar(255)" />
+      <column name="postcode" type="varchar(255)" />
+
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="otherstructures" author="katja danilova">
+    <createTable tableName="otherstructure">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="name" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="longtext">
+        <constraints nullable="false"/>
+      </column>
+      <column name="building_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_OTHER_STRUCTURE_BUILDING_ID" referencedColumnNames="id" referencedTableName="building"/>
+      </column>
+    </createTable>
+  </changeSet>
+  
+  <changeSet id="extend_survey" author="katja danilova">
+    <addColumn tableName="survey">
+      <column name="type" type="varchar(191)"/>
+      <column name="startdate" type="date"/>
+      <column name="enddate" type="date"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet id="reusable_materials" author="katja danilova">
+    <createTable tableName="reusablematerial">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="name" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="reusables" author="katja danilova">
+    <createTable tableName="reusable">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="survey_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_REUSABLE_SURVEY_ID" referencedColumnNames="id" referencedTableName="survey"/>
+      </column>
+      <column name="componentName" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="materialId" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usability" type="varchar(192)"/>
+      <column name="amount" type="varchar(192)"/>
+      <column name="unit" type="varchar(192)"/>
+      <column name="description" type="varchar(192)"/>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <createTable tableName="image">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="reusable_id" type="binary(16)">
+        <constraints foreignKeyName="FK_IMAGE_REUSABLE_ID" referencedColumnNames="id" referencedTableName="reusable"/>
+      </column>
+      <column name="imageuri" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="waste_materials_categories" author="katja danilova">
+    <createTable tableName="wastecategory">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="name" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ewccode" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <createTable tableName="wastematerial">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="wastecategory_id" type="binary(16)">
+        <constraints foreignKeyName="FK_WASTE_MATERIAL_WASTE CATEGORY_ID" referencedColumnNames="id" referencedTableName="wastecategory"/>
+      </column>
+      <column name="name" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ewcspecificationcode" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="fix_typo" author="katja danilova">
+    <dropForeignKeyConstraint baseTableName="wastematerial" constraintName="FK_WASTE_MATERIAL_WASTE CATEGORY_ID"/>
+    <addForeignKeyConstraint baseTableName="wastematerial" baseColumnNames="wastecategory_id" constraintName="FK_WASTE_MATERIAL_WASTE_CATEGORY_ID" referencedTableName="wastecategory"
+                             referencedColumnNames="id"/>
+  </changeSet>
+  
+  <changeSet id="wastes_usages" author="katja danilova">
+    <createTable tableName="wasteusage">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="name" type="varchar(191)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <createTable tableName="waste">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="amount" type="double">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="longtext"/>
+      <column name="survey_id" type="binary(16)">
+        <constraints foreignKeyName="FK_WASTE_SURVEY_ID" referencedColumnNames="id" referencedTableName="survey"/>
+      </column>
+      <column name="wastematerial_id" type="binary(16)">
+        <constraints foreignKeyName="FK_WASTE_WASTE_MATERIAL_ID" referencedColumnNames="id" referencedTableName="wastematerial"/>
+      </column>
+      <column name="usage_id" type="binary(16)">
+        <constraints foreignKeyName="FK_WASTE_USAGE_ID" referencedColumnNames="id" referencedTableName="wasteusage"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="haz_materials" author="katja danilova">
+    <createTable tableName="hazardousmaterial">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="wastecategory_id" type="binary(16)">
+        <constraints foreignKeyName="FK_WASTE_MATERIAL_WASTE CATEGORY_ID" referencedColumnNames="id" referencedTableName="wastecategory"/>
+      </column>
+      <column name="name" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ewcspecificationcode" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="waste_specifiers" author="katja danilova">
+    <createTable tableName="wastespecifier">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="name" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="hazardous_waste" author="katja danilova">
+    <createTable tableName="hazardouswaste">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="survey_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_HAZARDOUS_WASTE_SURVEY_ID" referencedColumnNames="id" referencedTableName="survey"/>
+      </column>
+      <column name="hazardousmaterial_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_HAZARDOUS_WASTE_HAZARDOUS_MATERIAL_ID" referencedColumnNames="id" referencedTableName="hazardousmaterial"/>
+      </column>
+      <column name="wastespecifier_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_HAZARDOUS_WASTE_SPECIFIER_ID" referencedColumnNames="id" referencedTableName="wastespecifier"/>
+      </column>
+      <column name="amount" type="double">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="longtext"/>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="buildings_classification_code" author="katja danilova">
+    <createTable tableName="buildingtype">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="name" type="varchar(191)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="code" type="varchar(191)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <dropColumn tableName="building" columnName="classificationcode"/>
+    <addColumn tableName="building">
+      <column name="buildingtype_id" type="binary(16)">
+        <constraints foreignKeyName="FK_BUILDING_BUILDING_TYPE_ID" referencedColumnNames="id" referencedTableName="buildingtype"/>
+      </column>
+    </addColumn>
+
+  </changeSet>
+
+  <changeSet id="reusable_waste_amount" author="katja danilova">
+    <addColumn tableName="reusable">
+      <column name="amountAsWaste" type="double"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet id="surveyors" author="jari nykanen">
+    <createTable tableName="surveyor">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="survey_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_SURVEYOR_SURVEY_ID_SURVEY_ID" referencedColumnNames="id" referencedTableName="survey"/>
+      </column>
+      <column name="firstname" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastname" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="company" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="phone" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="role" type="varchar(192)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="email" type="varchar(192)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="reportdate" type="datetime(6)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="other_structure_metadata" author="katja danilova">
+    <addColumn tableName="otherstructure">
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+
+  </changeSet>
+
+  <changeSet id="reusable_field_types" author="katja danilova">
+    <modifyDataType tableName="reusable" columnName="amount" newDataType="double"/>
+  </changeSet>
+
+  <changeSet id="attachments" author="katja danilova">
+    <createTable tableName="attachment">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="survey_id" type="binary(16)">
+        <constraints nullable="false" foreignKeyName="FK_ATTACHMENT_SURVEY_ID" referencedColumnNames="id" referencedTableName="survey"/>
+      </column>
+      <column name="url" type="longtext">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="varchar(191)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="longtext"/>
+      <column name="creatorid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="createdat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lastmodifierid" type="binary(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="modifiedat" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="waste_specifier_nullable_floor_string" author="tianxing wu">
+    <dropNotNullConstraint columnDataType="binary(16)" columnName="wastespecifier_id" tableName="hazardouswaste"/>
+    <modifyDataType tableName="building" columnName="floors" newDataType="varchar(100)"/>
+  </changeSet>
+</databaseChangeLog>
