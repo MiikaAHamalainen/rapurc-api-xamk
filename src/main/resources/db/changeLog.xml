@@ -557,9 +557,10 @@
       </column>
     </addColumn>
 
+    <!-- _utf8 based on same issue as: https://stackoverflow.com/a/51393124 -->
     <sql>
       INSERT INTO localizedvalue ( id, language, value, wastespecifier_id)
-      SELECT (uuid_to_bin(uuid())), 'fi', wastespecifier.name, wastespecifier.id
+      SELECT (unhex(replace(uuid(), _utf8'-', _utf8''))), 'fi', wastespecifier.name, wastespecifier.id
       FROM wastespecifier;
     </sql>
 
