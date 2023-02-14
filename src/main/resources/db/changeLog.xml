@@ -535,4 +535,34 @@
     <dropNotNullConstraint columnDataType="binary(16)" columnName="wastespecifier_id" tableName="hazardouswaste"/>
     <modifyDataType tableName="building" columnName="floors" newDataType="varchar(100)"/>
   </changeSet>
+
+  <changeSet id="localization" author="katja danilova">
+    <createTable tableName="localizedvalue">
+      <column name="id" type="binary(16)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="language" type="varchar(4)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value" type="varchar(192)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="waste_specifier_localization" author="katja danilova">
+    <addColumn tableName="localizedvalue">
+      <column name="wastespecifier_id" type="binary(16)">
+        <constraints foreignKeyName="FK_LOCALIZEDVALUE_WASTESPECIFIER_ID" referencedColumnNames="id" referencedTableName="wastespecifier"/>
+      </column>
+    </addColumn>
+
+    <sql>
+      INSERT INTO localizedvalue ( id, language, value, wastespecifier_id)
+      SELECT (uuid_to_bin(uuid())), 'fi', wastespecifier.name, wastespecifier.id
+      FROM wastespecifier;
+    </sql>
+
+    <dropColumn tableName="wastespecifier" columnName="name"/>
+  </changeSet>
 </databaseChangeLog>

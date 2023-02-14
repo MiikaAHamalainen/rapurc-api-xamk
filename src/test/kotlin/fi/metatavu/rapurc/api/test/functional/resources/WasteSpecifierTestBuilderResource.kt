@@ -4,6 +4,7 @@ import fi.metatavu.jaxrs.test.functional.builder.auth.AccessTokenProvider
 import fi.metatavu.rapurc.api.client.apis.WasteSpecifiersApi
 import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.rapurc.api.client.infrastructure.ClientException
+import fi.metatavu.rapurc.api.client.models.LocalizedValue
 import fi.metatavu.rapurc.api.client.models.Metadata
 import fi.metatavu.rapurc.api.client.models.WasteSpecifier
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
@@ -21,7 +22,9 @@ class WasteSpecifierTestBuilderResource(
 ): ApiTestBuilderResource<WasteSpecifier, ApiClient?>(testBuilder, apiClient) {
 
     val wasteSpecifier = WasteSpecifier(
-        name = "metal waste",
+        name = arrayOf(
+            LocalizedValue("en", "metal waste")
+        ),
         metadata = Metadata()
     )
 
@@ -35,25 +38,6 @@ class WasteSpecifierTestBuilderResource(
     }
 
     /**
-     * Creates default waste specifier
-     *
-     * @return new waste specifier
-     */
-    fun createDefault(): WasteSpecifier {
-        return create(wasteSpecifier)
-    }
-
-    /**
-     * Creates new waste specifier object
-     *
-     * @param WasteSpecifier new data
-     * @return created waste specifier
-     */
-    fun create(WasteSpecifier: WasteSpecifier): WasteSpecifier {
-        return addClosable(api.createWasteSpecifier(WasteSpecifier))
-    }
-
-    /**
      * Creates new waste specifier object
      *
      * @return created waste specifier
@@ -62,9 +46,24 @@ class WasteSpecifierTestBuilderResource(
         return addClosable(
             api.createWasteSpecifier(
                 WasteSpecifier(
-                    name = "waste specifier",
+                    name = arrayOf(
+                        LocalizedValue("en", "metal waste")
+                    ),
                     metadata = Metadata()
                 )
+            )
+        )
+    }
+
+    /**
+     * Creates new waste specifier object
+     *
+     * @return created waste specifier
+     */
+    fun create(wasteSpecifier: fi.metatavu.rapurc.api.client.models.WasteSpecifier): WasteSpecifier? {
+        return addClosable(
+            api.createWasteSpecifier(
+                wasteSpecifier
             )
         )
     }

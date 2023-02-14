@@ -1,11 +1,15 @@
 package fi.metatavu.rapurc.api.test.functional.tests
 
+import fi.metatavu.rapurc.api.client.models.LocalizedValue
+import fi.metatavu.rapurc.api.client.models.Metadata
+import fi.metatavu.rapurc.api.client.models.WasteSpecifier
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
 import fi.metatavu.rapurc.api.test.functional.resources.KeycloakTestResource
 import fi.metatavu.rapurc.api.test.functional.resources.MysqlTestResource
 import io.quarkus.test.common.QuarkusTestResource
 import io.quarkus.test.junit.QuarkusTest
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import java.util.*
 
@@ -26,12 +30,33 @@ class WasteSpecifierTestIT {
     fun create() {
         TestBuilder().use { testBuilder ->
             testBuilder.userA.wasteSpecifiers.assertCreateFailStatus(403)
-            val created = testBuilder.admin.wasteSpecifiers.createDefault()
-            assertEquals(testBuilder.admin.wasteSpecifiers.wasteSpecifier.name, created.name)
-            assertNotNull(created.metadata.createdAt)
-            assertNotNull(created.metadata.creatorId)
-            assertNotNull(created.metadata.modifiedAt)
-            assertNotNull(created.metadata.lastModifierId)
+            val created1 = testBuilder.admin.wasteSpecifiers.create(
+                WasteSpecifier(
+                    name = arrayOf(
+                        LocalizedValue("fi", "finnish name 1"),
+                        LocalizedValue("en", "english name 1")
+                    ),
+                    metadata = Metadata()
+                )
+            )
+
+            val created2 = testBuilder.admin.wasteSpecifiers.create(
+                WasteSpecifier(
+                    name = arrayOf(
+                        LocalizedValue("fi", "finnish name 2"),
+                        LocalizedValue("en", "english name 2")
+                    ),
+                    metadata = Metadata()
+                )
+            )
+
+            assertEquals("finnish name 1", created1!!.name.find { it.language == "fi" }!!.value)
+            assertEquals("english name 1", created1.name.find { it.language == "en" }!!.value)
+
+            assertEquals("english name 2", created2!!.name.find { it.language == "en" }!!.value)
+            assertEquals("english name 2", created2.name.find { it.language == "en" }!!.value)
+
+            assertNotNull(created1.metadata.createdAt)
         }
     }
 
@@ -41,8 +66,8 @@ class WasteSpecifierTestIT {
     @Test
     fun list() {
         TestBuilder().use { testBuilder ->
-            testBuilder.admin.wasteSpecifiers.createDefault()
-            testBuilder.admin.wasteSpecifiers.createDefault()
+            testBuilder.admin.wasteSpecifiers.create()
+            testBuilder.admin.wasteSpecifiers.create()
             testBuilder.userA.wasteSpecifiers.assertCount(2)
         }
     }
@@ -53,7 +78,7 @@ class WasteSpecifierTestIT {
     @Test
     fun find() {
         TestBuilder().use { testBuilder ->
-            val created = testBuilder.admin.wasteSpecifiers.createDefault()
+            val created = testBuilder.admin.wasteSpecifiers.create()
             testBuilder.admin.wasteSpecifiers.assertFindFailStatus(404, UUID.randomUUID())
             val found = testBuilder.admin.wasteSpecifiers.find(created.id!!)
             assertEquals(created.id, found.id)
@@ -66,13 +91,24 @@ class WasteSpecifierTestIT {
     @Test
     fun update() {
         TestBuilder().use { testBuilder ->
-            val created = testBuilder.admin.wasteSpecifiers.createDefault()
-            val updateData = created.copy(name = "other name")
+            val created = testBuilder.admin.wasteSpecifiers.create()
+            val updateData = created.copy(
+                name = arrayOf(
+                    LocalizedValue("en", "newValue"),
+                    LocalizedValue("fr", "newValue1")
+                )
+            )
             testBuilder.admin.wasteSpecifiers.assertUpdateFailStatus(404, UUID.randomUUID(), updateData)
             testBuilder.userA.wasteSpecifiers.assertUpdateFailStatus(403, created.id!!, updateData)
             val updated = testBuilder.admin.wasteSpecifiers.update(created.id, updateData)
             assertEquals(created.id, updated.id)
-            assertEquals(updateData.name, updated.name)
+            assertEquals(2, updated.name.size)
+            val sorted = updateData.name.sortedBy { it.language }
+            assertEquals("newValue", sorted[0].value)
+            assertEquals("en", sorted[0].language)
+
+            assertEquals("newValue1", sorted[1].value)
+            assertEquals("fr", sorted[1].language)
         }
     }
 
@@ -82,7 +118,7 @@ class WasteSpecifierTestIT {
     @Test
     fun delete() {
         TestBuilder().use { testBuilder ->
-            val created = testBuilder.admin.wasteSpecifiers.createDefault()
+            val created = testBuilder.admin.wasteSpecifiers.create()
             testBuilder.userA.wasteSpecifiers.assertDeleteFailStatus(403, created.id!!)
             testBuilder.admin.wasteSpecifiers.assertDeleteFailStatus(404, UUID.randomUUID())
             testBuilder.admin.wasteSpecifiers.delete(created.id)
