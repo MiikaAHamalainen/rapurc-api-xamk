@@ -1,5 +1,6 @@
 package fi.metatavu.rapurc.api.impl.waste
 
+import fi.metatavu.rapurc.api.persistence.dao.LocalizedValueDAO
 import fi.metatavu.rapurc.api.persistence.dao.WasteSpecifierDAO
 import fi.metatavu.rapurc.api.persistence.model.WasteSpecifier
 import java.util.*
@@ -14,6 +15,9 @@ class WasteSpecifierController {
 
     @Inject
     lateinit var wasteSpecifierDAO: WasteSpecifierDAO
+
+    @Inject
+    lateinit var localizedValueDAO: LocalizedValueDAO
 
     /**
      * Lists all waste specifiers
@@ -32,12 +36,22 @@ class WasteSpecifierController {
      * @return created waste Specifier
      */
     fun create(wasteSpecifier: fi.metatavu.rapurc.api.model.WasteSpecifier, userId: UUID): WasteSpecifier {
-        return wasteSpecifierDAO.create(
+        val createdWasteSpecifier = wasteSpecifierDAO.create(
             id = UUID.randomUUID(),
-            name = wasteSpecifier.name,
             creatorId = userId,
             modifierId = userId
         )
+
+        wasteSpecifier.localizedNames.forEach {
+            localizedValueDAO.create(
+                id = UUID.randomUUID(),
+                value = it.value,
+                language = it.language,
+                wasteSpecifier = createdWasteSpecifier
+            )
+        }
+
+        return createdWasteSpecifier
     }
 
     /**
@@ -59,7 +73,18 @@ class WasteSpecifierController {
      * @return updated waste specifier
      */
     fun update(wasteSpecifierToUpdate: WasteSpecifier, wasteSpecifier: fi.metatavu.rapurc.api.model.WasteSpecifier, userId: UUID): WasteSpecifier {
-        return wasteSpecifierDAO.updateName(wasteSpecifierToUpdate, wasteSpecifier.name, userId)
+        localizedValueDAO.listByWasteSpecifier(wasteSpecifierToUpdate)
+            .forEach { localizedValueDAO.delete(it) }
+
+        wasteSpecifier.localizedNames.forEach {
+            localizedValueDAO.create(
+                id = UUID.randomUUID(),
+                value = it.value,
+                language = it.language,
+                wasteSpecifier = wasteSpecifierToUpdate
+            )
+        }
+        return wasteSpecifierToUpdate
     }
 
     /**
@@ -68,6 +93,8 @@ class WasteSpecifierController {
      * @param wasteSpecifier specifier to delete
      */
     fun delete(wasteSpecifier: WasteSpecifier) {
+        localizedValueDAO.listByWasteSpecifier(wasteSpecifier)
+            .forEach { localizedValueDAO.delete(it) }
         wasteSpecifierDAO.delete(wasteSpecifier)
     }
 }
