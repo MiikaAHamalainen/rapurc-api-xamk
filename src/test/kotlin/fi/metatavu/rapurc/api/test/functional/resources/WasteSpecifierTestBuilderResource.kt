@@ -21,8 +21,8 @@ class WasteSpecifierTestBuilderResource(
     apiClient: ApiClient
 ): ApiTestBuilderResource<WasteSpecifier, ApiClient?>(testBuilder, apiClient) {
 
-    val wasteSpecifier = WasteSpecifier(
-        name = arrayOf(
+    private val wasteSpecifier = WasteSpecifier(
+        localizedNames = arrayOf(
             LocalizedValue("en", "metal waste")
         ),
         metadata = Metadata()
@@ -46,7 +46,7 @@ class WasteSpecifierTestBuilderResource(
         return addClosable(
             api.createWasteSpecifier(
                 WasteSpecifier(
-                    name = arrayOf(
+                    localizedNames = arrayOf(
                         LocalizedValue("en", "metal waste")
                     ),
                     metadata = Metadata()
@@ -60,7 +60,7 @@ class WasteSpecifierTestBuilderResource(
      *
      * @return created waste specifier
      */
-    fun create(wasteSpecifier: fi.metatavu.rapurc.api.client.models.WasteSpecifier): WasteSpecifier? {
+    fun create(wasteSpecifier: WasteSpecifier): WasteSpecifier? {
         return addClosable(
             api.createWasteSpecifier(
                 wasteSpecifier

@@ -42,7 +42,7 @@ class WasteSpecifierController {
             modifierId = userId
         )
 
-        wasteSpecifier.name.forEach {
+        wasteSpecifier.localizedNames.forEach {
             localizedValueDAO.create(
                 id = UUID.randomUUID(),
                 value = it.value,
@@ -76,7 +76,7 @@ class WasteSpecifierController {
         localizedValueDAO.listByWasteSpecifier(wasteSpecifierToUpdate)
             .forEach { localizedValueDAO.delete(it) }
 
-        wasteSpecifier.name.forEach {
+        wasteSpecifier.localizedNames.forEach {
             localizedValueDAO.create(
                 id = UUID.randomUUID(),
                 value = it.value,

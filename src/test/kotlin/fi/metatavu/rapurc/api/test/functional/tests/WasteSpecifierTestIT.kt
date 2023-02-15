@@ -32,7 +32,7 @@ class WasteSpecifierTestIT {
             testBuilder.userA.wasteSpecifiers.assertCreateFailStatus(403)
             val created1 = testBuilder.admin.wasteSpecifiers.create(
                 WasteSpecifier(
-                    name = arrayOf(
+                    localizedNames = arrayOf(
                         LocalizedValue("fi", "finnish name 1"),
                         LocalizedValue("en", "english name 1")
                     ),
@@ -42,7 +42,7 @@ class WasteSpecifierTestIT {
 
             val created2 = testBuilder.admin.wasteSpecifiers.create(
                 WasteSpecifier(
-                    name = arrayOf(
+                    localizedNames = arrayOf(
                         LocalizedValue("fi", "finnish name 2"),
                         LocalizedValue("en", "english name 2")
                     ),
@@ -50,11 +50,11 @@ class WasteSpecifierTestIT {
                 )
             )
 
-            assertEquals("finnish name 1", created1!!.name.find { it.language == "fi" }!!.value)
-            assertEquals("english name 1", created1.name.find { it.language == "en" }!!.value)
+            assertEquals("finnish name 1", created1!!.localizedNames.find { it.language == "fi" }!!.value)
+            assertEquals("english name 1", created1.localizedNames.find { it.language == "en" }!!.value)
 
-            assertEquals("english name 2", created2!!.name.find { it.language == "en" }!!.value)
-            assertEquals("english name 2", created2.name.find { it.language == "en" }!!.value)
+            assertEquals("english name 2", created2!!.localizedNames.find { it.language == "en" }!!.value)
+            assertEquals("english name 2", created2.localizedNames.find { it.language == "en" }!!.value)
 
             assertNotNull(created1.metadata.createdAt)
         }
@@ -93,7 +93,7 @@ class WasteSpecifierTestIT {
         TestBuilder().use { testBuilder ->
             val created = testBuilder.admin.wasteSpecifiers.create()
             val updateData = created.copy(
-                name = arrayOf(
+                localizedNames = arrayOf(
                     LocalizedValue("en", "newValue"),
                     LocalizedValue("fr", "newValue1")
                 )
@@ -102,8 +102,8 @@ class WasteSpecifierTestIT {
             testBuilder.userA.wasteSpecifiers.assertUpdateFailStatus(403, created.id!!, updateData)
             val updated = testBuilder.admin.wasteSpecifiers.update(created.id, updateData)
             assertEquals(created.id, updated.id)
-            assertEquals(2, updated.name.size)
-            val sorted = updateData.name.sortedBy { it.language }
+            assertEquals(2, updated.localizedNames.size)
+            val sorted = updateData.localizedNames.sortedBy { it.language }
             assertEquals("newValue", sorted[0].value)
             assertEquals("en", sorted[0].language)
 
