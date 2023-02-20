@@ -396,9 +396,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
     override fun createBuildingType(buildingType: BuildingType): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
 
-        if (buildingType.localizedNames.isEmpty() || buildingType.localizedNames[0].value.isNullOrEmpty()) {
-            return createBadRequest(MISSING_NAME)
-        }
+        checkLocalizedValues(buildingType.localizedNames)?.let { return it }
 
         val createdBuildingType = buildingTypeController.create(
             buildingType = buildingType,
@@ -419,9 +417,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
     override fun updateBuildingType(buildingTypeId: UUID, buildingType: BuildingType): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
 
-        if (buildingType.localizedNames.isEmpty() || buildingType.localizedNames[0].value.isNullOrEmpty()) {
-            return createBadRequest(MISSING_NAME)
-        }
+        checkLocalizedValues(buildingType.localizedNames)?.let { return it }
 
         val buildingTypeToUpdate = buildingTypeController.find(buildingTypeId) ?: return createNotFound(createNotFoundMessage(target = BUILDING_TYPE, id = buildingTypeId))
         val updatedBuildingType = buildingTypeController.update(
@@ -556,9 +552,8 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun createReusableMaterial(reusableMaterial: ReusableMaterial): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        if (reusableMaterial.localizedNames.isEmpty() || reusableMaterial.localizedNames[0].value.isNullOrEmpty()) {
-            return createBadRequest(MISSING_NAME)
-        }
+        checkLocalizedValues(reusableMaterial.localizedNames)?.let { return it }
+
         val createdMaterial = reuseableMaterialController.create(reusableMaterial, userId)
         return createOk(reusableMaterialTranslator.translate(createdMaterial))
     }
@@ -574,9 +569,8 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun updateReusableMaterial(reusableMaterialId: UUID, reusableMaterial: ReusableMaterial): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        if (reusableMaterial.localizedNames.isEmpty() || reusableMaterial.localizedNames[0].value.isNullOrEmpty()) {
-            return createBadRequest(MISSING_NAME)
-        }
+        checkLocalizedValues(reusableMaterial.localizedNames)?.let { return it }
+
         val materialToUpdate = reuseableMaterialController.find(reusableMaterialId) ?: return createNotFound(createNotFoundMessage(target = REUSABLE_MATERIAL, id = reusableMaterialId))
         val updatedMaterial = reuseableMaterialController.update(
             materialToUpdate = materialToUpdate,
@@ -698,9 +692,8 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun createWasteCategory(wasteCategory: WasteCategory): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        if (wasteCategory.localizedNames.isEmpty() || wasteCategory.localizedNames[0].value.isNullOrEmpty()) {
-            return createBadRequest(MISSING_NAME)
-        }
+        checkLocalizedValues(wasteCategory.localizedNames)?.let { return it }
+
         val createdCategory = wasteCategoryController.create(
             wasteCategory = wasteCategory,
             userId = userId
@@ -719,9 +712,8 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun updateWasteCategory(wasteCategoryId: UUID, payload: WasteCategory): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        if (payload.localizedNames.isEmpty() || payload.localizedNames[0].value.isNullOrEmpty()) {
-            return createBadRequest(MISSING_NAME)
-        }
+        checkLocalizedValues(payload.localizedNames)?.let { return it }
+
         val foundWasteCategory = wasteCategoryController.find(wasteCategoryId = wasteCategoryId) ?: return createNotFound(createNotFoundMessage(target = WASTE_CATEGORY, id = wasteCategoryId))
         val updated = wasteCategoryController.update(
             categoryToUpdate = foundWasteCategory,
@@ -758,9 +750,8 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun createWasteMaterial(wasteMaterial: WasteMaterial): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        if (wasteMaterial.localizedNames.isEmpty() || wasteMaterial.localizedNames[0].value.isNullOrEmpty()) {
-            return createBadRequest(MISSING_NAME)
-        }
+        checkLocalizedValues(wasteMaterial.localizedNames)?.let { return it }
+
         val foundWasteCategory = wasteCategoryController.find(wasteCategoryId = wasteMaterial.wasteCategoryId) ?: return createNotFound(createNotFoundMessage(target = WASTE_CATEGORY, id = wasteMaterial.wasteCategoryId))
         val createdWasteMaterial = wasteMaterialController.create(wasteMaterial, foundWasteCategory, userId)
 
@@ -776,9 +767,8 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun updateWasteMaterial(wasteMaterialId: UUID, wasteMaterial: WasteMaterial): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        if (wasteMaterial.localizedNames.isEmpty() || wasteMaterial.localizedNames[0].value.isNullOrEmpty()) {
-            return createBadRequest(MISSING_NAME)
-        }
+        checkLocalizedValues(wasteMaterial.localizedNames)?.let { return it }
+
         val materialToUpdate = wasteMaterialController.find(wasteMaterialId = wasteMaterialId) ?: return createNotFound(createNotFoundMessage(target = WASTE_MATERIAL, id = wasteMaterialId))
         val newWasteCategory = wasteCategoryController.find(wasteCategoryId = wasteMaterial.wasteCategoryId) ?: return createNotFound(createNotFoundMessage(target = WASTE_CATEGORY, id = wasteMaterial.wasteCategoryId))
         val updatedWasteMaterial = wasteMaterialController.update(
@@ -905,9 +895,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun createUsage(usage: Usage): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        if (usage.localizedNames.isEmpty() || usage.localizedNames[0].value.isNullOrEmpty()) {
-            return createBadRequest(MISSING_NAME)
-        }
+        checkLocalizedValues(usage.localizedNames)?.let { return it }
         val createdUsage = usageController.create(
             wasteUsage = usage,
             userId = userId
@@ -926,9 +914,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun updateUsage(usageId: UUID, usage: Usage): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        if (usage.localizedNames.isEmpty() || usage.localizedNames[0].value.isNullOrEmpty()) {
-            return createBadRequest(MISSING_NAME)
-        }
+        checkLocalizedValues(usage.localizedNames)?.let { return it }
         val usageToUpdate = usageController.find(usageId) ?: return createNotFound(createNotFoundMessage(target = USAGE, id = usageId))
         val updatedUsage = usageController.update(
             oldUsage = usageToUpdate,
@@ -962,9 +948,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun createHazardousMaterial(hazardousMaterial: HazardousMaterial): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        if (hazardousMaterial.localizedNames.isEmpty() || hazardousMaterial.localizedNames[0].value.isNullOrEmpty()) {
-            return createBadRequest(MISSING_NAME)
-        }
+        checkLocalizedValues(hazardousMaterial.localizedNames)?.let { return it }
         val foundWasteCategory = wasteCategoryController.find(wasteCategoryId = hazardousMaterial.wasteCategoryId) ?: return createNotFound(createNotFoundMessage(target = WASTE_CATEGORY, id = hazardousMaterial.wasteCategoryId))
         val foundHazardousMaterial = hazardousMaterialController.create(hazardousMaterial, foundWasteCategory, userId)
 
@@ -980,9 +964,8 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun updateHazardousMaterial(hazardousMaterialId: UUID, hazardousMaterial: HazardousMaterial): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
-        if (hazardousMaterial.localizedNames.isEmpty() || hazardousMaterial.localizedNames[0].value.isNullOrEmpty()) {
-            return createBadRequest(MISSING_NAME)
-        }
+        checkLocalizedValues(hazardousMaterial.localizedNames)?.let { return it }
+
         val materialToUpdate = hazardousMaterialController.find(materialId = hazardousMaterialId) ?: return createNotFound(createNotFoundMessage(target = HAZ_MATERIAL, id = hazardousMaterialId))
         val newWasteCategory = wasteCategoryController.find(wasteCategoryId = hazardousMaterial.wasteCategoryId) ?: return createNotFound(createNotFoundMessage(target = WASTE_CATEGORY, id = hazardousMaterial.wasteCategoryId))
         val updatedMaterial = hazardousMaterialController.update(
@@ -1019,10 +1002,8 @@ class V1ApiImpl : V1Api, AbstractApi() {
     @RolesAllowed(value = [ UserRole.ADMIN.name ])
     override fun createWasteSpecifier(wasteSpecifier: WasteSpecifier): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
+        checkLocalizedValues(wasteSpecifier.localizedNames)?.let { return it }
 
-        if (wasteSpecifier.localizedNames.isEmpty() || wasteSpecifier.localizedNames[0].value.isNullOrEmpty()) {
-            return createBadRequest(MISSING_NAME)
-        }
         val createdWasteSpecifier = wasteSpecifierController.create(
             wasteSpecifier = wasteSpecifier,
             userId = userId
@@ -1042,9 +1023,7 @@ class V1ApiImpl : V1Api, AbstractApi() {
     override fun updateWasteSpecifier(wasteSpecifierId: UUID, wasteSpecifier: WasteSpecifier): Response {
         val userId = loggedUserId ?: return createUnauthorized(NO_LOGGED_USER_ID)
 
-        if (wasteSpecifier.localizedNames.isEmpty() || wasteSpecifier.localizedNames[0].value.isNullOrEmpty()) {
-            return createBadRequest(MISSING_NAME)
-        }
+        checkLocalizedValues(wasteSpecifier.localizedNames)?.let { return it }
 
         val wasteSpecifierToUpdate = wasteSpecifierController.find(wasteSpecifierId = wasteSpecifierId) ?: return createNotFound(createNotFoundMessage(target = WASTE_SPECIFIER, id = wasteSpecifierId))
         val updatedWasteSpecifier = wasteSpecifierController.update(
@@ -1279,6 +1258,20 @@ class V1ApiImpl : V1Api, AbstractApi() {
             if (groupId != survey.keycloakGroupId) {
                 return createForbidden(createWrongGroupMessage(userId = userId))
             }
+        }
+
+        return null
+    }
+
+    /**
+     * Checks the localizedNames
+     *
+     * @param localizedNames localized Names
+     * @return null if no errors or response with error code
+     */
+    private fun checkLocalizedValues(localizedNames: List<LocalizedValue>): Response? {
+        if (localizedNames.isEmpty() || localizedNames.find { it.value.isNullOrBlank() || it.language.isNullOrBlank() } != null) {
+            return createBadRequest(MISSING_NAME)
         }
 
         return null
