@@ -5,6 +5,7 @@ import fi.metatavu.rapurc.api.client.apis.HazardousMaterialApi
 import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.rapurc.api.client.infrastructure.ClientException
 import fi.metatavu.rapurc.api.client.models.HazardousMaterial
+import fi.metatavu.rapurc.api.client.models.LocalizedValue
 import fi.metatavu.rapurc.api.client.models.Metadata
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
 import fi.metatavu.rapurc.api.test.functional.impl.ApiTestBuilderResource
@@ -30,7 +31,9 @@ class HazardousMaterialTestBuilderResource(
     }
 
     val defaultHazardousMaterial = HazardousMaterial(
-        name = "asbest",
+        localizedNames = arrayOf(
+            LocalizedValue("en", "asbest")
+        ),
         ewcSpecificationCode = "111",
         metadata = Metadata(),
         wasteCategoryId = UUID.randomUUID()

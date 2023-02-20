@@ -1,5 +1,6 @@
 package fi.metatavu.rapurc.api.impl.materials
 
+import fi.metatavu.rapurc.api.persistence.dao.LocalizedValueDAO
 import fi.metatavu.rapurc.api.persistence.dao.WasteMaterialDAO
 import fi.metatavu.rapurc.api.persistence.model.WasteCategory
 import fi.metatavu.rapurc.api.persistence.model.WasteMaterial
@@ -15,6 +16,9 @@ class WasteMaterialController {
 
     @Inject
     lateinit var wasteMaterialDAO: WasteMaterialDAO
+
+    @Inject
+    lateinit var localizedValueDAO: LocalizedValueDAO
 
     /**
      * Lists waste materials
@@ -35,14 +39,24 @@ class WasteMaterialController {
      * @return created waste material
      */
     fun create(wasteMaterial: fi.metatavu.rapurc.api.model.WasteMaterial, wasteCategory: WasteCategory, userId: UUID): WasteMaterial {
-        return wasteMaterialDAO.create(
+        val createdWasteMaterial = wasteMaterialDAO.create(
             id = UUID.randomUUID(),
-            name = wasteMaterial.name,
             wasteCategory = wasteCategory,
             ewcSpecificationCode = wasteMaterial.ewcSpecificationCode,
             creatorId = userId,
             modifierId = userId
         )
+
+        wasteMaterial.localizedNames.forEach {
+            localizedValueDAO.create(
+                id = UUID.randomUUID(),
+                value = it.value,
+                language = it.language,
+                wasteMaterial = createdWasteMaterial
+            )
+        }
+
+        return createdWasteMaterial
     }
 
     /**
@@ -65,9 +79,20 @@ class WasteMaterialController {
      * @return updated waste material
      */
     fun update(oldWasteMaterial: WasteMaterial, newWasteMaterial: fi.metatavu.rapurc.api.model.WasteMaterial, newWasteCategory: WasteCategory, userId: UUID): WasteMaterial {
-        val result = wasteMaterialDAO.updateName(oldWasteMaterial, newWasteMaterial.name, userId)
-        wasteMaterialDAO.updateEwcSpecificationCode(result, newWasteMaterial.ewcSpecificationCode, userId)
+        val result = wasteMaterialDAO.updateEwcSpecificationCode(oldWasteMaterial, newWasteMaterial.ewcSpecificationCode, userId)
         wasteMaterialDAO.updateWasteCategory(result, newWasteCategory, userId)
+
+        localizedValueDAO.listBy(wasteMaterial = result)
+            .forEach { localizedValueDAO.delete(it) }
+
+        newWasteMaterial.localizedNames.forEach {
+            localizedValueDAO.create(
+                id = UUID.randomUUID(),
+                value = it.value,
+                language = it.language,
+                wasteMaterial = result
+            )
+        }
         return result
     }
 
@@ -77,6 +102,8 @@ class WasteMaterialController {
      * @param wasteMaterial material to delete
      */
     fun delete(wasteMaterial: WasteMaterial) {
+        localizedValueDAO.listBy(wasteMaterial = wasteMaterial)
+            .forEach { localizedValueDAO.delete(it) }
         wasteMaterialDAO.delete(wasteMaterial)
     }
 }

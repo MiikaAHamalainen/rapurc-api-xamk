@@ -16,10 +16,6 @@ class WasteMaterial: Metadata() {
     @Id
     var id: UUID? = null
 
-    @NotEmpty
-    @Column(nullable = false)
-    var name: String? = null
-
     @ManyToOne
     var wasteCategory: WasteCategory? = null
 

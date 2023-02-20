@@ -18,7 +18,6 @@ class HazardousMaterialDAO: AbstractDAO<HazardousMaterial>(){
      * Creates waste material
      *
      * @param id id
-     * @param name material name
      * @param wasteCategory waste category
      * @param ewcSpecificationCode EWC category id
      * @param creatorId creator id
@@ -27,7 +26,6 @@ class HazardousMaterialDAO: AbstractDAO<HazardousMaterial>(){
      */
     fun create(
         id: UUID,
-        name: String,
         wasteCategory: WasteCategory,
         ewcSpecificationCode: String,
         creatorId: UUID,
@@ -35,7 +33,6 @@ class HazardousMaterialDAO: AbstractDAO<HazardousMaterial>(){
     ): HazardousMaterial {
         val wasteMaterial = HazardousMaterial()
         wasteMaterial.id = id
-        wasteMaterial.name = name
         wasteMaterial.wasteCategory = wasteCategory
         wasteMaterial.ewcSpecificationCode = ewcSpecificationCode
         wasteMaterial.creatorId = creatorId
@@ -78,20 +75,6 @@ class HazardousMaterialDAO: AbstractDAO<HazardousMaterial>(){
      */
     fun updateWasteCategory(hazardousMaterial: HazardousMaterial, newWasteCategory: WasteCategory, modifierId: UUID): HazardousMaterial {
         hazardousMaterial.wasteCategory = newWasteCategory
-        hazardousMaterial.lastModifierId = modifierId
-        return persist(hazardousMaterial)
-    }
-
-    /**
-     * Updates waste category
-     *
-     * @param hazardousMaterial hazardous material to update
-     * @param name new name
-     * @param modifierId modifier id
-     * @return updated hazardous material
-     */
-    fun updateName(hazardousMaterial: HazardousMaterial, name: String, modifierId: UUID): HazardousMaterial {
-        hazardousMaterial.name = name
         hazardousMaterial.lastModifierId = modifierId
         return persist(hazardousMaterial)
     }

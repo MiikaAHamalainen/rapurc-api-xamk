@@ -1,5 +1,6 @@
 package fi.metatavu.rapurc.api.test.functional.tests
 
+import fi.metatavu.rapurc.api.client.models.LocalizedValue
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
 import fi.metatavu.rapurc.api.test.functional.resources.KeycloakTestResource
 import fi.metatavu.rapurc.api.test.functional.resources.MysqlTestResource
@@ -41,7 +42,7 @@ class HazardousMaterialTestIT {
                 assertNotNull(createdMaterial.metadata.creatorId)
                 assertNotNull(createdMaterial.metadata.lastModifierId)
                 assertEquals(categoryId, createdMaterial.wasteCategoryId)
-                assertEquals(testBuilder.userA.hazMaterials.defaultHazardousMaterial.name, createdMaterial.name)
+                assertEquals(testBuilder.userA.hazMaterials.defaultHazardousMaterial.localizedNames[0].value, createdMaterial!!.localizedNames.find { it.language == "en" }!!.value)
                 assertEquals(testBuilder.userA.hazMaterials.defaultHazardousMaterial.ewcSpecificationCode, createdMaterial.ewcSpecificationCode)
             } finally {
                 if (materialID != null) {
@@ -77,7 +78,7 @@ class HazardousMaterialTestIT {
             val foundMaterial = testBuilder.userA.hazMaterials.find(createdMaterial.id!!)
             assertEquals(createdMaterial.id, foundMaterial.id)
             assertEquals(createdMaterial.wasteCategoryId, foundMaterial.wasteCategoryId)
-            assertEquals(createdMaterial.name, foundMaterial.name)
+            assertEquals(createdMaterial.localizedNames[0].value, foundMaterial.localizedNames.find { it.language == "en" }!!.value)
             assertEquals(createdMaterial.ewcSpecificationCode, foundMaterial.ewcSpecificationCode)
         }
     }
@@ -95,12 +96,17 @@ class HazardousMaterialTestIT {
                 materialId = createdMaterial.id
                 val category2 = testBuilder.admin.wasteCategories.create(
                     category1.copy(
-                        name = "new category"
+                        localizedNames = arrayOf(
+                            LocalizedValue("en", "new category name en"),
+                        ),
                     )
                 )
 
                 val updateData = createdMaterial.copy(
-                    name = "new material",
+                    localizedNames = arrayOf(
+                        LocalizedValue("en", "new material name en"),
+                        LocalizedValue("fr", "new material name fr")
+                    ),
                     wasteCategoryId = category2.id!!
                 )
 
@@ -111,10 +117,20 @@ class HazardousMaterialTestIT {
                     createdMaterial.id!!,
                     updateData.copy(wasteCategoryId = UUID.randomUUID())
                 )
+                testBuilder.admin.hazMaterials.assertUpdateFailStatus(400, createdMaterial.id!!, updateData.copy(localizedNames = emptyArray()))
+
                 val updated = testBuilder.admin.hazMaterials.update(createdMaterial.id, updateData)
                 assertEquals(updateData.wasteCategoryId, updated.wasteCategoryId)
                 assertEquals(updateData.id, updated.id)
-                assertEquals(updateData.name, updated.name)
+
+
+                val sorted = updated.localizedNames.sortedBy { it.language }
+                assertEquals("new material name en", sorted[0].value)
+                assertEquals("en", sorted[0].language)
+
+                assertEquals("new material name fr", sorted[1].value)
+                assertEquals("fr", sorted[1].language)
+
             } finally {
                 if (materialId != null) {
                     testBuilder.admin.hazMaterials.delete(materialId)

@@ -4,6 +4,7 @@ import fi.metatavu.jaxrs.test.functional.builder.auth.AccessTokenProvider
 import fi.metatavu.rapurc.api.client.apis.WasteMaterialApi
 import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.rapurc.api.client.infrastructure.ClientException
+import fi.metatavu.rapurc.api.client.models.LocalizedValue
 import fi.metatavu.rapurc.api.client.models.Metadata
 import fi.metatavu.rapurc.api.client.models.WasteMaterial
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
@@ -30,7 +31,9 @@ class WasteMaterialTestBuilderResource(
     }
 
     val wasteMaterial = WasteMaterial(
-        name = "brick",
+        localizedNames = arrayOf(
+            LocalizedValue("en", "brick")
+        ),
         ewcSpecificationCode = "111",
         metadata = Metadata(),
         wasteCategoryId = UUID.randomUUID()

@@ -1,5 +1,6 @@
 package fi.metatavu.rapurc.api.impl.waste
 
+import fi.metatavu.rapurc.api.persistence.dao.LocalizedValueDAO
 import fi.metatavu.rapurc.api.persistence.dao.WasteCategoryDAO
 import fi.metatavu.rapurc.api.persistence.model.WasteCategory
 import java.util.*
@@ -14,6 +15,9 @@ class WasteCategoryController {
 
     @Inject
     lateinit var wasteCategoryDAO: WasteCategoryDAO
+
+    @Inject
+    lateinit var localizedValueDAO: LocalizedValueDAO
 
     /**
      * Lists all waste categories
@@ -32,13 +36,23 @@ class WasteCategoryController {
      * @return created object
      */
     fun create(wasteCategory: fi.metatavu.rapurc.api.model.WasteCategory, userId: UUID): WasteCategory {
-        return wasteCategoryDAO.create(
+        val createdWasteCategory = wasteCategoryDAO.create(
             id = UUID.randomUUID(),
-            name = wasteCategory.name,
             ewcCode = wasteCategory.ewcCode,
             creatorId = userId,
             modifierId = userId
         )
+
+        wasteCategory.localizedNames.forEach {
+            localizedValueDAO.create(
+                id = UUID.randomUUID(),
+                value = it.value,
+                language = it.language,
+                wasteCategory = createdWasteCategory
+            )
+        }
+
+        return createdWasteCategory
     }
 
     /**
@@ -60,8 +74,20 @@ class WasteCategoryController {
      * @return updated waste category
      */
     fun update(categoryToUpdate: WasteCategory, wasteCategory: fi.metatavu.rapurc.api.model.WasteCategory, userId: UUID): WasteCategory {
-        val result = wasteCategoryDAO.updateName(categoryToUpdate, wasteCategory.name, userId)
-        return wasteCategoryDAO.updateEwcCode(result, wasteCategory.ewcCode, userId)
+
+        localizedValueDAO.listBy(wasteCategory = categoryToUpdate)
+            .forEach { localizedValueDAO.delete(it) }
+
+        wasteCategory.localizedNames.forEach {
+            localizedValueDAO.create(
+                id = UUID.randomUUID(),
+                value = it.value,
+                language = it.language,
+                wasteCategory = categoryToUpdate
+            )
+        }
+
+        return wasteCategoryDAO.updateEwcCode(categoryToUpdate, wasteCategory.ewcCode, userId)
     }
 
     /**
@@ -70,6 +96,8 @@ class WasteCategoryController {
      * @param wasteCategory category to delete
      */
     fun delete(wasteCategory: WasteCategory) {
+        localizedValueDAO.listBy(wasteCategory = wasteCategory)
+            .forEach { localizedValueDAO.delete(it) }
         wasteCategoryDAO.delete(wasteCategory)
     }
 }
