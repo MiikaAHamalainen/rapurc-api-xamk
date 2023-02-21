@@ -15,7 +15,6 @@ class BuildingTypeDAO: AbstractDAO<BuildingType>() {
      *
      * @param id id
      * @param code code
-     * @param name name
      * @param creatorId creator id
      * @param lastModifierId modifier id
      * @return created image
@@ -23,31 +22,15 @@ class BuildingTypeDAO: AbstractDAO<BuildingType>() {
     fun create(
         id: UUID,
         code: String,
-        name: String,
         creatorId: UUID,
         lastModifierId: UUID
     ): BuildingType {
         val buildingType = BuildingType()
         buildingType.id = id
         buildingType.code = code
-        buildingType.name = name
         buildingType.creatorId = creatorId
         buildingType.lastModifierId = lastModifierId
         return persist(buildingType)
-    }
-
-    /**
-     * Updates name of building type
-     *
-     * @param buildingType building type to update
-     * @param name new name
-     * @param lastModifierId modifier id
-     * @return updated building type
-     */
-    fun updateName(buildingType: BuildingType, name: String, lastModifierId: UUID): BuildingType {
-        buildingType.name = name
-        buildingType.lastModifierId = lastModifierId
-        return buildingType
     }
 
     /**

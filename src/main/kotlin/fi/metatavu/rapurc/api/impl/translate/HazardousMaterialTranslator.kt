@@ -1,5 +1,6 @@
 package fi.metatavu.rapurc.api.impl.translate
 
+import fi.metatavu.rapurc.api.persistence.dao.LocalizedValueDAO
 import fi.metatavu.rapurc.api.persistence.model.HazardousMaterial
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -13,10 +14,18 @@ class HazardousMaterialTranslator: AbstractTranslator<HazardousMaterial, fi.meta
     @Inject
     lateinit var metadataTranslator: MetadataTranslator
 
+    @Inject
+    lateinit var localizedValueTranslator: LocalizedValueTranslator
+
+    @Inject
+    lateinit var localizedValueDAO: LocalizedValueDAO
+
     override fun translate(entity: HazardousMaterial): fi.metatavu.rapurc.api.model.HazardousMaterial {
         val hazardousMaterial = fi.metatavu.rapurc.api.model.HazardousMaterial()
         hazardousMaterial.id = entity.id
-        hazardousMaterial.name = entity.name
+        hazardousMaterial.localizedNames = localizedValueDAO.listBy(hazardousMaterial = entity).map(
+            localizedValueTranslator::translate
+        )
         hazardousMaterial.wasteCategoryId = entity.wasteCategory?.id
         hazardousMaterial.ewcSpecificationCode = entity.ewcSpecificationCode
         hazardousMaterial.metadata = metadataTranslator.translate(entity)

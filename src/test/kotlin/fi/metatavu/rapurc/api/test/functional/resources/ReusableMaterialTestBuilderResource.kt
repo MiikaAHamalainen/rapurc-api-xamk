@@ -4,6 +4,7 @@ import fi.metatavu.jaxrs.test.functional.builder.auth.AccessTokenProvider
 import fi.metatavu.rapurc.api.client.apis.ReusableMaterialApi
 import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.rapurc.api.client.infrastructure.ClientException
+import fi.metatavu.rapurc.api.client.models.LocalizedValue
 import fi.metatavu.rapurc.api.client.models.Metadata
 import fi.metatavu.rapurc.api.client.models.ReusableMaterial
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
@@ -44,7 +45,9 @@ class ReusableMaterialTestBuilderResource(
         return addClosable(
             api.createReusableMaterial(
                 ReusableMaterial(
-                    name = "brick",
+                    localizedNames = arrayOf(
+                        LocalizedValue("en", "brick")
+                    ),
                     metadata = Metadata()
                 )
             )

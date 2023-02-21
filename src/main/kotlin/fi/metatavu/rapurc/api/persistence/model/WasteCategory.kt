@@ -17,9 +17,5 @@ class WasteCategory: Metadata() {
 
     @NotEmpty
     @Column(nullable = false)
-    var name: String? = null
-
-    @NotEmpty
-    @Column(nullable = false)
     var ewcCode: String? = null
 }

@@ -73,7 +73,7 @@ class WasteSpecifierController {
      * @return updated waste specifier
      */
     fun update(wasteSpecifierToUpdate: WasteSpecifier, wasteSpecifier: fi.metatavu.rapurc.api.model.WasteSpecifier, userId: UUID): WasteSpecifier {
-        localizedValueDAO.listByWasteSpecifier(wasteSpecifierToUpdate)
+        localizedValueDAO.listBy(wasteSpecifierToUpdate)
             .forEach { localizedValueDAO.delete(it) }
 
         wasteSpecifier.localizedNames.forEach {
@@ -93,7 +93,7 @@ class WasteSpecifierController {
      * @param wasteSpecifier specifier to delete
      */
     fun delete(wasteSpecifier: WasteSpecifier) {
-        localizedValueDAO.listByWasteSpecifier(wasteSpecifier)
+        localizedValueDAO.listBy(wasteSpecifier)
             .forEach { localizedValueDAO.delete(it) }
         wasteSpecifierDAO.delete(wasteSpecifier)
     }

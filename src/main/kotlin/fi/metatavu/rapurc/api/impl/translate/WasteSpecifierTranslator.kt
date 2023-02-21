@@ -23,7 +23,7 @@ class WasteSpecifierTranslator : AbstractTranslator<WasteSpecifier, fi.metatavu.
     override fun translate(entity: WasteSpecifier): fi.metatavu.rapurc.api.model.WasteSpecifier {
         val wasteSpecifier = fi.metatavu.rapurc.api.model.WasteSpecifier()
         wasteSpecifier.id = entity.id
-        wasteSpecifier.localizedNames = localizedValueDAO.listByWasteSpecifier(entity).map(
+        wasteSpecifier.localizedNames = localizedValueDAO.listBy(entity).map(
             localizedValueTranslator::translate
         )
         wasteSpecifier.metadata = metadataTranslator.translate(entity)

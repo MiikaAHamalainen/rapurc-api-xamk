@@ -25,4 +25,22 @@ class LocalizedValue {
 
     @ManyToOne
     var wasteSpecifier: WasteSpecifier? = null
+
+    @ManyToOne
+    var wasteCategory: WasteCategory? = null
+
+    @ManyToOne
+    var usage: WasteUsage? = null
+
+    @ManyToOne
+    var reusableMaterial: ReusableMaterial? = null
+
+    @ManyToOne
+    var hazardousMaterial: HazardousMaterial? = null
+
+    @ManyToOne
+    var buildingType: BuildingType? = null
+
+    @ManyToOne
+    var wasteMaterial: WasteMaterial? = null
 }

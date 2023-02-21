@@ -1,5 +1,6 @@
 package fi.metatavu.rapurc.api.test.functional.tests
 
+import fi.metatavu.rapurc.api.client.models.LocalizedValue
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
 import fi.metatavu.rapurc.api.test.functional.resources.KeycloakTestResource
 import fi.metatavu.rapurc.api.test.functional.resources.MysqlTestResource
@@ -27,7 +28,7 @@ class WasteCategoryTestIT {
         TestBuilder().use { testBuilder ->
             testBuilder.userA.wasteCategories.assertCreateFailStatus(403)
             val created = testBuilder.admin.wasteCategories.createDefault()
-            assertEquals(testBuilder.admin.wasteCategories.wasteCategory.name, created.name)
+            assertEquals(testBuilder.admin.wasteCategories.wasteCategory.localizedNames[0].value, created.localizedNames.find { it.language == "en" }!!.value)
             assertEquals(testBuilder.admin.wasteCategories.wasteCategory.ewcCode, created.ewcCode)
             assertNotNull(created.metadata.createdAt)
             assertNotNull(created.metadata.creatorId)
@@ -68,13 +69,27 @@ class WasteCategoryTestIT {
     fun update() {
         TestBuilder().use { testBuilder ->
             val created = testBuilder.admin.wasteCategories.createDefault()
-            val updateData = created.copy("other name", ewcCode = "122")
+            val updateData = created.copy(
+                ewcCode = "122",
+                localizedNames = arrayOf(
+                    LocalizedValue("en", "new material name en"),
+                    LocalizedValue("fr", "new material name fr")
+                )
+            )
             testBuilder.admin.wasteCategories.assertUpdateFailStatus(404, UUID.randomUUID(), updateData)
             testBuilder.userA.wasteCategories.assertUpdateFailStatus(403, created.id!!, updateData)
+            testBuilder.admin.wasteCategories.assertUpdateFailStatus(400, created.id!!, updateData.copy(localizedNames = emptyArray()))
+
             val updated = testBuilder.admin.wasteCategories.update(created.id, updateData)
             assertEquals(created.id, updated.id)
-            assertEquals(updateData.name, updated.name)
             assertEquals(updateData.ewcCode, updated.ewcCode)
+
+            val sorted = updated.localizedNames.sortedBy { it.language }
+            assertEquals("new material name en", sorted[0].value)
+            assertEquals("en", sorted[0].language)
+
+            assertEquals("new material name fr", sorted[1].value)
+            assertEquals("fr", sorted[1].language)
         }
     }
 

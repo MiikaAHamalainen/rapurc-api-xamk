@@ -567,4 +567,100 @@
 
     <dropColumn tableName="wastespecifier" columnName="name"/>
   </changeSet>
+
+  <changeSet id="waste_category_localization" author="katja danilova">
+    <addColumn tableName="localizedvalue">
+      <column name="wastecategory_id" type="binary(16)">
+        <constraints foreignKeyName="FK_LOCALIZEDVALUE_WASTECATEGORY_ID" referencedColumnNames="id" referencedTableName="wastecategory"/>
+      </column>
+    </addColumn>
+
+    <sql>
+      INSERT INTO localizedvalue ( id, language, value, wastecategory_id)
+      SELECT (unhex(replace(uuid(), _utf8'-', _utf8''))), 'fi', wastecategory.name, wastecategory.id
+      FROM wastecategory;
+    </sql>
+
+    <dropColumn tableName="wastecategory" columnName="name"/>
+  </changeSet>
+
+  <changeSet id="usage_localization" author="katja danilova">
+    <addColumn tableName="localizedvalue">
+      <column name="usage_id" type="binary(16)">
+        <constraints foreignKeyName="FK_LOCALIZEDVALUE_WASTEUSAGE_ID" referencedColumnNames="id" referencedTableName="wasteusage"/>
+      </column>
+    </addColumn>
+
+    <sql>
+      INSERT INTO localizedvalue ( id, language, value, usage_id)
+      SELECT (unhex(replace(uuid(), _utf8'-', _utf8''))), 'fi', wasteusage.name, wasteusage.id
+      FROM wasteusage;
+    </sql>
+
+    <dropColumn tableName="wasteusage" columnName="name"/>
+  </changeSet>
+
+  <changeSet id="reusable_material_localization" author="katja danilova">
+    <addColumn tableName="localizedvalue">
+      <column name="reusablematerial_id" type="binary(16)">
+        <constraints foreignKeyName="FK_LOCALIZEDVALUE_REUSABLEMATERIAL_ID" referencedColumnNames="id" referencedTableName="reusablematerial"/>
+      </column>
+    </addColumn>
+
+    <sql>
+      INSERT INTO localizedvalue ( id, language, value, reusablematerial_id)
+      SELECT (unhex(replace(uuid(), _utf8'-', _utf8''))), 'fi', reusablematerial.name, reusablematerial.id
+      FROM reusablematerial;
+    </sql>
+
+    <dropColumn tableName="reusablematerial" columnName="name"/>
+  </changeSet>
+
+  <changeSet id="hazardous_material_localization" author="katja danilova">
+    <addColumn tableName="localizedvalue">
+      <column name="hazardousmaterial_id" type="binary(16)">
+        <constraints foreignKeyName="FK_LOCALIZEDVALUE_HAZARDOUSMATERIAL_ID" referencedColumnNames="id" referencedTableName="hazardousmaterial"/>
+      </column>
+    </addColumn>
+
+    <sql>
+      INSERT INTO localizedvalue ( id, language, value, hazardousmaterial_id)
+      SELECT (unhex(replace(uuid(), _utf8'-', _utf8''))), 'fi', hazardousmaterial.name, hazardousmaterial.id
+      FROM hazardousmaterial;
+    </sql>
+
+    <dropColumn tableName="hazardousmaterial" columnName="name"/>
+  </changeSet>
+
+  <changeSet id="building_type_localization" author="katja danilova">
+    <addColumn tableName="localizedvalue">
+      <column name="buildingtype_id" type="binary(16)">
+        <constraints foreignKeyName="FK_LOCALIZEDVALUE_BUILDINGTYPE_ID" referencedColumnNames="id" referencedTableName="buildingtype"/>
+      </column>
+    </addColumn>
+
+    <sql>
+      INSERT INTO localizedvalue ( id, language, value, buildingtype_id)
+      SELECT (unhex(replace(uuid(), _utf8'-', _utf8''))), 'fi', buildingtype.name, buildingtype.id
+      FROM buildingtype;
+    </sql>
+
+    <dropColumn tableName="buildingtype" columnName="name"/>
+  </changeSet>
+
+  <changeSet id="wate_material_localization" author="katja danilova">
+    <addColumn tableName="localizedvalue">
+      <column name="wastematerial_id" type="binary(16)">
+        <constraints foreignKeyName="FK_LOCALIZEDVALUE_WASTEMATERIAL_ID" referencedColumnNames="id" referencedTableName="wastematerial"/>
+      </column>
+    </addColumn>
+
+    <sql>
+      INSERT INTO localizedvalue ( id, language, value, wastematerial_id)
+      SELECT (unhex(replace(uuid(), _utf8'-', _utf8''))), 'fi', wastematerial.name, wastematerial.id
+      FROM wastematerial;
+    </sql>
+
+    <dropColumn tableName="wastematerial" columnName="name"/>
+  </changeSet>
 </databaseChangeLog>

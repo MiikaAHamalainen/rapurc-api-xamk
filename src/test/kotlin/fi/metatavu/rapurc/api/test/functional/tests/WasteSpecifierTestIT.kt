@@ -100,6 +100,8 @@ class WasteSpecifierTestIT {
             )
             testBuilder.admin.wasteSpecifiers.assertUpdateFailStatus(404, UUID.randomUUID(), updateData)
             testBuilder.userA.wasteSpecifiers.assertUpdateFailStatus(403, created.id!!, updateData)
+            testBuilder.admin.wasteSpecifiers.assertUpdateFailStatus(400, created.id, updateData.copy(localizedNames = emptyArray()))
+
             val updated = testBuilder.admin.wasteSpecifiers.update(created.id, updateData)
             assertEquals(created.id, updated.id)
             assertEquals(2, updated.localizedNames.size)
