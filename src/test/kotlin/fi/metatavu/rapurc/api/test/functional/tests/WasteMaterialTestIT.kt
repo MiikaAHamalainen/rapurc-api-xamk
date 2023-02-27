@@ -1,8 +1,6 @@
 package fi.metatavu.rapurc.api.test.functional.tests
 
-import fi.metatavu.rapurc.api.client.models.Metadata
-import fi.metatavu.rapurc.api.client.models.WasteCategory
-import fi.metatavu.rapurc.api.client.models.WasteMaterial
+import fi.metatavu.rapurc.api.client.models.LocalizedValue
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
 import fi.metatavu.rapurc.api.test.functional.resources.KeycloakTestResource
 import fi.metatavu.rapurc.api.test.functional.resources.MysqlTestResource
@@ -44,7 +42,7 @@ class WasteMaterialTestIT {
                 assertNotNull(createdMaterial.metadata.creatorId)
                 assertNotNull(createdMaterial.metadata.lastModifierId)
                 assertEquals(categoryId, createdMaterial.wasteCategoryId)
-                assertEquals(testBuilder.userA.wasteMaterials.wasteMaterial.name, createdMaterial.name)
+                assertEquals(testBuilder.userA.wasteMaterials.wasteMaterial.localizedNames[0].value, createdMaterial.localizedNames.find { it.language == "en" }!!.value)
                 assertEquals(testBuilder.userA.wasteMaterials.wasteMaterial.ewcSpecificationCode, createdMaterial.ewcSpecificationCode)
             } finally {
                 if (materialID != null) {
@@ -80,7 +78,7 @@ class WasteMaterialTestIT {
             val foundMaterial = testBuilder.userA.wasteMaterials.find(createdMaterial.id!!)
             assertEquals(createdMaterial.id, foundMaterial.id)
             assertEquals(createdMaterial.wasteCategoryId, foundMaterial.wasteCategoryId)
-            assertEquals(createdMaterial.name, foundMaterial.name)
+            assertEquals(createdMaterial.localizedNames[0].value, foundMaterial!!.localizedNames.find { it.language == "en" }!!.value)
             assertEquals(createdMaterial.ewcSpecificationCode, foundMaterial.ewcSpecificationCode)
         }
     }
@@ -96,15 +94,14 @@ class WasteMaterialTestIT {
                 val category1 = testBuilder.admin.wasteCategories.createDefault()
                 val createdMaterial = testBuilder.admin.wasteMaterials.create(category1.id!!)
                 materialId = createdMaterial.id
-                val category2 = testBuilder.admin.wasteCategories.create(
-                    category1.copy(
-                        name = "new category"
-                    )
-                )
+                val category2 = testBuilder.admin.wasteCategories.create(category1)
 
                 val updateData = createdMaterial.copy(
-                    name = "new material",
-                    wasteCategoryId = category2.id!!
+                    wasteCategoryId = category2.id!!,
+                    localizedNames = arrayOf(
+                        LocalizedValue("en", "new material name en"),
+                        LocalizedValue("fr", "new material name fr")
+                    )
                 )
 
                 testBuilder.userA.wasteMaterials.assertUpdateFailStatus(403, UUID.randomUUID(), updateData)
@@ -114,10 +111,17 @@ class WasteMaterialTestIT {
                     createdMaterial.id!!,
                     updateData.copy(wasteCategoryId = UUID.randomUUID())
                 )
+                testBuilder.admin.wasteMaterials.assertUpdateFailStatus(400, createdMaterial.id, updateData.copy(localizedNames = emptyArray()))
+
                 val updated = testBuilder.admin.wasteMaterials.update(createdMaterial.id, updateData)
                 assertEquals(updateData.wasteCategoryId, updated.wasteCategoryId)
                 assertEquals(updateData.id, updated.id)
-                assertEquals(updateData.name, updated.name)
+                val sorted = updated.localizedNames.sortedBy { it.language }
+                assertEquals("new material name en", sorted[0].value)
+                assertEquals("en", sorted[0].language)
+
+                assertEquals("new material name fr", sorted[1].value)
+                assertEquals("fr", sorted[1].language)
             } finally {
                 if (materialId != null) {
                     testBuilder.admin.wasteMaterials.delete(materialId)

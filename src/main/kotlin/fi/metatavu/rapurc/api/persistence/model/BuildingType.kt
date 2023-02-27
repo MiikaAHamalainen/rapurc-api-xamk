@@ -17,9 +17,5 @@ class BuildingType: Metadata() {
 
     @Column(nullable = false)
     @NotEmpty
-    var name: String? = null
-
-    @Column(nullable = false)
-    @NotEmpty
     var code: String? = null
 }

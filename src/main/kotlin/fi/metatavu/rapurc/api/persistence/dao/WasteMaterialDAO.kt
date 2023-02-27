@@ -18,7 +18,6 @@ class WasteMaterialDAO: AbstractDAO<WasteMaterial>(){
      * Creates waste material
      *
      * @param id id
-     * @param name material name
      * @param wasteCategory waste category
      * @param ewcSpecificationCode EWC category id
      * @param creatorId creator id
@@ -27,7 +26,6 @@ class WasteMaterialDAO: AbstractDAO<WasteMaterial>(){
      */
     fun create(
         id: UUID,
-        name: String,
         wasteCategory: WasteCategory,
         ewcSpecificationCode: String,
         creatorId: UUID,
@@ -35,7 +33,6 @@ class WasteMaterialDAO: AbstractDAO<WasteMaterial>(){
     ): WasteMaterial {
         val wasteMaterial = WasteMaterial()
         wasteMaterial.id = id
-        wasteMaterial.name = name
         wasteMaterial.wasteCategory = wasteCategory
         wasteMaterial.ewcSpecificationCode = ewcSpecificationCode
         wasteMaterial.creatorId = creatorId
@@ -70,12 +67,6 @@ class WasteMaterialDAO: AbstractDAO<WasteMaterial>(){
 
     fun updateWasteCategory(wasteMaterial: WasteMaterial, newWasteCategory: WasteCategory, userId: UUID): WasteMaterial {
         wasteMaterial.wasteCategory = newWasteCategory
-        wasteMaterial.lastModifierId = userId
-        return persist(wasteMaterial)
-    }
-
-    fun updateName(wasteMaterial: WasteMaterial, name: String, userId: UUID): WasteMaterial {
-        wasteMaterial.name = name
         wasteMaterial.lastModifierId = userId
         return persist(wasteMaterial)
     }

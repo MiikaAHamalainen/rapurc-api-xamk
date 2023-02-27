@@ -2,10 +2,11 @@ package fi.metatavu.rapurc.api.test.functional.resources
 
 import fi.metatavu.jaxrs.test.functional.builder.auth.AccessTokenProvider
 import fi.metatavu.rapurc.api.client.apis.BuildingTypesApi
-import fi.metatavu.rapurc.api.client.apis.BuildingsApi
 import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.rapurc.api.client.infrastructure.ClientException
-import fi.metatavu.rapurc.api.client.models.*
+import fi.metatavu.rapurc.api.client.models.BuildingType
+import fi.metatavu.rapurc.api.client.models.LocalizedValue
+import fi.metatavu.rapurc.api.client.models.Metadata
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
 import fi.metatavu.rapurc.api.test.functional.impl.ApiTestBuilderResource
 import org.junit.Assert.assertEquals
@@ -22,7 +23,9 @@ class BuildingTypeTestBuilderResource(
 ): ApiTestBuilderResource<BuildingType, ApiClient?>(testBuilder, apiClient) {
 
     val buildingType = BuildingType(
-        name = "stndard building type",
+        localizedNames = arrayOf(
+            LocalizedValue("en", "stndard building type")
+        ),
         code = "code",
         metadata = Metadata()
     )

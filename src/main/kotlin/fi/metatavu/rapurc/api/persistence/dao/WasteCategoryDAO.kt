@@ -14,7 +14,6 @@ class WasteCategoryDAO: AbstractDAO<WasteCategory>() {
      * Creates waste category entity
      *
      * @param id id
-     * @param name category name
      * @param ewcCode first four characters of EWC code
      * @param creatorId creator id
      * @param modifierId modifier id
@@ -22,30 +21,14 @@ class WasteCategoryDAO: AbstractDAO<WasteCategory>() {
      */
     fun create(
         id: UUID,
-        name: String,
         ewcCode: String,
         creatorId: UUID,
         modifierId: UUID
     ): WasteCategory {
         val wasteCategory = WasteCategory()
         wasteCategory.id = id
-        wasteCategory.name = name
         wasteCategory.ewcCode = ewcCode
         wasteCategory.creatorId = creatorId
-        wasteCategory.lastModifierId = modifierId
-        return persist(wasteCategory)
-    }
-
-    /**
-     * Updates waste category name
-     *
-     * @param wasteCategory waste category to update
-     * @param name new name
-     * @param modifierId user id
-     * @return updated waste category
-     */
-    fun updateName(wasteCategory: WasteCategory, name: String, modifierId: UUID): WasteCategory {
-        wasteCategory.name = name
         wasteCategory.lastModifierId = modifierId
         return persist(wasteCategory)
     }

@@ -1,5 +1,7 @@
 package fi.metatavu.rapurc.api.impl.waste
 
+import fi.metatavu.rapurc.api.model.Usage
+import fi.metatavu.rapurc.api.persistence.dao.LocalizedValueDAO
 import fi.metatavu.rapurc.api.persistence.dao.UsageDAO
 import fi.metatavu.rapurc.api.persistence.model.WasteUsage
 import java.util.*
@@ -15,6 +17,9 @@ class UsageController {
     @Inject
     lateinit var usageDAO: UsageDAO
 
+    @Inject
+    lateinit var localizedValueDAO: LocalizedValueDAO
+
     /**
      * Lists all usages
      *
@@ -27,20 +32,30 @@ class UsageController {
     /**
      * Creates usage entity
      *
-     * @param name name
+     * @param wasteUsage rest object
      * @param userId user id
      * @return created usage
      */
     fun create(
-        name: String,
+        wasteUsage: Usage,
         userId: UUID
     ): WasteUsage {
-        return usageDAO.create(
+        val createdWasteUsage = usageDAO.create(
             id = UUID.randomUUID(),
-            name = name,
             creatorId = userId,
             modifierId = userId
         )
+
+        wasteUsage.localizedNames.forEach {
+            localizedValueDAO.create(
+                id = UUID.randomUUID(),
+                value = it.value,
+                language = it.language,
+                usage = createdWasteUsage
+            )
+        }
+
+        return createdWasteUsage
     }
 
     /**
@@ -61,8 +76,19 @@ class UsageController {
      * @param userId user id
      * @return upfated Usage
      */
-    fun update(oldUsage: WasteUsage, newUsage: fi.metatavu.rapurc.api.model.Usage, userId: UUID): WasteUsage {
-        return usageDAO.updateName(oldUsage, newUsage.name, userId)
+    fun update(oldUsage: WasteUsage, newUsage: Usage, userId: UUID): WasteUsage {
+        localizedValueDAO.listBy(usage = oldUsage)
+            .forEach { localizedValueDAO.delete(it) }
+
+        newUsage.localizedNames.forEach {
+            localizedValueDAO.create(
+                id = UUID.randomUUID(),
+                value = it.value,
+                language = it.language,
+                usage = oldUsage
+            )
+        }
+        return oldUsage
     }
 
     /**
@@ -71,6 +97,8 @@ class UsageController {
      * @param usage usege to delete
      */
     fun delete(usage: WasteUsage) {
+        localizedValueDAO.listBy(usage = usage)
+            .forEach { localizedValueDAO.delete(it) }
         usageDAO.delete(usage)
     }
 

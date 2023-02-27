@@ -4,6 +4,7 @@ import fi.metatavu.jaxrs.test.functional.builder.auth.AccessTokenProvider
 import fi.metatavu.rapurc.api.client.apis.UsagesApi
 import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.rapurc.api.client.infrastructure.ClientException
+import fi.metatavu.rapurc.api.client.models.LocalizedValue
 import fi.metatavu.rapurc.api.client.models.Metadata
 import fi.metatavu.rapurc.api.client.models.Usage
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
@@ -36,7 +37,12 @@ class UsageTestBuilderResource(
      * @return created usage
      */
     fun create(): Usage {
-        return addClosable(api.createUsage(Usage(name = "default_usage", metadata = Metadata())))
+        return addClosable(api.createUsage(Usage(
+            localizedNames = arrayOf(
+                LocalizedValue("en", "default_usage")
+            ),
+            metadata = Metadata()
+        )))
     }
 
     /**

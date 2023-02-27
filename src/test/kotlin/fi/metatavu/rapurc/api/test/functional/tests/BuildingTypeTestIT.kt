@@ -25,13 +25,13 @@ class BuildingTypeTestIT {
      */
     @Test
     fun create() {
-        TestBuilder().use {
-            it.userA.buildingTypes.assertCreateFailStatus(403)
-            val buildingType = it.admin.buildingTypes.create()
+        TestBuilder().use { tb ->
+            tb.userA.buildingTypes.assertCreateFailStatus(403)
+            val buildingType = tb.admin.buildingTypes.create()
 
             assertNotNull(buildingType)
-            assertEquals(it.userA.buildingTypes.buildingType.name, buildingType!!.name)
-            assertEquals(it.userA.buildingTypes.buildingType.code, buildingType.code)
+            assertEquals(tb.userA.buildingTypes.buildingType.localizedNames[0].value, buildingType!!.localizedNames.find { it.language == "en" }!!.value)
+            assertEquals(tb.userA.buildingTypes.buildingType.code, buildingType.code)
         }
     }
 
@@ -61,7 +61,7 @@ class BuildingTypeTestIT {
 
             assertNotNull(foundBuildingType)
             assertEquals(createdBuildingType.id, foundBuildingType.id)
-            assertEquals(createdBuildingType.name, foundBuildingType.name)
+            assertEquals(createdBuildingType.localizedNames[0].value, foundBuildingType.localizedNames.find { it.language == "en" }!!.value)
             assertEquals(createdBuildingType.code, foundBuildingType.code)
         }
     }
@@ -71,20 +71,31 @@ class BuildingTypeTestIT {
      */
     @Test
     fun update() {
-        TestBuilder().use {
-            val createdBuildingType = it.admin.buildingTypes.create()
+        TestBuilder().use { testBuilder ->
+            val createdBuildingType = testBuilder.admin.buildingTypes.create()
             val updateBuildingType = BuildingType(
-                name = "new name",
+                localizedNames = arrayOf(
+                    LocalizedValue("en", "newValue"),
+                    LocalizedValue("fr", "newValue1")
+                ),
                 code = "new code",
                 metadata = Metadata()
             )
 
-            it.userA.buildingTypes.assertUpdateFailStatus(403, createdBuildingType!!.id!!, updateBuildingType)
-            val updatedBuilding = it.admin.buildingTypes.update(createdBuildingType.id!!, updateBuildingType)
+            testBuilder.userA.buildingTypes.assertUpdateFailStatus(403, createdBuildingType!!.id!!, updateBuildingType)
+            testBuilder.admin.buildingTypes.assertUpdateFailStatus(400, createdBuildingType.id!!, updateBuildingType.copy(localizedNames = emptyArray()))
+
+            val updatedBuilding = testBuilder.admin.buildingTypes.update(createdBuildingType.id!!, updateBuildingType)
 
             assertNotNull(updatedBuilding)
-            assertEquals(updateBuildingType.name, updatedBuilding.name)
             assertEquals(updateBuildingType.code, updatedBuilding.code)
+
+            val sorted = updatedBuilding.localizedNames.sortedBy { it.language }
+            assertEquals("newValue", sorted[0].value)
+            assertEquals("en", sorted[0].language)
+
+            assertEquals("newValue1", sorted[1].value)
+            assertEquals("fr", sorted[1].language)
         }
     }
 

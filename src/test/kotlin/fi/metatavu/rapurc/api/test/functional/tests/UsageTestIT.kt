@@ -1,5 +1,6 @@
 package fi.metatavu.rapurc.api.test.functional.tests
 
+import fi.metatavu.rapurc.api.client.models.LocalizedValue
 import fi.metatavu.rapurc.api.client.models.Metadata
 import fi.metatavu.rapurc.api.client.models.Usage
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
@@ -29,7 +30,8 @@ class UsageTestIT {
         TestBuilder().use { testBuilder ->
             testBuilder.userA.usages.assertCreateFailStatus(403)
             val createdUsage = testBuilder.admin.usages.create()
-            assertEquals("default_usage", createdUsage.name)
+            assertEquals("default_usage", createdUsage.localizedNames.find { it.language == "en" }!!.value)
+
             assertNotNull(createdUsage.id)
             assertNotNull(createdUsage.metadata.createdAt)
         }
@@ -56,7 +58,7 @@ class UsageTestIT {
             val createdUsage = testBuilder.admin.usages.create()
             val foundUsage = testBuilder.admin.usages.find(createdUsage.id!!)
             assertEquals(createdUsage.id, foundUsage.id)
-            assertEquals(createdUsage.name, foundUsage.name)
+            assertEquals(createdUsage.localizedNames.find { it.language == "en" }!!.value, foundUsage.localizedNames.find { it.language == "en" }!!.value)
         }
     }
 
@@ -68,13 +70,23 @@ class UsageTestIT {
         TestBuilder().use { testBuilder ->
             val createdUsage = testBuilder.admin.usages.create()
             val updateData = Usage(
-                name = "updated_usage",
+                localizedNames = arrayOf(
+                    LocalizedValue("en", "new material name en"),
+                    LocalizedValue("fr", "new material name fr")
+                ),
                 metadata = Metadata()
             )
 
             testBuilder.userA.usages.assertUpdateFailStatus(403, createdUsage.id!!, updateData)
+            testBuilder.admin.usages.assertUpdateFailStatus(400, createdUsage.id, updateData.copy(localizedNames = emptyArray()))
+
             val updated = testBuilder.admin.usages.update(createdUsage.id, updateData)
-            assertEquals(updateData.name, updated.name)
+            val sorted = updated.localizedNames.sortedBy { it.language }
+            assertEquals("new material name en", sorted[0].value)
+            assertEquals("en", sorted[0].language)
+
+            assertEquals("new material name fr", sorted[1].value)
+            assertEquals("fr", sorted[1].language)
         }
     }
 

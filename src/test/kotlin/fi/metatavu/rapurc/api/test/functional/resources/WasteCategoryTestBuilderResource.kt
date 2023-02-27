@@ -4,6 +4,7 @@ import fi.metatavu.jaxrs.test.functional.builder.auth.AccessTokenProvider
 import fi.metatavu.rapurc.api.client.apis.WasteCategoryApi
 import fi.metatavu.rapurc.api.client.infrastructure.ApiClient
 import fi.metatavu.rapurc.api.client.infrastructure.ClientException
+import fi.metatavu.rapurc.api.client.models.LocalizedValue
 import fi.metatavu.rapurc.api.client.models.Metadata
 import fi.metatavu.rapurc.api.client.models.WasteCategory
 import fi.metatavu.rapurc.api.test.functional.TestBuilder
@@ -21,7 +22,9 @@ class WasteCategoryTestBuilderResource(
 ): ApiTestBuilderResource<WasteCategory, ApiClient?>(testBuilder, apiClient) {
 
     val wasteCategory = WasteCategory(
-        name = "metal waste",
+        localizedNames = arrayOf(
+            LocalizedValue("en", "metal waste")
+        ),
         ewcCode = "123C",
         metadata = Metadata()
     )
