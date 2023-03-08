@@ -38,4 +38,6 @@ class Surveyor: Metadata() {
     @Column
     var reportDate: LocalDate? = null
 
+    @Column
+    var visits: String? = null
 }

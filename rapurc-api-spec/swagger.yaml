@@ -3840,6 +3840,9 @@ components:
         roofType:
           type: string
           description: Roof type
+        propertyName:
+          type: string
+          description: Name of the property
         address:
           $ref: "#/components/schemas/Address"
         otherStructures:
@@ -4220,6 +4223,9 @@ components:
           type: string
           format: date
           description: Report date
+        visits:
+          type: string
+          description: Surveying visits
         metadata:
           $ref: "#/components/schemas/Metadata"
 

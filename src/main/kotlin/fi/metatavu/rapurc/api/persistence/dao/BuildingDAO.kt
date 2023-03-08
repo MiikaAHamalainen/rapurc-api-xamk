@@ -31,6 +31,7 @@ class BuildingDAO: AbstractDAO<Building>() {
      * @param supportStructure support structure
      * @param facadeMaterial facade material
      * @param roofType roof type
+     * @param propertyName property name
      * @param streetAddress street address
      * @param city city
      * @param postCode post code
@@ -53,6 +54,7 @@ class BuildingDAO: AbstractDAO<Building>() {
         supportStructure: String?,
         facadeMaterial: String?,
         roofType: String?,
+        propertyName: String?,
         streetAddress: String?,
         city: String?,
         postCode: String?,
@@ -74,6 +76,7 @@ class BuildingDAO: AbstractDAO<Building>() {
         building.supportStructure = supportStructure
         building.facadeMaterial = facadeMaterial
         building.roofType = roofType
+        building.propertyName = propertyName
         building.streetAddress = streetAddress
         building.city = city
         building.postCode = postCode
@@ -280,7 +283,19 @@ class BuildingDAO: AbstractDAO<Building>() {
         building.lastModifierId = modifierId
         return persist(building)
     }
-
+    /**
+     * Updates name of the building
+     *
+     * @param building building to update
+     * @param propertyName new property name
+     * @param modifierId modifier id
+     * @return updated building
+     */
+    fun updatePropertyName(building: Building, propertyName: String?, modifierId: UUID): Building {
+        building.propertyName = propertyName
+        building.lastModifierId = modifierId
+        return persist(building)
+    }
     /**
      * Updates street address of the building
      *
