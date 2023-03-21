@@ -52,6 +52,7 @@ class SurveyTestIT {
                 address = null,
                 status = null,
                 type = null,
+                dateUnknown = null,
                 startDate = null,
                 endDate = null
             )
@@ -61,6 +62,7 @@ class SurveyTestIT {
             it.userA.surveys.create(
                 Survey(
                     status = SurveyStatus.dRAFT,
+                    dateUnknown = false,
                     startDate = LocalDate.of(2021, 1, 10).toString(),
                     endDate = LocalDate.of(2021, 5, 1).toString(),
                     type = SurveyType.dEMOLITION,
@@ -71,6 +73,7 @@ class SurveyTestIT {
                 Survey(
                     status = SurveyStatus.dONE,
                     type = SurveyType.rENOVATION,
+                    dateUnknown = false,
                     startDate = LocalDate.of(2020, 1, 1).toString(),
                     endDate = LocalDate.of(2020, 12, 1).toString(),
                     metadata = Metadata()
@@ -90,6 +93,7 @@ class SurveyTestIT {
                 address = null,
                 status = null,
                 type = null,
+                dateUnknown = null,
                 startDate = null,
                 endDate = null
             )
@@ -103,6 +107,7 @@ class SurveyTestIT {
                 address = null,
                 status = SurveyStatus.dRAFT,
                 type = null,
+                dateUnknown = null,
                 startDate = null,
                 endDate = null
             )
@@ -115,6 +120,7 @@ class SurveyTestIT {
                 address = null,
                 status = SurveyStatus.dONE,
                 type = null,
+                dateUnknown = null,
                 startDate = null,
                 endDate = null
             )
@@ -126,6 +132,7 @@ class SurveyTestIT {
                 address = null,
                 status = null,
                 type = SurveyType.rENOVATION,
+                dateUnknown = null,
                 startDate = null,
                 endDate = null
             )
@@ -137,6 +144,7 @@ class SurveyTestIT {
                 address = null,
                 status = null,
                 type = null,
+                dateUnknown = null,
                 startDate = LocalDate.of(2021, 1, 1).toString(),
                 endDate = LocalDate.of(2021, 5, 1).toString()
             )
@@ -148,6 +156,7 @@ class SurveyTestIT {
                 address = null,
                 status = null,
                 type = null,
+                dateUnknown = null,
                 startDate = null,
                 endDate = null
             )
@@ -159,6 +168,7 @@ class SurveyTestIT {
                 address = null,
                 status = null,
                 type = null,
+                dateUnknown = null,
                 startDate = null,
                 endDate = null
             )
@@ -214,6 +224,7 @@ class SurveyTestIT {
                 address = null,
                 status = null,
                 type = null,
+                dateUnknown = null,
                 startDate = null,
                 endDate = null
             )
@@ -229,6 +240,7 @@ class SurveyTestIT {
                 address = null,
                 status = null,
                 type = null,
+                dateUnknown = null,
                 startDate = null,
                 endDate = null
             )
@@ -249,6 +261,7 @@ class SurveyTestIT {
                 address = null,
                 status = null,
                 type = null,
+                dateUnknown = null,
                 startDate = null,
                 endDate = null
             )

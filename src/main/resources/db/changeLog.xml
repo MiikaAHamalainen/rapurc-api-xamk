@@ -126,6 +126,7 @@
   <changeSet id="extend_survey" author="katja danilova">
     <addColumn tableName="survey">
       <column name="type" type="varchar(191)"/>
+      <column name="dateUnknown" type="bit(1)"/>
       <column name="startdate" type="date"/>
       <column name="enddate" type="date"/>
     </addColumn>
