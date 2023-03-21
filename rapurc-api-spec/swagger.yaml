@@ -60,6 +60,12 @@ paths:
           required: false
           schema:
             $ref: "#/components/schemas/SurveyType"
+        - name: dateUnknown
+          in: query
+          required: false
+          description: From by date known
+          schema:
+            type: boolean
         - name: startDate
           in: query
           required: false
@@ -3709,6 +3715,9 @@ components:
           $ref: "#/components/schemas/SurveyStatus"
         type:
           $ref: "#/components/schemas/SurveyType"
+        dateUnknown:
+          type: boolean
+          description: True if date of demolition is unknown
         startDate:
           type: string
           format: date
