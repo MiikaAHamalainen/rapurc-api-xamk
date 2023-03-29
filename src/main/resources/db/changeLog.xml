@@ -87,6 +87,7 @@
       <column name="supportstructure" type="varchar(255)" />
       <column name="facadematerial" type="varchar(255)" />
       <column name="rooftype" type="varchar(255)" />
+      <column name="propertyname" type="varchar(255)" />
       <column name="streetaddress" type="varchar(255)" />
       <column name="city" type="varchar(255)" />
       <column name="postcode" type="varchar(255)" />
@@ -126,6 +127,7 @@
   <changeSet id="extend_survey" author="katja danilova">
     <addColumn tableName="survey">
       <column name="type" type="varchar(191)"/>
+      <column name="dateUnknown" type="bit(1)"/>
       <column name="startdate" type="date"/>
       <column name="enddate" type="date"/>
     </addColumn>
@@ -463,6 +465,9 @@
         <constraints nullable="true"/>
       </column>
       <column name="reportdate" type="datetime(6)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="visits" type="varchar(192)">
         <constraints nullable="true"/>
       </column>
       <column name="creatorid" type="binary(16)">
