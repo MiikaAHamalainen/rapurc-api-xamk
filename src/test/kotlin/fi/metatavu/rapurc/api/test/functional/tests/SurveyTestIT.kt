@@ -137,6 +137,18 @@ class SurveyTestIT {
                 endDate = null
             )
             assertEquals(1, listByType.size)
+            
+            val listByDateUnknown = it.admin.surveys.listSurveys(
+                firstResult = null,
+                maxResult = null,
+                address = null,
+                status = null,
+                type = null,
+                dateUnknown = false,
+                startDate = null,
+                endDate = null
+            )
+            assertEquals(2, listByDateUnknown.size)
 
             val listFilteredByDate = it.admin.surveys.listSurveys(
                 firstResult = null,

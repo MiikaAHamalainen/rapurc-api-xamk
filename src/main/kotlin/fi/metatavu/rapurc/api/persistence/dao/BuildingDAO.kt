@@ -76,7 +76,7 @@ class BuildingDAO: AbstractDAO<Building>() {
         building.supportStructure = supportStructure
         building.facadeMaterial = facadeMaterial
         building.roofType = roofType
-            building.propertyName = propertyName
+        building.propertyName = propertyName
         building.streetAddress = streetAddress
         building.city = city
         building.postCode = postCode
